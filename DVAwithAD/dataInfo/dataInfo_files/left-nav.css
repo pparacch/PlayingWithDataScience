@@ -1,0 +1,103 @@
+/*=================================
+ Left side navigation
+ ================================== */
+
+#leftNav {
+	margin-top: 15px;
+	padding: 8px 0 8px 0;
+	width: 100%;
+	background-color: #fff;
+	border: none;
+}
+
+#leftNav ul {margin: 0;}
+
+#leftNav li {
+	list-style: none;
+}
+
+#leftNav li a {
+	text-decoration: none;
+	color: #333333;
+	padding: 5px;
+}
+.lnmenubaritem {border-top: 1px solid #ccc}
+
+#selected-page .lnmenubaritem a {
+	background-color: #5F6F7F;
+	color: #fff;
+}	
+
+#leftNav .lnmenubaritem a:hover {
+	background-color: #F5F5F5;
+	color: #333333;
+	font-weight: 500;
+	margin: 0;
+}
+
+#leftNav .selected-section {
+	border-top: 1px #003366 solid;
+	border-bottom: 1px #003366 solid;
+}
+
+#leftNav ul.submenu .lnmenubaritem a {
+	padding-left: 20px;
+	font-weight: 400;
+	margin-bottom: 0
+}
+
+#leftNav ul.submenu li {margin-top: 0}
+
+#leftNav .lnmenubaritemlabel {
+	background: inherit;
+	line-height: 1em;
+	display: block;
+	padding: 7px 5px 7px 5px;
+	font-family: Verdana, Geneva, sans-serif;
+	font-style: normal;
+	font-weight: 500;
+	color: #333;
+	margin: 0;
+}
+
+
+/*==========================
+Style for drop-down left nav
+============================*/
+
+	#leftNav2 {
+	
+	}
+	
+	#leftNav2 .bd {
+		padding: 10px 0 10px 0;
+		width: 100%;
+		/*background-image:url(/feg/images/leftnav/LeftNavBackground.png);
+		background-repeat: repeat-x;*/
+		background-color: white;
+		border: #cccccc solid 1px; 
+		-moz-border-radius: 8px;
+		-webkit-border-radius: 8px;
+		border-radius: 8px;
+	}
+	
+	#leftNav2 .bd .bd {
+		padding: 3px 0 3px 0;
+		width: 100%;
+		/*background-image:url(/feg/images/leftnav/LeftNavBackground.png); 
+		background-repeat: repeat-x;*/
+		background-color: white;
+		border: #cccccc solid 1px; 
+		-moz-border-radius: none;
+		-webkit-border-radius: none;
+		border-radius: none;
+	}
+    #leftNav2 {position: static;}
+    /*
+        For IE 6: trigger "haslayout" for the anchor elements in the root Menu by 
+        setting the "zoom" property to 1.  This ensures that the selected state of 
+        MenuItems doesn't get dropped when the user mouses off of the text node of 
+        the anchor element that represents a MenuItem's text label.
+    */
+    #leftNav2 .yuimenuitemlabel {_zoom: 1;}
+    #leftNav2 .yuimenu .yuimenuitemlabel {_zoom: normal;}

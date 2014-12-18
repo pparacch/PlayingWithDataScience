@@ -1,0 +1,144 @@
+
+/*==================================
+Styles for main content container
+==================================== */
+#main-content {border: none; background-color: white; padding: .77em; *padding: .75em; min-height: 30.8em; *min-height: 30em}
+#main-content p, #main-content li {font-size: 1em; line-height: 1.25em;}
+#main-content p {margin: .25em 0 1em 0;}
+#main-content p.footnote {line-height: .85em; font-size: .85em;	margin-top: 0;}
+#main-content p a{text-decoration: underline; color: blue;}
+#main-content h1, h2, h3 {color: #1a558f;}
+#main-content h1 {font-size: 1.65em; font-weight: bold; text-align: left; margin-top: .25em; margin-bottom: .75em; margin-left: 0;}
+#main-content h2 {font-size: 1.15em; font-weight: bold;	margin: 1.75em 0 .5em 0;}
+#main-content h2 a {text-decoration: none; color: inherit;}
+#main-content h2 a:hover {text-decoration: underline; color: inherit;}
+#main-content h3 {font-size: 1em; font-weight: bold; margin: 1.25em 0 .5em 0;}
+#main-content img.floatRight {float: right;	margin-top: .5em; margin-right: .5em; margin-bottom: 1em; margin-left: 2.5em; border: 1px solid #444433;}
+#main-content img.floatLeft {float: left;	margin-top: .5em; margin-right: 2.5em; margin-bottom: 1em; margin-left: 0; border: 1px solid #444433;}
+#main-content img.icon {border: none;}
+#main-content ul, #main-content ol {margin: 1em .5em 1em 2.5em;}
+#main-content ul li {margin: .5em 0 .5em 0; list-style-type: disc; list-style-position: outside;}
+#main-content ol li {margin: .5em 0 .5em 0; list-style-type: decimal; list-style-position: outside;}
+#main-content ul li ul li {list-style-type: circle;}
+#main-content .data-source-section {font-size: 85%; margin-top: 1.92em; *margin-top: 1.88em; padding-top: .5em; border-top: 1px solid #cccccc;}
+#main-content .data-source-header {color: #1a558f;	font-weight: bold;}
+#main-content .end-notes {margin-top: .5em;	padding-top: .5em; border-top: 1px solid #cccccc;}
+#main-content .alert {color: #990000; font-weight: bold;}
+#main-content .caption p, #main-content .caption {text-align: center; font-size: 85%; margin-top: .5em;	margin-bottom: 0;}
+#main-content .image-box {display: block; float: right; margin: .38em 0 .77em 1.92em; *margin: .38em 0 .75em 1.88em}
+#main-content .image-box-content {margin-left: auto; margin-right: auto;}
+#main-content .image-box img {border: 1px solid #444433;}
+#main-content img.has-border {border: 1px solid #444433;} /* Used to be called image-border */
+#main-content strong {font-weight: bold;}
+#main-content em {font-style:italic;}
+#main-content sup {font-size: 77%; position: relative; vertical-align: super;}
+#main-content .text-container {float: left; display: block; margin-right: 2em; overflow: auto;}
+#main-content .text-container: after {clear: both;}
+#main-content .text-container-inner {float: left; display: block; margin-bottom: .25em;}
+#main-content .text-container img {float: left; margin: .25em 1em .5em .25em; border: 1px solid #444433;}
+#main-content .highlight-box {background-color:  #D5DCEC; padding: .5em; display: block; border-width: 1px; border-style: groove; border-color: #507696; margin: 1em 0 1em 0;}
+#main-content .highlight-box p.close-box {clear: both;}
+#main-content .highlight-box h2 {margin-top: .5em;}
+#main-content a.more-less {display: inline; margin-left: .5em;}
+#main-content .footnote {font-size: 85%; line-height: 1em; margin: .35em 0 .35em 0;}
+#main-content .tab-box-content {clear: both; border-width: 1px; border-color: #444433; border-style: none solid solid solid; padding: .77em; *padding: .75em; margin: 0;}
+#main-content blockquote {margin: 1em 2em;}
+#main-content blockquote p {margin: .25em 0 .25em 0;}
+/*==================================
+Styles for tables
+====================================*/
+
+#main-content table {margin: 0 0 1em 0;}
+#main-content .footnote-table {font-size: .85em; line-height: 1em; margin-bottom: 1em; padding: .5em; display: block;}
+#main-content .footnote-table p {margin: .35em 0 .35em 0;}
+#main-content table caption {font-weight: bold; text-align: center; color: #1a558f; margin: 1em .5em .5em .5em;}
+#main-content td, #main-content th {padding: .5em; border: 1px solid #444433;}
+#main-content td {vertical-align: top;}
+#main-content .table-header-first {background: #7099cc; color: #ffffff;	font-weight: bold; text-align: center;	vertical-align: middle;}
+#main-content .table-header-first td, #main-content .table-header-first th {padding: .35em; text-align: center;}
+#main-content .table-header-second {background: #f6f6f6; color: #000; font-weight: bold; vertical-align: middle;}
+#main-content .table-header-second td {padding: .25em;}
+#main-content .table-caption p {margin: .25em 0 0 0; font-size: 85%;}
+#main-content td.right {text-align: right;}
+#main-content td.center {text-align: center;}
+
+/*========================
+Styles for tax tables
+==========================*/
+#main-content .tax-table {margin: 0; padding: .5em; width: 100%; border: none;}
+#main-content .tax-table .tax-main-header th {clear: both; vertical-align: middle; background-color: #7099cc; color: white; font-weight: bold; text-align: center;}
+#main-content .tax-table td, #main-content .tax-table th  {border-style: solid none solid none;}
+#main-content .tax-table tr.tax-manuf {padding: .5em;}
+#main-content .tax-table .tax-manuf td {font-size: 85%; text-align: center; vertical-align: middle; font-weight: bold; color: black; background-color: #f6f6f6;}
+#main-content .tax-table td img {border: 1px solid #444433; margin: 1px 3px 1px 1px; vertical-align: top; float: left;}
+#main-content .tax-table .tax-manuf .manuf-name {text-align: left;}
+#main-content .make-model {color: #1a558f; font-weight: bold; vertical-align: top;}
+#main-content .tax-credit-amount {font-size: .9em; text-align: right; vertical-align: middle; padding: 0 1em 0  1em;}
+#main-content .tax-credit-amount .null {text-align: center; vertical-align: inherit;}
+#main-content .yui-accordion-item .yui-widget-bd {padding: 0; margin: 0;}
+#main-content .phaseoutMessage {background-color: #990000; border: 1px solid #444433; width: auto; margin: 0;}
+#main-content .phaseoutText {color: white; font-weight: bold; text-align: center; margin: 1em; vertical-align: middle;}
+#main-content .collapse-box {display: block; margin-top: 1.75em; margin-bottom: .5em;}
+#main-content .collapse-detail {display: block; margin-top: .5em;}
+	
+/*==========================
+Styles for accordions
+============================*/
+#main-content .accordion-container li {font-size: inherit;}
+#main-content .yui-widget-bd .footnote-table {padding-bottom: .1em;}
+.yui-skin-sam #main-content .yui-accordion-item-label {color: #1a558f;}
+/*===========================
+Styles for Gas Tips
+=============================*/
+#main-content table.gas-tip-table {background-color: #f6f6f6; width: 100%; border: 1px solid #cccccc; margin: 0;}
+#main-content th.benefit-header {padding: .25em .25em .25em .25em; border: none; color: #367845; font-weight: bold;}
+#main-content td.benefit-quantity {text-align: right; padding: .25em; border: none; color: #367845; font-weight: bold;}
+#main-content .gas-tip {width: 42.3em; *width: 41.25em; margin: 0;}
+#main-content .gas-tip img {border: 1px solid #444433;}
+
+/*============================
+Style for carousels
+==============================*/
+#main-content #container {margin-top: 0;}
+#main-content #container ul, #main-content #container ol {margin: 0; vertical-align: middle;}
+#main-content #container .yui-carousel-nav ul, #main-content #container .yui-carousel-nav ol {margin: .38em;}
+#main-content .yui-carousel-button, #main-content #container .yui-carousel-nav ul li {margin-top: .38em; list-style-type: none;}
+#main-content .yui-carousel-nav ul li {margin-left: .15em;}
+#main-content ol#carousel li {list-style: none; vertical-align: middle;}
+#main-content #container .yui-carousel-content ol {vertical-align: middle;}
+#main-content .conceptsTitle {position: relative; bottom: 1.9em; z-index: 1; background: none; margin: 0 0 0 .3em; font-size: 100%; font-style: italic; font-weight: 800; color:#1a558f;}
+#main-content .videoBox {float: left; width: 18.69em; *width: 18.23em; min-height: 16.54em; *min-height: 16.13; padding: .3em; vertical-align: top;}
+#main-content .videoTitle {margin: 3px 2px 3px 2px; text-align: center; vertical-align: bottom; font-weight: bold; color: #1a558f; white-space: normal; font-size: 90%;}
+#main-content .videoImage .caption p {margin: .15em; text-align: center; vertical-align: top;}
+#main-content .videoImage img {border: 1px solid #cccccc;}
+#main-content .videoText {text-align: left;}
+#main-content p.motorweek-credit {margin-top: .1em; margin-bottom: .1em; font-style: italic; font-size: 90%;}
+
+/*==================================
+Style for New & Upcoming Electric
+====================================*/
+#main-content .new-upcoming-ev {border-top: 1px solid #cccccc; border-bottom: 1px solid #cccccc; width: 100%;}
+#main-content .new-upcoming-ev td {border-color: #cccccc; border-width: 1px; border-style: solid none solid none; padding: .77em; *padding: .75em; white-space: normal;  border-collapse: collapse;}
+#main-content .new-upcoming-ev td p {margin: .5em .5em 0 .5em; display: block; font-size: 90%;}
+#main-content .new-upcoming-ev img {display: block; border: 1px solid #444433; margin-top: .38em;}
+
+/*=======================================
+Style for New & Upcoming Hybrids/Diesels
+=========================================*/
+#main-content p.veh-name {text-align: left; font-weight: bold; color: #1a558f; margin: 0 0 .1em 0; line-height: normal;}
+#main-content p.veh-class {text-align: left; margin: 0 0 .1em 0; line-height: normal;}
+#main-content table.new-upcoming img.veh-photo {border: 1px solid #444433;}
+#main-content table.new-upcoming img.mpg-chart {margin-left: auto; margin-right: auto; margin-top: .77em; *margin-top: .75em; border: none; vertical-align: bottom;} 
+#main-content table.new-upcoming {width: 100%; border-top: 1px solid #444433; border-bottom: 1px solid #444433; border-left: none; border-right: none;}
+#main-content table.new-upcoming th {border-style: none none solid none; border-color: #444433; border-width: 1px; text-align: center; font-weight: bold; background-color: #7099cc; color: white; padding: .25em;}
+#main-content table.new-upcoming td.msrp {text-align: center; vertical-align: middle;}
+#main-content table.new-upcoming td {padding: .5em; border-style: solid none solid none; border-width: 1px; border-color: #444433; border-collapse: collapse;}
+#main-content table.new-upcoming .date-available {text-align: center;}
+
+/*===========================
+Style for Links Tables
+=============================*/
+
+#main-content .links-table {margin: 0; width: 100%;}
+#main-content .links-table th, #main-content .links-table td {font-size: 90%; padding: 1em; border: none;}
+#main-content .links-table th {background-color: #7099cc; color: white; font-weight: bold; text-align: center;}

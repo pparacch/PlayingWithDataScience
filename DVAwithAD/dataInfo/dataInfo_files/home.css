@@ -1,0 +1,95 @@
+
+/* CSS Document */
+
+html{
+	background-color: #fff;
+	}
+
+body {
+	font-family: verdana, helvetica, arial, sans-serif;
+	background-color: #fff;
+	background-image:url("/feg/images/home/bg-trans.gif");
+	background-repeat:repeat-x;
+	}
+
+.yui-t2 .yui-b {
+
+	}
+	
+.yui-t2 #yui-main {
+
+	}
+	
+.yui-t2 #yui-main .yui-b {
+
+	}
+	
+.sponsor {
+	margin-bottom: 0;
+	padding: 0;	
+	background-color: #fff;
+	}
+	
+.headerNav{
+	font-size: .85em;
+	margin-bottom: 0;
+	margin-top: 8px;
+	margin-right: 15px;
+	padding: .385em;
+ 	*padding: .375em;
+	color: #fff;	
+	font-weight: 500;
+	}
+    
+.headerNav a {
+	text-decoration: none;
+	color: #fff;	
+	font-weight: 500;
+	margin-left: 10px
+	}
+	
+#doc4 {
+	border-right: none; 
+	border-top: none;  
+	border-left: none; 
+	}
+    
+#hd {
+
+	background-color: #1a558f;
+	background-repeat: repeat-y;	
+	border-bottom: #fff .769em solid;	
+ 	*border-bottom: #fff .75em solid;
+	}
+
+#hd h1 { 
+	padding: .2em;
+ 	*padding: .195em;
+	}
+
+#bd {
+	background-color: #fff;
+	}
+
+#ft {
+	background-color: #fff;
+	text-align: center;
+	font-size: .85em;
+	padding-top: 1.538em;
+ 	*padding-top: 1.5em;
+	}
+
+/* Skip navigation 
+===================================== */
+
+.skipnav {width: 100%; background-color: #fff;}
+.skipnav a { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.skipnav a:focus, .skipnav a:active { position: static; left: 0; width: auto; height: auto; overflow: visible; text-decoration: underline;} 
+
+
+
+
+
+	
+
+
