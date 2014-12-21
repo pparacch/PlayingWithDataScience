@@ -18,5 +18,19 @@ install.package("name") | Install a package (library) from the CRAN website.
 library(name) | Load a package (previously installed), making it available for use. 
 detach(package:name) | Make the package unavailable for use. Replace name with the package name to be detached.
 
+## Working Directory Management
+The working directory is the location - in your file system - where file are looked and stored by default.
 
-> Written with [StackEdit](https://stackedit.io/).
+Command | Description
+------------|--------------
+getwd() | Return the current working directory.
+setwd("location") | Set the current directory to the provided location. "location" can be an absolute path or relative path (relative to the current working directory).
+
+__Note!__ If you want to change the working directory on a permanent basis look at the "Preferences" for R/ RStudio.
+
+### Other Commands
+Command | Description
+------------ | ---------
+dir() | List all files/ directories in the working directory.
+dir("location") | List all files/ directories in the provided directory.
+dir(all.files = T) | List all files/ directories including hidden ones.
