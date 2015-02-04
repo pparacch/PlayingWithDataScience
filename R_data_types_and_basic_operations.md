@@ -1,8 +1,24 @@
 # Data Types & Basic Operations
 
+[Data Types Overview: Modes](#modes)
+
+
+[Data Types Overview: Data Structures in R](#dataStructures)
+
+- Attributes
+- Vectors
+- Matrices
+- Lists
+- Data Frames
+- Factors
+- Note on Classes
+
+[Basic Operations](#basicOperations)
+
+
 ## Data Types Overview
 
-### Modes
+### <a id="modes">Modes</a>
 Basic or “atomic” classes of objects or __modes__ in R:
 
 -   __character__
@@ -49,7 +65,7 @@ Command | Description
 `mode()` | Get the type or storage mode of an object.
 `class()`| Many R objects have a __class__ attribute, a character vector giving the names of the classes from which the object inherits. If the object does not have a __class__ attribute, it has an implicit class, "matrix", "array" or the result of `mode(x)` (except that integer vectors have implicit class "integer").
 
-### Some R Data Structure
+### <a id="dataStructures">Some R Data Structure</a>
 
 #### Attributes
 R objects can have attributes
@@ -65,12 +81,12 @@ Command | Description
 `attributes()` | Return the object's attribute list as a vector. `NULL` if attributes are not available. 
 
 
-### Vector
+#### Vector
 The most basic object is a vector
 
 -   it can only contain objects/ elements of the same mode or __elements of a vector must have all of the same mode/ data type__.
 
-#### Scalars & Character Strings
+##### Scalars & Character Strings
 Scalars & Caharacter Strings do not exist in R - what appear to be an individual number or a string is actuallly a _one-element_ vector.
 
 ```
@@ -98,7 +114,7 @@ Command | Description
 ------------ | ---------
 `length()` | Return the length of the vector.
 
-### Matrices
+#### Matrices
 Matrices are vectors with a __dimension__ attribute. The __dimension attribute is an integer vector of length 2 (nrow, ncol). __Note!__ Being a vector, a matrix can contain only element of the same mode/ data type.
 
 ```
@@ -131,7 +147,7 @@ Command | Description
 `dim()` | Return the __dimension__ attribute. `NULL` if __dimension__ does not exist.
 
 
-### Lists
+#### Lists
 A __list__ is a container for values but its content __can be__ ___items of different modes/ data types___.
 
 ```
@@ -165,7 +181,7 @@ $d
 [1] 1 2 3
 ```
 
-### Data Frames
+#### Data Frames
 A typical data set containing data of different modes/ data types, used to store tabular data.
 
 A __Data Frame__ is a __list__ with each component of the list being a vector corresponding to a "column" in our tabular data.
@@ -194,7 +210,7 @@ A __Data Frame__ is a __list__ with each component of the list being a vector co
 
 Note! Typically data frames are created by reading a data set from a specific source e.g. file, database, etc.
 
-### Factors
+#### Factors
 Factors are used to represent categorical data, ordered or unordered. A factor is like an integer vector where each integer has a label.
 
 - Factors are treated specially by modelling functions e.g. `lm()`, etc
@@ -227,14 +243,14 @@ attr(,"levels")
 [1] "yes" "no" 
 ```
 
-### Final Note on Classes
+#### Note on Classes
 R is an object-oriented language and most of the R language is based on S3 classes (S language, version 3). Instances of classes are lists with an extra attribute, the __class name__.
 
 Classes are a fundamental concept when working with __generic__ functions.
 
 _"A **generic function** stands for a family of functions, all serving a similar purpose but each appropiate to a specific class."_
 
-### Usefull Commands for R Data Sructures
+#### Usefull Commands for R Data Sructures
 Command | Description
 ------------ | ---------
 `str()` | Return the __structure__ of provided R data structure (__generic function__).
@@ -276,7 +292,7 @@ equidist  1     -none- logical
  
  
 ---
-## Basic Operations
+## <a id="basicOperations">Basic Operations</a>
 
 Command | Description
 ------------ | ---------
