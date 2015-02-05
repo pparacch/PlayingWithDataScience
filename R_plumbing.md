@@ -22,6 +22,7 @@ Command | Description
 `help.search("string")` | Search the Help System for the provided "string". 
 `apropos(pattern)` | Show all of the commands that contains provided pattern. Note pattern can be a regular expression or a string.
 `example(cmd)` | Run examples section from the online help.
+`?Syntax` | To get a complete refence on operator syntax & precedences
 
 ## <a id="package">Package Management</a>
 Command | Description
