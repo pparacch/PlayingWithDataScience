@@ -130,3 +130,96 @@ all(x > 10)
 
 x <- 1:10
 x > 5
+
+###########################################
+###########################################
+##Vectorized Operations/ functions
+##1st example
+x <- 1:4 # Vector x
+y <- 2:5 # Vector y
+x > y 
+## ">" is a vectorized function
+## ">" is applied to: x[1] y[1], x[2] y[2], etc 
+">"(x,y) ## Same as before
+
+## Another example
+x
+sqrt(x) ## vectorized function - see how it is applied to each element
+
+##2nd example
+x <- 1:10
+x
+incrementMe <- function(x){return(x + 1)}
+## incrementMe uses just vectorized operations `+`
+incrementMe(x)
+
+## "+" is vectorized? Verify it
+x <- 1:4 # Vector x
+y <- 2:5 # Vector y
+x + y 
+
+
+## Another example
+x <- 1:3
+c <- 1
+f <- function(x,c){return((x+c)^2)}
+f(x, c)
+## When applying the function the following is happeneing behind teh scenes
+## 1. recycling
+##      c from 1 -> 1,1,1 (in order to have the same length as x)
+##      2 from 2 -> 2,2,2 ((in order to have the same length as x and c)
+## 2. vectorizing
+
+## Another example
+x <- 1:3
+c <- 1:3
+e <- 1:3
+f <- function(x,c,e){return((x+c)^e)}
+f(x, c, e)
+
+### Missing Values
+x <- c(1:3, NA, 4:7)
+x
+is.na(x)
+
+x <- c(1:3, NaN, 4:7)
+x
+is.nan(x)
+
+x <- NULL
+is.null(x)
+##is.null() is not a vectorized function (be careful)
+x <- c(1,2,3,NULL)
+is.null(x)
+
+
+## NA and NaN
+x <- c(1, 2, NaN, NA, 4)
+x
+is.na(x)
+is.nan(x)
+
+## NAs with different modes
+x <- c(1, NA)
+y <- c("a", NA)
+x;y
+mode(x[2]); class(x[2]); typeof(x[2])
+mode(y[2]); class(y[2]); typeof(y[2])
+
+## Skipping NAs
+x <- c(NA, 1,2,3, NaN)
+mean(x) ## By default uses all values so
+mean(x, na.rm = T) ## Instructed to remove `Na`s (`NA` and `NaN`)
+
+
+
+## You must be careful ...
+x <- c(1:3, NA, 4:7)
+x == NA
+
+## NULL vs. NA
+x <- NULL
+length(x)
+
+y <- NA
+length(y)

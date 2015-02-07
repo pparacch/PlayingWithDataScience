@@ -1,19 +1,11 @@
 # Data Types & Basic Operations
 
-[Data Types Overview: Modes](#modes)
+[Data Types Overview: Modes](#modes)  
+[Data Types Overview: Data Structures in R](#dataStructures)  
+[Basic Operations](#basicOperations)  
+[Special Values: `NA`, `NaN` & `Null`](#specialValues)
 
 
-[Data Types Overview: Data Structures in R](#dataStructures)
-
-- Attributes
-- Vectors
-- Matrices
-- Lists
-- Data Frames
-- Factors
-- Note on Classes
-
-[Basic Operations](#basicOperations)
 
 
 ## Data Types Overview
@@ -364,3 +356,106 @@ NAs introduced by coercion
 > class(x3)
 [1] "complex"
 ```
+---
+## <a id="specialValues">Special Values: `NA`, `NaN` & `Null`</a>
+
+In statistical dataset often missing values are found. Those missing values in R are represented with a `NA` (Not Avalilable), `NaN` (Not a Number) or `NULL`.
+
+- `NA` values are connected to the mode; integer `NA`, character `NA`, etc
+- `NaN` is a `NA`but __`NA` is not a `NaN`__
+
+Some basic examples
+
+```
+> ## NAs with different modes
+> x <- c(1, NA)
+> y <- c("a", NA)
+> x;y
+[1]  1 NA
+[1] "a" NA 
+> mode(x[2]);typeof(x[2])
+[1] "numeric"
+[1] "double"
+
+> mode(y[2]); typeof(y[2])
+[1] "character"
+[1] "character"
+```
+
+```
+> x <- c(1, 2, NaN, NA, 4)
+> x
+[1]   1   2 NaN  NA   4
+> is.na(x)
+[1] FALSE FALSE  TRUE  TRUE FALSE
+> is.nan(x)
+[1] FALSE FALSE  TRUE FALSE FALSE
+```
+
+### How to check for missing values
+
+Command | Description
+------------ | ---------
+`is.na()` | Test if is `NA`.
+`is.nan()` | Test if is `NaN`
+`is.null()` | Tets if is `NULL`
+
+```
+> x <- c(1:3, NA, 4:7)
+> x
+[1]  1  2  3 NA  4  5  6  7
+> is.na(x)
+[1] FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE
+```
+
+```
+> x <- c(1:3, NaN, 4:7)
+> x
+[1]   1   2   3 NaN   4   5   6   7
+> is.nan(x)
+[1] FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE
+```
+
+```
+> x <- NULL
+> is.null(x)
+[1] TRUE
+> ##is.null() is not a vectorized function (be careful)
+> x <- c(1,2,3,NULL)
+> is.null(x)
+[1] FALSE
+```
+
+Be carefulf if using `==` operator with `NA`
+
+```
+> x <- c(1:3, NA, 4:7)
+> x == NA
+[1] NA NA NA NA NA NA NA NA
+```
+### Managing `NA`s and `NULL`s values
+
+#### Using `NA`s
+
+Many of the statistical functions in R can be set to skip over `NA`s. __Remember__ `NaN` is a `NA`.
+
+```
+> x <- c(NA, 1,2,3, NaN)
+> mean(x) ## By default uses all values so
+[1] NA ## mean refused to calculate because of the missing values
+> mean(x, na.rm = T) ## Instructed to remove missing values (`NA` and `NaN`)
+[1] 2
+```
+
+#### Using `NULL`s
+There is a big difference between `NA` and `NULL`. `NULL` is a psecial object with no __mode__ , `NULL` values are counted as non existent values.
+
+```
+> x <- NULL
+> length(x)
+[1] 0
+> 
+> y <- NA
+> length(y)
+[1] 1
+``` 

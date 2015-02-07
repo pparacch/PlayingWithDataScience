@@ -6,11 +6,11 @@
 [Recycling](#recy)  
 [Common Vector Operations](#vectOpe)  
 [Use `all()` & `any()`](#allAny)    
-
+[Vectorized Operations](#vectOps)
 
 The fundamental data type in R is the __vector__.
 
-Some relevant topics:
+Important topics:
 
 - __recycling__, the automatic lengthening of vectors in certain setting
 - __filtering__, the extraction of subsets of vectors
@@ -205,6 +205,15 @@ NULL
 > for(i in seq(x)) print(i)
 ```
 
+### Using `NULL` to build Vectors
+```
+> ##Using NULL to cbuild a vector
+> x <- NULL
+> for (i in 1:3) x <- c(x, i)
+> x
+[1] 1 2 3
+```
+
 ---
 
 ## <a id="recy">Recycling</a>
@@ -294,3 +303,75 @@ __Note!__ Check out what's the outcome of `x > 5`
  [1] FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE
 ```
 `any(x > 5)` just check if there is at least a `TRUE` in the logical vector `x > 5`. `all(x > 5)` check if all elements are `TRUE` in the logical vector `x > 5`. 
+
+---
+
+## <a id="vectOps">Vectorized Operations</a>
+A __vectorized function/ operation__ is a function/ operation that is applied to each element of the vector.
+
+Surprisingly most of the operators and functions in R are vectorized - e.g. `+`, `-`, `/`, `%`, `sqrt()`, etc ...
+
+### Vector In, Vector Out: a view from a vectorized world
+
+```
+> ##1st example
+> x <- 1:4 # Vector x
+> y <- 2:5 # Vector y
+> x > y 
+[1] FALSE FALSE FALSE FALSE
+> ## ">" is a vectorized function
+> ## ">" is applied to: x[1] y[1], x[2] y[2], etc 
+> ">"(x,y) ## Same as before
+[1] FALSE FALSE FALSE FALSE
+
+> ## Another example
+> x
+[1] 1 2 3 4
+> sqrt(x) ## vectorized function - see how it is applied to each element
+[1] 1.000000 1.414214 1.732051 2.000000
+```
+
+__Important__! If a R function uses vectorized oprations then the function is __vectorized__. 
+
+```
+> ##2nd example
+> x <- 1:10
+> x
+ [1]  1  2  3  4  5  6  7  8  9 10
+> incrementMe <- function(x){return(x + 1)}
+> ## incrementMe uses just vectorized operations `+`
+> incrementMe(x)
+ [1]  2  3  4  5  6  7  8  9 10 11
+> 
+> ## "+" is vectorized? Verify it
+> x <- 1:4 # Vector x
+> y <- 2:5 # Vector y
+> x + y
+[1] 3 5 7 9
+```
+
+```
+> ## Another example
+> x <- 1:3
+> c <- 1
+> f <- function(x,c){return((x+c)^2)}
+> f(x, c)
+[1]  4  9 16
+> ## When applying the function the following is happeneing behind teh scenes
+> ## 1. recycling
+> ##      c from 1 -> 1,1,1 (in order to have the same length as x)
+> ##      2 from 2 -> 2,2,2 ((in order to have the same length as x and c)
+> ## 2. vectorizing
+
+> ## Another example
+> x <- 1:3
+> c <- 1:3
+> e <- 1:3
+> f <- function(x,c,e){return((x+c)^e)}
+> f(x, c, e)
+[1]   2  16 216
+```
+
+---
+
+
