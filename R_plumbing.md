@@ -12,6 +12,14 @@
 
 [R website](http://cran.r-project.org/)
 [Stackoverflow](http://stackoverflow.com/)
+### Locale
+####Reminder
+__[From edx.org]__ If you downloaded and installed R in a location other than the United States, you might encounter some formating issues later in this class due to language differences. To fix this, you will need to type in your R console:
+
+Sys.setlocale("LC_ALL", "C")
+
+This will only change the locale for your current R session.
+
 ### The Help command in R
 
 Command | Description
