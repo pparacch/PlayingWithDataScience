@@ -8,6 +8,8 @@
 
 [Managing Loaded Named-Objects](#loadedObjects)
 
+[Managing Available Data Sets](#dataset)
+
 ## <a id="help">Getting Help</a>
 
 [R website](http://cran.r-project.org/)
@@ -86,3 +88,8 @@ Command | Description
 * Remove all loaded objects whose name matches the provided pattern `rm(list = ls("pattern"))`.
 * Remove specific objects `rm(objectName1, objectName2, objectName3, ..)`.
 
+##<a id="dataset">Managing Available data Sets</a>
+Command | Description
+------------ | ---------
+`data()` | List all of the available data sets, all packages in teh search path are used.
+`data(package = .packages(all.available = TRUE))`|List of all the available data sets for all of the available packages.
