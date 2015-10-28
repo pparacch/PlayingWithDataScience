@@ -1,0 +1,112 @@
+---
+title: "Data Frame Management using dplyr"
+author: "ppar"
+date: "28 Oct 2015"
+output: html_document
+---
+```{r echo = FALSE, results="hide"}
+Sys.setlocale("LC_ALL", "C")
+```
+#A grammar for data manipulation
+The **dplyr** package is an important tool for dealing and managing data frames. It does not provide any news functionality to R, everything that can be done with **dplyr** can be done with base R but **dplyr** does **greatly simplify** existing functionality in R.
+
+The **dplyr** package provides a "vocabulary"/ "grammar" used for data manipulation and for operating on data frames. And **dplyr** functions are faster and more performant than base R.
+
+##The **vocabulary**/ **grammar**: the basic elements
+
+* [`select`](#sel)
+* `filter` (`slice`)
+* `arrange`
+* `rename`
+* `mutate`
+* `summarize`
+* `%>%`
+
+##Installing the **dplyr** package
+```{r installation, eval = FALSE}
+install.packages("dplyr")
+```
+
+##Loading the **dplyr** package & the data
+```{r loadPackage, warning = FALSE, message = FALSE, collapse = TRUE}
+library(dplyr)
+```
+```{r checkVersion, collapse = TRUE}
+packageVersion("dplyr")
+```
+
+Loading the data used for the code chunks.
+```{r loadData, collapse = TRUE, cache = TRUE}
+rawData <- read.csv("./data/stormData.csv", stringsAsFactors = FALSE)
+str(rawData)
+```
+
+##<a id="sel">`select`verb</a>
+The `select` function is used to select the columns of a data frame that you want to focus on.
+
+```{r selectExample1, collapse=TRUE}
+#Select only the following columns 
+#STATE__(1), BGN_DATE(2), BGN_TIME(3), TIME_ZONE(4), 
+#COUNTY(5), COUNTYNAME(6), STATE(7), EVTYPE(8)
+
+#Provide the column numbers
+rawData.s <- select(rawData, 1:8)
+str(rawData.s)
+```
+
+```{r selectExample2, collapse=TRUE}
+#Select only the following columns 
+#BGN_DATE(2), BGN_TIME(3), TIME_ZONE(4), 
+#COUNTYNAME(6), STATE(7), EVTYPE(8)
+
+#Provide the column numbers
+rawData.s <- select(rawData, c(2,3,4,6,7,8))
+str(rawData.s)
+```
+
+```{r selectExample3, collapse=TRUE}
+#Select only the following columns 
+#STATE__(1), BGN_DATE(2), BGN_TIME(3), TIME_ZONE(4), 
+#COUNTY(5), COUNTYNAME(6), STATE(7), EVTYPE(8)
+
+#Provide the column names
+rawData.s <- select(rawData, STATE__:EVTYPE)
+str(rawData.s)
+```
+
+```{r selectExample4, collapse=TRUE}
+#Select only the following columns 
+#STATE__(1), BGN_DATE(2) 
+#EVTYPE(8)
+
+#Provide the column names
+rawData.s <- select(rawData, c(STATE__, BGN_DATE, EVTYPE))
+str(rawData.s)
+```
+
+```{r selectExample5, collapse=TRUE}
+#Remove the following columns 
+#STATE__(1), BGN_DATE(2) 
+#EVTYPE(8)
+
+#Provide the column names or column numbers
+#-(minus) is used to tell to remove a specific element
+rawData.s <- select(rawData, c(-STATE__, -BGN_DATE, -EVTYPE))
+str(rawData.s)
+```
+
+```{r selectExample6, collapse=TRUE}
+#Select the columns whose names start with "BGN")
+
+#starts_with is a special function
+rawData.s <- select(rawData, starts_with("BGN"))
+str(rawData.s)
+```
+
+```{r selectExample7, collapse=TRUE}
+#Select the columns whose names end with "DATE")
+
+#ends_with is a special function
+rawData.s <- select(rawData, ends_with("DATE"))
+str(rawData.s)
+```
