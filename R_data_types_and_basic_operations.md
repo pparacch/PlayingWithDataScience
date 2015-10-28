@@ -66,7 +66,7 @@ R objects can have attributes
 - dimensions
 - class
 - length
-- other user-defined attributes/ metadat
+- other user-defined attributes/ metadata
 
 Command | Description
 ------------ | ---------
@@ -79,7 +79,7 @@ The most basic object is a vector
 -   it can only contain objects/ elements of the same mode or __elements of a vector must have all of the same mode/ data type__.
 
 ##### Scalars & Character Strings
-Scalars & Caharacter Strings do not exist in R - what appear to be an individual number or a string is actuallly a _one-element_ vector.
+Scalars & Character Strings do not exist in R - what appear to be an individual number or a string is actuallly a _one-element_ vector.
 
 ```
 > x <- 1 # Appear to be a scalar but
@@ -105,6 +105,7 @@ text <- "message"
 Command | Description
 ------------ | ---------
 `length()` | Return the length of the vector.
+`[]`| Used to access a specific element in the vector. E.g. `x[3]` gets the 3rd element in the x vector.
 
 #### Matrices
 Matrices are vectors with a __dimension__ attribute. The __dimension attribute is an integer vector of length 2 (nrow, ncol). __Note!__ Being a vector, a matrix can contain only element of the same mode/ data type.
