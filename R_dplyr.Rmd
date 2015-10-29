@@ -20,7 +20,7 @@ The **dplyr** package provides a "vocabulary"/ "grammar" used for data manipulat
 * [`select`](#sel)
 * [`filter`](#fil) (`slice`)
 * [`arrange`](#arr)
-* `rename`
+* [`rename`](#ren)
 * `mutate`
 * `summarize`
 * `%>%`
@@ -215,4 +215,20 @@ Verify that observations have been actually ordered as expected.
 head(rawData.order.desc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
 
 tail(rawData.order.desc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
+```
+##<a id="ren">`rename`verb</a>
+The `rename` function is used to rename a variable in a data frame.
+
+```{r collapse = TRUE}
+#print out the names of the variables (cols)
+names(rawData)[1:5]
+```
+
+```{r renameExample, collapse = TRUE}
+rawData <- rename(rawData, STATE = STATE__, BEGIN_DATE = BGN_DATE, BEGIN_TIME = BGN_TIME)
+```
+
+```{r collapse = TRUE}
+#print out the names of the variables (cols)
+names(rawData)[1:5]
 ```

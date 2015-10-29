@@ -78,7 +78,7 @@ img {
 <li><a href="#sel"><code>select</code></a></li>
 <li><a href="#fil"><code>filter</code></a> (<code>slice</code>)</li>
 <li><a href="#arr"><code>arrange</code></a></li>
-<li><code>rename</code></li>
+<li><a href="#ren"><code>rename</code></a></li>
 <li><code>mutate</code></li>
 <li><code>summarize</code></li>
 <li><code>%&gt;%</code></li>
@@ -412,6 +412,17 @@ tail(rawData.order.desc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
 ##  [1] &quot;1950-02-12&quot; &quot;1950-02-12&quot; &quot;1950-02-12&quot; &quot;1950-02-12&quot; &quot;1950-01-25&quot;
 ##  [6] &quot;1950-01-25&quot; &quot;1950-01-13&quot; &quot;1950-01-03&quot; &quot;1950-01-03&quot; &quot;1950-01-03&quot;</code></pre>
 </div>
+</div>
+<div id="renameverb" class="section level2">
+<h2><a id="ren"><code>rename</code>verb</a></h2>
+<p>The <code>rename</code> function is used to rename a variable in a data frame.</p>
+<pre class="r"><code>#print out the names of the variables (cols)
+names(rawData)[1:5]
+## [1] &quot;STATE__&quot;   &quot;BGN_DATE&quot;  &quot;BGN_TIME&quot;  &quot;TIME_ZONE&quot; &quot;COUNTY&quot;</code></pre>
+<pre class="r"><code>rawData &lt;- rename(rawData, STATE = STATE__, BEGIN_DATE = BGN_DATE, BEGIN_TIME = BGN_TIME)</code></pre>
+<pre class="r"><code>#print out the names of the variables (cols)
+names(rawData)[1:5]
+## [1] &quot;STATE&quot;      &quot;BEGIN_DATE&quot; &quot;BEGIN_TIME&quot; &quot;TIME_ZONE&quot;  &quot;COUNTY&quot;</code></pre>
 </div>
 </div>
 

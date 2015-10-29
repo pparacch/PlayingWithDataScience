@@ -12,7 +12,7 @@ The **dplyr** package provides a "vocabulary"/ "grammar" used for data manipulat
 * [`select`](#sel)
 * [`filter`](#fil) (`slice`)
 * [`arrange`](#arr)
-* `rename`
+* [`rename`](#ren)
 * `mutate`
 * `summarize`
 * `%>%`
@@ -396,4 +396,25 @@ head(rawData.order.desc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
 tail(rawData.order.desc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
 ##  [1] "1950-02-12" "1950-02-12" "1950-02-12" "1950-02-12" "1950-01-25"
 ##  [6] "1950-01-25" "1950-01-13" "1950-01-03" "1950-01-03" "1950-01-03"
+```
+##<a id="ren">`rename`verb</a>
+The `rename` function is used to rename a variable in a data frame.
+
+
+```r
+#print out the names of the variables (cols)
+names(rawData)[1:5]
+## [1] "STATE__"   "BGN_DATE"  "BGN_TIME"  "TIME_ZONE" "COUNTY"
+```
+
+
+```r
+rawData <- rename(rawData, STATE = STATE__, BEGIN_DATE = BGN_DATE, BEGIN_TIME = BGN_TIME)
+```
+
+
+```r
+#print out the names of the variables (cols)
+names(rawData)[1:5]
+## [1] "STATE"      "BEGIN_DATE" "BEGIN_TIME" "TIME_ZONE"  "COUNTY"
 ```
