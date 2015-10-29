@@ -24,7 +24,7 @@ The **dplyr** package provides a "vocabulary"/ "grammar" used for data manipulat
 * [`mutate`](#mut)
 * [`group_by`](#gro)
 * [`summarize`](#gro)
-* `%>%`
+* [`%>%`](#pip)
 
 ##Installing the **dplyr** package
 ```{r installation, eval = FALSE}
@@ -273,3 +273,8 @@ Then the `summarize` function is used to perform some statistical computation on
 summarize(rawData.group.by.TMP_BGN_YEAR, 
           HEALTH_COST = mean(TOTAL_VICTIMS, na.rm = TRUE))
 ```
+
+##<a id="pip">`%>%`: the pipeline operator</a>
+The **pipeline operator** allows to combine together multiple `dplyr` functions in a sequence
+
+`first(data) %>% second %>% third`

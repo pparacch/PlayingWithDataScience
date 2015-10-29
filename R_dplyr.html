@@ -80,9 +80,9 @@ img {
 <li><a href="#arr"><code>arrange</code></a></li>
 <li><a href="#ren"><code>rename</code></a></li>
 <li><a href="#mut"><code>mutate</code></a></li>
-<li><code>group_by</code></li>
-<li><code>summarize</code></li>
-<li><code>%&gt;%</code></li>
+<li><a href="#gro"><code>group_by</code></a></li>
+<li><a href="#gro"><code>summarize</code></a></li>
+<li><a href="#pip"><code>%&gt;%</code></a></li>
 </ul>
 </div>
 <div id="installing-the-dplyr-package" class="section level2">
@@ -346,14 +346,14 @@ dim(rawData)
 ## [1] 107168     39
 
 #Getting all of the observation connecte with a &quot;TORNADO&quot; EVTYPE
-rawData.tornado &lt;- filter(rawData, EVTYPE == &quot;TORNADO&quot;)
+rawData.f &lt;- filter(rawData, EVTYPE == &quot;TORNADO&quot;)
 
 #Unique EVTYPE values
-unique(rawData.tornado$EVTYPE)
+unique(rawData.f$EVTYPE)
 ## [1] &quot;TORNADO&quot;
 
 #Dimension filtered dataset
-dim(rawData.tornado)
+dim(rawData.f)
 ## [1] 20851    39</code></pre>
 <p>A more complex filtering ….</p>
 <pre class="r"><code>#Unique EVTYPE values
@@ -370,18 +370,18 @@ dim(rawData)
 ## [1] 107168     39
 
 #Getting all of the observation connecte with a &quot;TORNADO&quot; EVTYPE and &quot;MOBILE&quot; COUNTYNAME
-rawData.tornadoAndMobile &lt;- filter(rawData, EVTYPE == &quot;TORNADO&quot; &amp; COUNTYNAME == &quot;MOBILE&quot;)
+rawData.f &lt;- filter(rawData, EVTYPE == &quot;TORNADO&quot; &amp; COUNTYNAME == &quot;MOBILE&quot;)
 
 #Unique EVTYPE values
-unique(rawData.tornadoAndMobile$EVTYPE)
+unique(rawData.f$EVTYPE)
 ## [1] &quot;TORNADO&quot;
 
 #Unique COUNTYNAME values
-unique(rawData.tornadoAndMobile$COUNTYNAME)
+unique(rawData.f$COUNTYNAME)
 ## [1] &quot;MOBILE&quot;
 
 #Dimension filtered dataset
-dim(rawData.tornadoAndMobile)
+dim(rawData.f)
 ## [1] 50 39</code></pre>
 </div>
 <div id="arrangeverb" class="section level2">
@@ -427,9 +427,9 @@ tail(rawData.order.desc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
 <pre class="r"><code>#print out the names of the variables (cols)
 names(rawData)[1:5]
 ## [1] &quot;STATE__&quot;   &quot;BGN_DATE&quot;  &quot;BGN_TIME&quot;  &quot;TIME_ZONE&quot; &quot;COUNTY&quot;</code></pre>
-<pre class="r"><code>rawData &lt;- rename(rawData, STATE_ID = STATE__, BEGIN_DATE = BGN_DATE, BEGIN_TIME = BGN_TIME)</code></pre>
+<pre class="r"><code>rawData.r &lt;- rename(rawData, STATE_ID = STATE__, BEGIN_DATE = BGN_DATE, BEGIN_TIME = BGN_TIME)</code></pre>
 <pre class="r"><code>#print out the names of the variables (cols)
-names(rawData)[1:5]
+names(rawData.r)[1:5]
 ## [1] &quot;STATE_ID&quot;   &quot;BEGIN_DATE&quot; &quot;BEGIN_TIME&quot; &quot;TIME_ZONE&quot;  &quot;COUNTY&quot;</code></pre>
 </div>
 <div id="mutateverb" class="section level2">
@@ -439,7 +439,7 @@ names(rawData)[1:5]
 <pre class="r"><code>#print out the names of the variables (cols)
 #check that TOTAL_VICTIMS does not exist.
 names(rawData)
-##  [1] &quot;STATE_ID&quot;     &quot;BEGIN_DATE&quot;   &quot;BEGIN_TIME&quot;   &quot;TIME_ZONE&quot;   
+##  [1] &quot;STATE__&quot;      &quot;BGN_DATE&quot;     &quot;BGN_TIME&quot;     &quot;TIME_ZONE&quot;   
 ##  [5] &quot;COUNTY&quot;       &quot;COUNTYNAME&quot;   &quot;STATE&quot;        &quot;EVTYPE&quot;      
 ##  [9] &quot;BGN_RANGE&quot;    &quot;BGN_AZI&quot;      &quot;BGN_LOCATI&quot;   &quot;END_DATE&quot;    
 ## [13] &quot;END_TIME&quot;     &quot;COUNTY_END&quot;   &quot;COUNTYENDN&quot;   &quot;END_RANGE&quot;   
@@ -489,6 +489,11 @@ typeof(rawData.group.by.TMP_BGN_YEAR)
 ## 9          1958   0.2300275
 ## 10         1959   0.5348214
 ## ..          ...         ...</code></pre>
+</div>
+<div id="the-pipeline-operator" class="section level2">
+<h2><a id="pip"><code>%&gt;%</code>: the pipeline operator</a></h2>
+<p>The <strong>pipeline operator</strong> allows to combine together multiple <code>dplyr</code> functions in a sequence</p>
+<p><code>first(data) %&gt;% second %&gt;% third</code></p>
 </div>
 </div>
 

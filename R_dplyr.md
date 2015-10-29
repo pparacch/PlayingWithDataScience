@@ -14,9 +14,9 @@ The **dplyr** package provides a "vocabulary"/ "grammar" used for data manipulat
 * [`arrange`](#arr)
 * [`rename`](#ren)
 * [`mutate`](#mut)
-* `group_by`
-* `summarize`
-* `%>%`
+* [`group_by`](#gro)
+* [`summarize`](#gro)
+* [`%>%`](#pip)
 
 ##Installing the **dplyr** package
 
@@ -316,14 +316,14 @@ dim(rawData)
 ## [1] 107168     39
 
 #Getting all of the observation connecte with a "TORNADO" EVTYPE
-rawData.tornado <- filter(rawData, EVTYPE == "TORNADO")
+rawData.f <- filter(rawData, EVTYPE == "TORNADO")
 
 #Unique EVTYPE values
-unique(rawData.tornado$EVTYPE)
+unique(rawData.f$EVTYPE)
 ## [1] "TORNADO"
 
 #Dimension filtered dataset
-dim(rawData.tornado)
+dim(rawData.f)
 ## [1] 20851    39
 ```
 
@@ -344,18 +344,18 @@ dim(rawData)
 ## [1] 107168     39
 
 #Getting all of the observation connecte with a "TORNADO" EVTYPE and "MOBILE" COUNTYNAME
-rawData.tornadoAndMobile <- filter(rawData, EVTYPE == "TORNADO" & COUNTYNAME == "MOBILE")
+rawData.f <- filter(rawData, EVTYPE == "TORNADO" & COUNTYNAME == "MOBILE")
 
 #Unique EVTYPE values
-unique(rawData.tornadoAndMobile$EVTYPE)
+unique(rawData.f$EVTYPE)
 ## [1] "TORNADO"
 
 #Unique COUNTYNAME values
-unique(rawData.tornadoAndMobile$COUNTYNAME)
+unique(rawData.f$COUNTYNAME)
 ## [1] "MOBILE"
 
 #Dimension filtered dataset
-dim(rawData.tornadoAndMobile)
+dim(rawData.f)
 ## [1] 50 39
 ```
 
@@ -418,13 +418,13 @@ names(rawData)[1:5]
 
 
 ```r
-rawData <- rename(rawData, STATE_ID = STATE__, BEGIN_DATE = BGN_DATE, BEGIN_TIME = BGN_TIME)
+rawData.r <- rename(rawData, STATE_ID = STATE__, BEGIN_DATE = BGN_DATE, BEGIN_TIME = BGN_TIME)
 ```
 
 
 ```r
 #print out the names of the variables (cols)
-names(rawData)[1:5]
+names(rawData.r)[1:5]
 ## [1] "STATE_ID"   "BEGIN_DATE" "BEGIN_TIME" "TIME_ZONE"  "COUNTY"
 ```
 
@@ -438,7 +438,7 @@ Adding a new variable `TOTAL_VICTIMS` as the sum of `FATALITIES`and `INJURIES`.
 #print out the names of the variables (cols)
 #check that TOTAL_VICTIMS does not exist.
 names(rawData)
-##  [1] "STATE_ID"     "BEGIN_DATE"   "BEGIN_TIME"   "TIME_ZONE"   
+##  [1] "STATE__"      "BGN_DATE"     "BGN_TIME"     "TIME_ZONE"   
 ##  [5] "COUNTY"       "COUNTYNAME"   "STATE"        "EVTYPE"      
 ##  [9] "BGN_RANGE"    "BGN_AZI"      "BGN_LOCATI"   "END_DATE"    
 ## [13] "END_TIME"     "COUNTY_END"   "COUNTYENDN"   "END_RANGE"   
@@ -507,3 +507,8 @@ summarize(rawData.group.by.TMP_BGN_YEAR,
 ## 10         1959   0.5348214
 ## ..          ...         ...
 ```
+
+##<a id="pip">`%>%`: the pipeline operator</a>
+The **pipeline operator** allows to combine together multiple `dplyr` functions in a sequence
+
+`first(data) %>% second %>% third`
