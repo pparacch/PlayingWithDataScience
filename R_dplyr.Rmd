@@ -2,6 +2,10 @@
 title: "Data Frame Management using dplyr"
 author: "ppar"
 date: "28 Oct 2015"
+output:
+  html_document:
+    keep_md: yes
+    toc: no
 ---
 ```{r echo = FALSE, results="hide"}
 Sys.setlocale("LC_ALL", "C")
@@ -14,7 +18,7 @@ The **dplyr** package provides a "vocabulary"/ "grammar" used for data manipulat
 ##The **vocabulary**/ **grammar**: the basic elements
 
 * [`select`](#sel)
-* `filter` (`slice`)
+* [`filter`](#fil) (`slice`)
 * `arrange`
 * `rename`
 * `mutate`
@@ -43,6 +47,7 @@ str(rawData)
 ##<a id="sel">`select`verb</a>
 The `select` function is used to select the columns of a data frame that you want to focus on.
 
+Example 1: select cols by col numbers  
 ```{r selectExample1, collapse=TRUE}
 #Select only the following columns 
 #STATE__(1), BGN_DATE(2), BGN_TIME(3), TIME_ZONE(4), 
@@ -53,6 +58,7 @@ rawData.s <- select(rawData, 1:8)
 str(rawData.s)
 ```
 
+Example 2: select cols by col numbers (alternative)   
 ```{r selectExample2, collapse=TRUE}
 #Select only the following columns 
 #BGN_DATE(2), BGN_TIME(3), TIME_ZONE(4), 
@@ -63,6 +69,7 @@ rawData.s <- select(rawData, c(2,3,4,6,7,8))
 str(rawData.s)
 ```
 
+Example 3: select cols by col names  
 ```{r selectExample3, collapse=TRUE}
 #Select only the following columns 
 #STATE__(1), BGN_DATE(2), BGN_TIME(3), TIME_ZONE(4), 
@@ -73,6 +80,7 @@ rawData.s <- select(rawData, STATE__:EVTYPE)
 str(rawData.s)
 ```
 
+Example 4:  select cols by col names (alternative)  
 ```{r selectExample4, collapse=TRUE}
 #Select only the following columns 
 #STATE__(1), BGN_DATE(2) 
@@ -83,6 +91,7 @@ rawData.s <- select(rawData, c(STATE__, BGN_DATE, EVTYPE))
 str(rawData.s)
 ```
 
+Example 5: select cols by col names (alternative)  
 ```{r selectExample5, collapse=TRUE}
 #Remove the following columns 
 #STATE__(1), BGN_DATE(2) 
@@ -94,6 +103,7 @@ rawData.s <- select(rawData, c(-STATE__, -BGN_DATE, -EVTYPE))
 str(rawData.s)
 ```
 
+Example 6: select cols whose col names start with  
 ```{r selectExample6, collapse=TRUE}
 #Select the columns whose names start with "BGN")
 
@@ -102,10 +112,56 @@ rawData.s <- select(rawData, starts_with("BGN"))
 str(rawData.s)
 ```
 
+Example 7: select cols whose col names end with  
 ```{r selectExample7, collapse=TRUE}
 #Select the columns whose names end with "DATE")
 
 #ends_with is a special function
 rawData.s <- select(rawData, ends_with("DATE"))
 str(rawData.s)
+```
+
+##<a id="fil">`filter`verb</a>
+The `filter` function is used to extract a subset of rows from a data frame based on a specific logic condition.
+
+A simple filtering ....
+```{r filterExample1, collapse = TRUE}
+#Unique EVTYPE values
+unique(rawData$EVTYPE)
+
+#Original dimension raw dataset
+dim(rawData)
+
+#Getting all of the observation connecte with a "TORNADO" EVTYPE
+rawData.tornado <- filter(rawData, EVTYPE == "TORNADO")
+
+#Unique EVTYPE values
+unique(rawData.tornado$EVTYPE)
+
+#Dimension filtered dataset
+dim(rawData.tornado)
+```
+
+A more complex filtering ....
+```{r filterExample2, collapse = TRUE}
+#Unique EVTYPE values
+unique(rawData$EVTYPE)
+
+#Unique COUNTYNAME values (first 10 ...)
+unique(rawData$COUNTYNAME)[1:10]
+
+#Original dimension raw dataset
+dim(rawData)
+
+#Getting all of the observation connecte with a "TORNADO" EVTYPE and "MOBILE" COUNTYNAME
+rawData.tornadoAndMobile <- filter(rawData, EVTYPE == "TORNADO" & COUNTYNAME == "MOBILE")
+
+#Unique EVTYPE values
+unique(rawData.tornadoAndMobile$EVTYPE)
+
+#Unique COUNTYNAME values
+unique(rawData.tornadoAndMobile$COUNTYNAME)
+
+#Dimension filtered dataset
+dim(rawData.tornadoAndMobile)
 ```

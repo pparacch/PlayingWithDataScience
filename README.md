@@ -13,7 +13,7 @@ Based on
 
 [Plumbing: Fundamentals](https://github.com/pparacch/PlayingWithDataScience/blob/master/R_plumbing.md)  
 [Data Types And Basic Operations](https://github.com/pparacch/PlayingWithDataScience/blob/master/R_data_types_and_basic_operations.md)  
-[dyplr](https://github.com/pparacch/PlayingWithDataScience/blob/master/R_dplyr.md)  
+[A grammar for data frame management (dyplr)](https://github.com/pparacch/PlayingWithDataScience/blob/master/R_dplyr.md)  
 [Vectors](https://github.com/pparacch/PlayingWithDataScience/blob/master/R_vectors.md) 
 
 
