@@ -44,6 +44,26 @@ rawData <- read.csv("./data/stormData.csv", stringsAsFactors = FALSE)
 str(rawData)
 ```
 
+Preparing the data - specifically extracting the `BGN_DATE` (begin date) in order to transform it to a `Date` format.
+```{r bngDateTransformation, collapse = TRUE}
+#BGN_DATE seems to have the following format
+#d(max 2)/d(max2)/d(4) 0:00:00
+
+#Verify that it is a correct assumption -> assumption evaluation should be TRUE
+all(grepl("^\\d{1,2}\\/\\d{1,2}\\/\\d{4}\\s0:00:00$", rawData$BGN_DATE))
+
+#Create a new col (temp feature): TMP_BGN_DATE
+rawData$TMP_BNG_DATE <- gsub("\\s0:00:00$", "", rawData$BGN_DATE)
+head(rawData[,c("BGN_DATE", "TMP_BNG_DATE")])
+tail(rawData[,c("BGN_DATE", "TMP_BNG_DATE")])
+
+#Transform TMP_BGN_DATE (character) to (Date)
+rawData$TMP_BNG_DATE <- as.Date(rawData$TMP_BNG_DATE, format = "%m/%d/%Y")
+head(rawData[,c("BGN_DATE", "TMP_BNG_DATE")])
+tail(rawData[,c("BGN_DATE", "TMP_BNG_DATE")])
+summary(rawData$TMP_BNG_DATE)
+```
+
 ##<a id="sel">`select`verb</a>
 The `select` function is used to select the columns of a data frame that you want to focus on.
 
