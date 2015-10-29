@@ -79,7 +79,8 @@ img {
 <li><a href="#fil"><code>filter</code></a> (<code>slice</code>)</li>
 <li><a href="#arr"><code>arrange</code></a></li>
 <li><a href="#ren"><code>rename</code></a></li>
-<li><code>mutate</code></li>
+<li><a href="#mut"><code>mutate</code></a></li>
+<li><code>group_by</code></li>
 <li><code>summarize</code></li>
 <li><code>%&gt;%</code></li>
 </ul>
@@ -134,7 +135,7 @@ str(rawData)
 ##  $ LONGITUDE_: num  8806 0 0 0 0 ...
 ##  $ REMARKS   : logi  NA NA NA NA NA NA ...
 ##  $ REFNUM    : num  1 2 3 4 5 6 7 8 9 10 ...</code></pre>
-<p>Preparing the data - specifically extracting the <code>BGN_DATE</code> (begin date) in order to transform it to a <code>Date</code> format.</p>
+<p>Preparing the data - specifically extracting the <code>BGN_DATE</code> (begin date) in order to transform it to a <code>Date</code> format, and adding a <code>TMP_BGN_YEAR</code> variable.</p>
 <pre class="r"><code>#BGN_DATE seems to have the following format
 #d(max 2)/d(max2)/d(4) 0:00:00
 
@@ -183,7 +184,13 @@ summary(rawData$TMP_BGN_DATE)
 ##         Min.      1st Qu.       Median         Mean      3rd Qu. 
 ## &quot;1950-01-03&quot; &quot;1972-04-21&quot; &quot;1982-04-16&quot; &quot;1979-04-22&quot; &quot;1988-05-10&quot; 
 ##         Max. 
-## &quot;1992-12-30&quot;</code></pre>
+## &quot;1992-12-30&quot;
+
+#Adding a TMP_BGN_YEAR variable
+rawData$TMP_BGN_YEAR &lt;- as.POSIXlt(rawData$TMP_BGN_DATE)$year + 1900
+summary(rawData$TMP_BGN_YEAR)
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1950    1972    1982    1979    1988    1992</code></pre>
 </div>
 <div id="selectverb" class="section level2">
 <h2><a id="sel"><code>select</code>verb</a></h2>
@@ -261,7 +268,7 @@ str(rawData.s)
 #-(minus) is used to tell to remove a specific element
 rawData.s &lt;- select(rawData, c(-STATE__, -BGN_DATE, -EVTYPE))
 str(rawData.s)
-## 'data.frame':    107168 obs. of  35 variables:
+## 'data.frame':    107168 obs. of  36 variables:
 ##  $ BGN_TIME    : int  130 145 1600 900 1500 2000 100 900 2000 2000 ...
 ##  $ TIME_ZONE   : chr  &quot;CST&quot; &quot;CST&quot; &quot;CST&quot; &quot;CST&quot; ...
 ##  $ COUNTY      : num  97 3 57 89 43 77 9 123 125 57 ...
@@ -296,7 +303,8 @@ str(rawData.s)
 ##  $ LONGITUDE_  : num  8806 0 0 0 0 ...
 ##  $ REMARKS     : logi  NA NA NA NA NA NA ...
 ##  $ REFNUM      : num  1 2 3 4 5 6 7 8 9 10 ...
-##  $ TMP_BGN_DATE: Date, format: &quot;1950-04-18&quot; &quot;1950-04-18&quot; ...</code></pre>
+##  $ TMP_BGN_DATE: Date, format: &quot;1950-04-18&quot; &quot;1950-04-18&quot; ...
+##  $ TMP_BGN_YEAR: num  1950 1950 1951 1951 1951 ...</code></pre>
 </div>
 <div id="select-cols-whose-col-names-start-with" class="section level3">
 <h3>Select cols whose col names start with</h3>
@@ -335,7 +343,7 @@ unique(rawData$EVTYPE)
 
 #Original dimension raw dataset
 dim(rawData)
-## [1] 107168     38
+## [1] 107168     39
 
 #Getting all of the observation connecte with a &quot;TORNADO&quot; EVTYPE
 rawData.tornado &lt;- filter(rawData, EVTYPE == &quot;TORNADO&quot;)
@@ -346,7 +354,7 @@ unique(rawData.tornado$EVTYPE)
 
 #Dimension filtered dataset
 dim(rawData.tornado)
-## [1] 20851    38</code></pre>
+## [1] 20851    39</code></pre>
 <p>A more complex filtering ….</p>
 <pre class="r"><code>#Unique EVTYPE values
 unique(rawData$EVTYPE)
@@ -359,7 +367,7 @@ unique(rawData$COUNTYNAME)[1:10]
 
 #Original dimension raw dataset
 dim(rawData)
-## [1] 107168     38
+## [1] 107168     39
 
 #Getting all of the observation connecte with a &quot;TORNADO&quot; EVTYPE and &quot;MOBILE&quot; COUNTYNAME
 rawData.tornadoAndMobile &lt;- filter(rawData, EVTYPE == &quot;TORNADO&quot; &amp; COUNTYNAME == &quot;MOBILE&quot;)
@@ -374,7 +382,7 @@ unique(rawData.tornadoAndMobile$COUNTYNAME)
 
 #Dimension filtered dataset
 dim(rawData.tornadoAndMobile)
-## [1] 50 38</code></pre>
+## [1] 50 39</code></pre>
 </div>
 <div id="arrangeverb" class="section level2">
 <h2><a id="arr"><code>arrange</code>verb</a></h2>
@@ -419,10 +427,68 @@ tail(rawData.order.desc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
 <pre class="r"><code>#print out the names of the variables (cols)
 names(rawData)[1:5]
 ## [1] &quot;STATE__&quot;   &quot;BGN_DATE&quot;  &quot;BGN_TIME&quot;  &quot;TIME_ZONE&quot; &quot;COUNTY&quot;</code></pre>
-<pre class="r"><code>rawData &lt;- rename(rawData, STATE = STATE__, BEGIN_DATE = BGN_DATE, BEGIN_TIME = BGN_TIME)</code></pre>
+<pre class="r"><code>rawData &lt;- rename(rawData, STATE_ID = STATE__, BEGIN_DATE = BGN_DATE, BEGIN_TIME = BGN_TIME)</code></pre>
 <pre class="r"><code>#print out the names of the variables (cols)
 names(rawData)[1:5]
-## [1] &quot;STATE&quot;      &quot;BEGIN_DATE&quot; &quot;BEGIN_TIME&quot; &quot;TIME_ZONE&quot;  &quot;COUNTY&quot;</code></pre>
+## [1] &quot;STATE_ID&quot;   &quot;BEGIN_DATE&quot; &quot;BEGIN_TIME&quot; &quot;TIME_ZONE&quot;  &quot;COUNTY&quot;</code></pre>
+</div>
+<div id="mutateverb" class="section level2">
+<h2><a id="mut"><code>mutate</code>verb</a></h2>
+<p>The <code>mutate</code> function is used to compute transformation of variables in a data frame. In other words to create new variables that are derived from existing variables.</p>
+<p>Adding a new variable <code>TOTAL_VICTIMS</code> as the sum of <code>FATALITIES</code>and <code>INJURIES</code>.</p>
+<pre class="r"><code>#print out the names of the variables (cols)
+#check that TOTAL_VICTIMS does not exist.
+names(rawData)
+##  [1] &quot;STATE_ID&quot;     &quot;BEGIN_DATE&quot;   &quot;BEGIN_TIME&quot;   &quot;TIME_ZONE&quot;   
+##  [5] &quot;COUNTY&quot;       &quot;COUNTYNAME&quot;   &quot;STATE&quot;        &quot;EVTYPE&quot;      
+##  [9] &quot;BGN_RANGE&quot;    &quot;BGN_AZI&quot;      &quot;BGN_LOCATI&quot;   &quot;END_DATE&quot;    
+## [13] &quot;END_TIME&quot;     &quot;COUNTY_END&quot;   &quot;COUNTYENDN&quot;   &quot;END_RANGE&quot;   
+## [17] &quot;END_AZI&quot;      &quot;END_LOCATI&quot;   &quot;LENGTH&quot;       &quot;WIDTH&quot;       
+## [21] &quot;F&quot;            &quot;MAG&quot;          &quot;FATALITIES&quot;   &quot;INJURIES&quot;    
+## [25] &quot;PROPDMG&quot;      &quot;PROPDMGEXP&quot;   &quot;CROPDMG&quot;      &quot;CROPDMGEXP&quot;  
+## [29] &quot;WFO&quot;          &quot;STATEOFFIC&quot;   &quot;ZONENAMES&quot;    &quot;LATITUDE&quot;    
+## [33] &quot;LONGITUDE&quot;    &quot;LATITUDE_E&quot;   &quot;LONGITUDE_&quot;   &quot;REMARKS&quot;     
+## [37] &quot;REFNUM&quot;       &quot;TMP_BGN_DATE&quot; &quot;TMP_BGN_YEAR&quot;</code></pre>
+<pre class="r"><code>rawData &lt;- mutate(rawData, TOTAL_VICTIMS = FATALITIES + INJURIES)</code></pre>
+<pre class="r"><code>#print out some of the data
+head(rawData[,c(&quot;FATALITIES&quot;, &quot;INJURIES&quot;, &quot;TOTAL_VICTIMS&quot;)], 10)
+##    FATALITIES INJURIES TOTAL_VICTIMS
+## 1           0       15            15
+## 2           0        0             0
+## 3           0        2             2
+## 4           0        2             2
+## 5           0        2             2
+## 6           0        6             6
+## 7           0        1             1
+## 8           0        0             0
+## 9           1       14            15
+## 10          0        0             0</code></pre>
+</div>
+<div id="group_byverb" class="section level2">
+<h2><a id="gro"><code>group_by</code>verb</a></h2>
+<p>The <code>group_by</code> function is used to generate summary statistics from the data frame within strata defined by a variable.</p>
+<pre class="r"><code>rawData.group.by.TMP_BGN_YEAR &lt;- group_by(rawData, TMP_BGN_YEAR)
+#Note the object implementing the returned objected implemented group_by 
+typeof(rawData.group.by.TMP_BGN_YEAR)
+## [1] &quot;list&quot;</code></pre>
+<p>Then the <code>summarize</code> function is used to perform some statistical computation on the data structur (<code>list</code>) created by <code>group_by</code>.</p>
+<pre class="r"><code>summarize(rawData.group.by.TMP_BGN_YEAR, 
+          HEALTH_COST = mean(TOTAL_VICTIMS, na.rm = TRUE))</code></pre>
+<pre><code>## Source: local data frame [43 x 2]
+## 
+##    TMP_BGN_YEAR HEALTH_COST
+##           (dbl)       (dbl)
+## 1          1950   3.2500000
+## 2          1951   2.0714286
+## 3          1952   7.6228571
+## 4          1953  12.8286604
+## 5          1954   1.2789474
+## 6          1955   0.7144593
+## 7          1956   1.0272727
+## 8          1957   1.1055556
+## 9          1958   0.2300275
+## 10         1959   0.5348214
+## ..          ...         ...</code></pre>
 </div>
 </div>
 

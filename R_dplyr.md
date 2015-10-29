@@ -13,7 +13,8 @@ The **dplyr** package provides a "vocabulary"/ "grammar" used for data manipulat
 * [`filter`](#fil) (`slice`)
 * [`arrange`](#arr)
 * [`rename`](#ren)
-* `mutate`
+* [`mutate`](#mut)
+* `group_by`
 * `summarize`
 * `%>%`
 
@@ -79,7 +80,8 @@ str(rawData)
 ##  $ REFNUM    : num  1 2 3 4 5 6 7 8 9 10 ...
 ```
 
-Preparing the data - specifically extracting the `BGN_DATE` (begin date) in order to transform it to a `Date` format.
+Preparing the data - specifically extracting the `BGN_DATE` (begin date) in order to transform it to a `Date` format, and adding a `TMP_BGN_YEAR` variable.
+
 
 ```r
 #BGN_DATE seems to have the following format
@@ -131,6 +133,12 @@ summary(rawData$TMP_BGN_DATE)
 ## "1950-01-03" "1972-04-21" "1982-04-16" "1979-04-22" "1988-05-10" 
 ##         Max. 
 ## "1992-12-30"
+
+#Adding a TMP_BGN_YEAR variable
+rawData$TMP_BGN_YEAR <- as.POSIXlt(rawData$TMP_BGN_DATE)$year + 1900
+summary(rawData$TMP_BGN_YEAR)
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1950    1972    1982    1979    1988    1992
 ```
 
 ##<a id="sel">`select`verb</a>
@@ -224,7 +232,7 @@ An alternative way...
 #-(minus) is used to tell to remove a specific element
 rawData.s <- select(rawData, c(-STATE__, -BGN_DATE, -EVTYPE))
 str(rawData.s)
-## 'data.frame':	107168 obs. of  35 variables:
+## 'data.frame':	107168 obs. of  36 variables:
 ##  $ BGN_TIME    : int  130 145 1600 900 1500 2000 100 900 2000 2000 ...
 ##  $ TIME_ZONE   : chr  "CST" "CST" "CST" "CST" ...
 ##  $ COUNTY      : num  97 3 57 89 43 77 9 123 125 57 ...
@@ -260,6 +268,7 @@ str(rawData.s)
 ##  $ REMARKS     : logi  NA NA NA NA NA NA ...
 ##  $ REFNUM      : num  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ TMP_BGN_DATE: Date, format: "1950-04-18" "1950-04-18" ...
+##  $ TMP_BGN_YEAR: num  1950 1950 1951 1951 1951 ...
 ```
 
 ###Select cols whose col names start with  
@@ -304,7 +313,7 @@ unique(rawData$EVTYPE)
 
 #Original dimension raw dataset
 dim(rawData)
-## [1] 107168     38
+## [1] 107168     39
 
 #Getting all of the observation connecte with a "TORNADO" EVTYPE
 rawData.tornado <- filter(rawData, EVTYPE == "TORNADO")
@@ -315,7 +324,7 @@ unique(rawData.tornado$EVTYPE)
 
 #Dimension filtered dataset
 dim(rawData.tornado)
-## [1] 20851    38
+## [1] 20851    39
 ```
 
 A more complex filtering ....
@@ -332,7 +341,7 @@ unique(rawData$COUNTYNAME)[1:10]
 
 #Original dimension raw dataset
 dim(rawData)
-## [1] 107168     38
+## [1] 107168     39
 
 #Getting all of the observation connecte with a "TORNADO" EVTYPE and "MOBILE" COUNTYNAME
 rawData.tornadoAndMobile <- filter(rawData, EVTYPE == "TORNADO" & COUNTYNAME == "MOBILE")
@@ -347,7 +356,7 @@ unique(rawData.tornadoAndMobile$COUNTYNAME)
 
 #Dimension filtered dataset
 dim(rawData.tornadoAndMobile)
-## [1] 50 38
+## [1] 50 39
 ```
 
 ##<a id="arr">`arrange`verb</a>
@@ -409,12 +418,92 @@ names(rawData)[1:5]
 
 
 ```r
-rawData <- rename(rawData, STATE = STATE__, BEGIN_DATE = BGN_DATE, BEGIN_TIME = BGN_TIME)
+rawData <- rename(rawData, STATE_ID = STATE__, BEGIN_DATE = BGN_DATE, BEGIN_TIME = BGN_TIME)
 ```
 
 
 ```r
 #print out the names of the variables (cols)
 names(rawData)[1:5]
-## [1] "STATE"      "BEGIN_DATE" "BEGIN_TIME" "TIME_ZONE"  "COUNTY"
+## [1] "STATE_ID"   "BEGIN_DATE" "BEGIN_TIME" "TIME_ZONE"  "COUNTY"
+```
+
+##<a id="mut">`mutate`verb</a>
+The `mutate` function is used to compute transformation of variables in a data frame. In other words to create new variables that are derived from existing variables.
+
+Adding a new variable `TOTAL_VICTIMS` as the sum of `FATALITIES`and `INJURIES`.
+
+
+```r
+#print out the names of the variables (cols)
+#check that TOTAL_VICTIMS does not exist.
+names(rawData)
+##  [1] "STATE_ID"     "BEGIN_DATE"   "BEGIN_TIME"   "TIME_ZONE"   
+##  [5] "COUNTY"       "COUNTYNAME"   "STATE"        "EVTYPE"      
+##  [9] "BGN_RANGE"    "BGN_AZI"      "BGN_LOCATI"   "END_DATE"    
+## [13] "END_TIME"     "COUNTY_END"   "COUNTYENDN"   "END_RANGE"   
+## [17] "END_AZI"      "END_LOCATI"   "LENGTH"       "WIDTH"       
+## [21] "F"            "MAG"          "FATALITIES"   "INJURIES"    
+## [25] "PROPDMG"      "PROPDMGEXP"   "CROPDMG"      "CROPDMGEXP"  
+## [29] "WFO"          "STATEOFFIC"   "ZONENAMES"    "LATITUDE"    
+## [33] "LONGITUDE"    "LATITUDE_E"   "LONGITUDE_"   "REMARKS"     
+## [37] "REFNUM"       "TMP_BGN_DATE" "TMP_BGN_YEAR"
+```
+
+
+```r
+rawData <- mutate(rawData, TOTAL_VICTIMS = FATALITIES + INJURIES)
+```
+
+
+```r
+#print out some of the data
+head(rawData[,c("FATALITIES", "INJURIES", "TOTAL_VICTIMS")], 10)
+##    FATALITIES INJURIES TOTAL_VICTIMS
+## 1           0       15            15
+## 2           0        0             0
+## 3           0        2             2
+## 4           0        2             2
+## 5           0        2             2
+## 6           0        6             6
+## 7           0        1             1
+## 8           0        0             0
+## 9           1       14            15
+## 10          0        0             0
+```
+
+##<a id="gro">`group_by`verb</a>
+The `group_by` function is used to generate summary statistics from the data frame within strata defined by a variable.
+
+
+```r
+rawData.group.by.TMP_BGN_YEAR <- group_by(rawData, TMP_BGN_YEAR)
+#Note the object implementing the returned objected implemented group_by 
+typeof(rawData.group.by.TMP_BGN_YEAR)
+## [1] "list"
+```
+
+Then the `summarize` function is used to perform some statistical computation on the data structur (`list`) created by `group_by`.
+
+```r
+summarize(rawData.group.by.TMP_BGN_YEAR, 
+          HEALTH_COST = mean(TOTAL_VICTIMS, na.rm = TRUE))
+```
+
+```
+## Source: local data frame [43 x 2]
+## 
+##    TMP_BGN_YEAR HEALTH_COST
+##           (dbl)       (dbl)
+## 1          1950   3.2500000
+## 2          1951   2.0714286
+## 3          1952   7.6228571
+## 4          1953  12.8286604
+## 5          1954   1.2789474
+## 6          1955   0.7144593
+## 7          1956   1.0272727
+## 8          1957   1.1055556
+## 9          1958   0.2300275
+## 10         1959   0.5348214
+## ..          ...         ...
 ```
