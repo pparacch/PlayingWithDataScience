@@ -77,7 +77,7 @@ img {
 <ul>
 <li><a href="#sel"><code>select</code></a></li>
 <li><a href="#fil"><code>filter</code></a> (<code>slice</code>)</li>
-<li><code>arrange</code></li>
+<li><a href="#arr"><code>arrange</code></a></li>
 <li><code>rename</code></li>
 <li><code>mutate</code></li>
 <li><code>summarize</code></li>
@@ -142,30 +142,54 @@ str(rawData)
 all(grepl(&quot;^\\d{1,2}\\/\\d{1,2}\\/\\d{4}\\s0:00:00$&quot;, rawData$BGN_DATE))
 ## [1] TRUE
 
-#Create a new col (temp feature): date
-rawData$TMP_BNG_DATE &lt;- gsub(&quot;\\s0:00:00$&quot;, &quot;&quot;, rawData$BGN_DATE)
-head(rawData[,c(&quot;BGN_DATE&quot;, &quot;TMP_BNG_DATE&quot;)])
-##             BGN_DATE TMP_BNG_DATE
+#Create a new col (temp feature): TMP_BGN_DATE
+rawData$TMP_BGN_DATE &lt;- gsub(&quot;\\s0:00:00$&quot;, &quot;&quot;, rawData$BGN_DATE)
+head(rawData[,c(&quot;BGN_DATE&quot;, &quot;TMP_BGN_DATE&quot;)])
+##             BGN_DATE TMP_BGN_DATE
 ## 1  4/18/1950 0:00:00    4/18/1950
 ## 2  4/18/1950 0:00:00    4/18/1950
 ## 3  2/20/1951 0:00:00    2/20/1951
 ## 4   6/8/1951 0:00:00     6/8/1951
 ## 5 11/15/1951 0:00:00   11/15/1951
 ## 6 11/15/1951 0:00:00   11/15/1951
-
-tail(rawData[,c(&quot;BGN_DATE&quot;, &quot;TMP_BNG_DATE&quot;)])
-##                 BGN_DATE TMP_BNG_DATE
+tail(rawData[,c(&quot;BGN_DATE&quot;, &quot;TMP_BGN_DATE&quot;)])
+##                 BGN_DATE TMP_BGN_DATE
 ## 107163 5/29/1967 0:00:00    5/29/1967
 ## 107164 6/25/1967 0:00:00    6/25/1967
 ## 107165 6/25/1967 0:00:00    6/25/1967
 ## 107166 7/11/1967 0:00:00    7/11/1967
 ## 107167 7/14/1967 0:00:00    7/14/1967
-## 107168 7/16/1967 0:00:00    7/16/1967</code></pre>
+## 107168 7/16/1967 0:00:00    7/16/1967
+
+#Transform TMP_BGN_DATE (character) to (Date)
+rawData$TMP_BGN_DATE &lt;- as.Date(rawData$TMP_BGN_DATE, format = &quot;%m/%d/%Y&quot;)
+head(rawData[,c(&quot;BGN_DATE&quot;, &quot;TMP_BGN_DATE&quot;)])
+##             BGN_DATE TMP_BGN_DATE
+## 1  4/18/1950 0:00:00   1950-04-18
+## 2  4/18/1950 0:00:00   1950-04-18
+## 3  2/20/1951 0:00:00   1951-02-20
+## 4   6/8/1951 0:00:00   1951-06-08
+## 5 11/15/1951 0:00:00   1951-11-15
+## 6 11/15/1951 0:00:00   1951-11-15
+tail(rawData[,c(&quot;BGN_DATE&quot;, &quot;TMP_BGN_DATE&quot;)])
+##                 BGN_DATE TMP_BGN_DATE
+## 107163 5/29/1967 0:00:00   1967-05-29
+## 107164 6/25/1967 0:00:00   1967-06-25
+## 107165 6/25/1967 0:00:00   1967-06-25
+## 107166 7/11/1967 0:00:00   1967-07-11
+## 107167 7/14/1967 0:00:00   1967-07-14
+## 107168 7/16/1967 0:00:00   1967-07-16
+summary(rawData$TMP_BGN_DATE)
+##         Min.      1st Qu.       Median         Mean      3rd Qu. 
+## &quot;1950-01-03&quot; &quot;1972-04-21&quot; &quot;1982-04-16&quot; &quot;1979-04-22&quot; &quot;1988-05-10&quot; 
+##         Max. 
+## &quot;1992-12-30&quot;</code></pre>
 </div>
 <div id="selectverb" class="section level2">
 <h2><a id="sel"><code>select</code>verb</a></h2>
 <p>The <code>select</code> function is used to select the columns of a data frame that you want to focus on.</p>
-<p>Example 1: select cols by col numbers</p>
+<div id="select-cols-by-col-numbers" class="section level3">
+<h3>Select cols by col numbers</h3>
 <pre class="r"><code>#Select only the following columns 
 #STATE__(1), BGN_DATE(2), BGN_TIME(3), TIME_ZONE(4), 
 #COUNTY(5), COUNTYNAME(6), STATE(7), EVTYPE(8)
@@ -182,7 +206,7 @@ str(rawData.s)
 ##  $ COUNTYNAME: chr  &quot;MOBILE&quot; &quot;BALDWIN&quot; &quot;FAYETTE&quot; &quot;MADISON&quot; ...
 ##  $ STATE     : chr  &quot;AL&quot; &quot;AL&quot; &quot;AL&quot; &quot;AL&quot; ...
 ##  $ EVTYPE    : chr  &quot;TORNADO&quot; &quot;TORNADO&quot; &quot;TORNADO&quot; &quot;TORNADO&quot; ...</code></pre>
-<p>Example 2: select cols by col numbers (alternative)</p>
+<p>An alternative way…</p>
 <pre class="r"><code>#Select only the following columns 
 #BGN_DATE(2), BGN_TIME(3), TIME_ZONE(4), 
 #COUNTYNAME(6), STATE(7), EVTYPE(8)
@@ -197,7 +221,9 @@ str(rawData.s)
 ##  $ COUNTYNAME: chr  &quot;MOBILE&quot; &quot;BALDWIN&quot; &quot;FAYETTE&quot; &quot;MADISON&quot; ...
 ##  $ STATE     : chr  &quot;AL&quot; &quot;AL&quot; &quot;AL&quot; &quot;AL&quot; ...
 ##  $ EVTYPE    : chr  &quot;TORNADO&quot; &quot;TORNADO&quot; &quot;TORNADO&quot; &quot;TORNADO&quot; ...</code></pre>
-<p>Example 3: select cols by col names</p>
+</div>
+<div id="select-cols-by-col-names" class="section level3">
+<h3>Select cols by col names</h3>
 <pre class="r"><code>#Select only the following columns 
 #STATE__(1), BGN_DATE(2), BGN_TIME(3), TIME_ZONE(4), 
 #COUNTY(5), COUNTYNAME(6), STATE(7), EVTYPE(8)
@@ -214,7 +240,7 @@ str(rawData.s)
 ##  $ COUNTYNAME: chr  &quot;MOBILE&quot; &quot;BALDWIN&quot; &quot;FAYETTE&quot; &quot;MADISON&quot; ...
 ##  $ STATE     : chr  &quot;AL&quot; &quot;AL&quot; &quot;AL&quot; &quot;AL&quot; ...
 ##  $ EVTYPE    : chr  &quot;TORNADO&quot; &quot;TORNADO&quot; &quot;TORNADO&quot; &quot;TORNADO&quot; ...</code></pre>
-<p>Example 4: select cols by col names (alternative)</p>
+<p>An alternative way…</p>
 <pre class="r"><code>#Select only the following columns 
 #STATE__(1), BGN_DATE(2) 
 #EVTYPE(8)
@@ -226,7 +252,7 @@ str(rawData.s)
 ##  $ STATE__ : num  1 1 1 1 1 1 1 1 1 1 ...
 ##  $ BGN_DATE: chr  &quot;4/18/1950 0:00:00&quot; &quot;4/18/1950 0:00:00&quot; &quot;2/20/1951 0:00:00&quot; &quot;6/8/1951 0:00:00&quot; ...
 ##  $ EVTYPE  : chr  &quot;TORNADO&quot; &quot;TORNADO&quot; &quot;TORNADO&quot; &quot;TORNADO&quot; ...</code></pre>
-<p>Example 5: select cols by col names (alternative)</p>
+<p>An alternative way…</p>
 <pre class="r"><code>#Remove the following columns 
 #STATE__(1), BGN_DATE(2) 
 #EVTYPE(8)
@@ -270,8 +296,10 @@ str(rawData.s)
 ##  $ LONGITUDE_  : num  8806 0 0 0 0 ...
 ##  $ REMARKS     : logi  NA NA NA NA NA NA ...
 ##  $ REFNUM      : num  1 2 3 4 5 6 7 8 9 10 ...
-##  $ TMP_BNG_DATE: chr  &quot;4/18/1950&quot; &quot;4/18/1950&quot; &quot;2/20/1951&quot; &quot;6/8/1951&quot; ...</code></pre>
-<p>Example 6: select cols whose col names start with</p>
+##  $ TMP_BGN_DATE: Date, format: &quot;1950-04-18&quot; &quot;1950-04-18&quot; ...</code></pre>
+</div>
+<div id="select-cols-whose-col-names-start-with" class="section level3">
+<h3>Select cols whose col names start with</h3>
 <pre class="r"><code>#Select the columns whose names start with &quot;BGN&quot;)
 
 #starts_with is a special function
@@ -283,7 +311,9 @@ str(rawData.s)
 ##  $ BGN_RANGE : num  0 0 0 0 0 0 0 0 0 0 ...
 ##  $ BGN_AZI   : logi  NA NA NA NA NA NA ...
 ##  $ BGN_LOCATI: logi  NA NA NA NA NA NA ...</code></pre>
-<p>Example 7: select cols whose col names end with</p>
+</div>
+<div id="select-cols-whose-col-names-end-with" class="section level3">
+<h3>Select cols whose col names end with</h3>
 <pre class="r"><code>#Select the columns whose names end with &quot;DATE&quot;)
 
 #ends_with is a special function
@@ -292,7 +322,8 @@ str(rawData.s)
 ## 'data.frame':    107168 obs. of  3 variables:
 ##  $ BGN_DATE    : chr  &quot;4/18/1950 0:00:00&quot; &quot;4/18/1950 0:00:00&quot; &quot;2/20/1951 0:00:00&quot; &quot;6/8/1951 0:00:00&quot; ...
 ##  $ END_DATE    : logi  NA NA NA NA NA NA ...
-##  $ TMP_BNG_DATE: chr  &quot;4/18/1950&quot; &quot;4/18/1950&quot; &quot;2/20/1951&quot; &quot;6/8/1951&quot; ...</code></pre>
+##  $ TMP_BGN_DATE: Date, format: &quot;1950-04-18&quot; &quot;1950-04-18&quot; ...</code></pre>
+</div>
 </div>
 <div id="filterverb" class="section level2">
 <h2><a id="fil"><code>filter</code>verb</a></h2>
@@ -344,6 +375,43 @@ unique(rawData.tornadoAndMobile$COUNTYNAME)
 #Dimension filtered dataset
 dim(rawData.tornadoAndMobile)
 ## [1] 50 38</code></pre>
+</div>
+<div id="arrangeverb" class="section level2">
+<h2><a id="arr"><code>arrange</code>verb</a></h2>
+<p>The <code>arrange</code> function is used to reorder rows of a data frame according to one of the col/ feature, preserving observations.</p>
+<pre class="r"><code>head(rawData$TMP_BGN_DATE, 10)
+##  [1] &quot;1950-04-18&quot; &quot;1950-04-18&quot; &quot;1951-02-20&quot; &quot;1951-06-08&quot; &quot;1951-11-15&quot;
+##  [6] &quot;1951-11-15&quot; &quot;1951-11-16&quot; &quot;1952-01-22&quot; &quot;1952-02-13&quot; &quot;1952-02-13&quot;
+
+tail(rawData$TMP_BGN_DATE, 10)
+##  [1] &quot;1967-05-20&quot; &quot;1967-05-20&quot; &quot;1967-05-20&quot; &quot;1967-05-29&quot; &quot;1967-05-29&quot;
+##  [6] &quot;1967-06-25&quot; &quot;1967-06-25&quot; &quot;1967-07-11&quot; &quot;1967-07-14&quot; &quot;1967-07-16&quot;</code></pre>
+<div id="order-ascending" class="section level3">
+<h3>Order ascending</h3>
+<p>Order the observations by <code>TMP_BGN_DATE</code> in ascending order (default).</p>
+<pre class="r"><code>rawData.order.asc.by.TMP_BNG_DATE &lt;- arrange(rawData, TMP_BGN_DATE)</code></pre>
+<p>Verify that observations have been actually ordered as expected.</p>
+<pre class="r"><code>head(rawData.order.asc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
+##  [1] &quot;1950-01-03&quot; &quot;1950-01-03&quot; &quot;1950-01-03&quot; &quot;1950-01-13&quot; &quot;1950-01-25&quot;
+##  [6] &quot;1950-01-25&quot; &quot;1950-02-12&quot; &quot;1950-02-12&quot; &quot;1950-02-12&quot; &quot;1950-02-12&quot;
+
+tail(rawData.order.asc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
+##  [1] &quot;1992-12-15&quot; &quot;1992-12-15&quot; &quot;1992-12-15&quot; &quot;1992-12-15&quot; &quot;1992-12-15&quot;
+##  [6] &quot;1992-12-17&quot; &quot;1992-12-17&quot; &quot;1992-12-17&quot; &quot;1992-12-29&quot; &quot;1992-12-30&quot;</code></pre>
+</div>
+<div id="order-descending" class="section level3">
+<h3>Order descending</h3>
+<p>Order the observations by <code>TMP_BGN_DATE</code> in descending order.</p>
+<pre class="r"><code>rawData.order.desc.by.TMP_BNG_DATE &lt;- arrange(rawData, desc(TMP_BGN_DATE))</code></pre>
+<p>Verify that observations have been actually ordered as expected.</p>
+<pre class="r"><code>head(rawData.order.desc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
+##  [1] &quot;1992-12-30&quot; &quot;1992-12-29&quot; &quot;1992-12-17&quot; &quot;1992-12-17&quot; &quot;1992-12-17&quot;
+##  [6] &quot;1992-12-15&quot; &quot;1992-12-15&quot; &quot;1992-12-15&quot; &quot;1992-12-15&quot; &quot;1992-12-15&quot;
+
+tail(rawData.order.desc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
+##  [1] &quot;1950-02-12&quot; &quot;1950-02-12&quot; &quot;1950-02-12&quot; &quot;1950-02-12&quot; &quot;1950-01-25&quot;
+##  [6] &quot;1950-01-25&quot; &quot;1950-01-13&quot; &quot;1950-01-03&quot; &quot;1950-01-03&quot; &quot;1950-01-03&quot;</code></pre>
+</div>
 </div>
 </div>
 

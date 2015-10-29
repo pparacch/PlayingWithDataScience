@@ -11,7 +11,7 @@ The **dplyr** package provides a "vocabulary"/ "grammar" used for data manipulat
 
 * [`select`](#sel)
 * [`filter`](#fil) (`slice`)
-* `arrange`
+* [`arrange`](#arr)
 * `rename`
 * `mutate`
 * `summarize`
@@ -89,31 +89,54 @@ Preparing the data - specifically extracting the `BGN_DATE` (begin date) in orde
 all(grepl("^\\d{1,2}\\/\\d{1,2}\\/\\d{4}\\s0:00:00$", rawData$BGN_DATE))
 ## [1] TRUE
 
-#Create a new col (temp feature): date
-rawData$TMP_BNG_DATE <- gsub("\\s0:00:00$", "", rawData$BGN_DATE)
-head(rawData[,c("BGN_DATE", "TMP_BNG_DATE")])
-##             BGN_DATE TMP_BNG_DATE
+#Create a new col (temp feature): TMP_BGN_DATE
+rawData$TMP_BGN_DATE <- gsub("\\s0:00:00$", "", rawData$BGN_DATE)
+head(rawData[,c("BGN_DATE", "TMP_BGN_DATE")])
+##             BGN_DATE TMP_BGN_DATE
 ## 1  4/18/1950 0:00:00    4/18/1950
 ## 2  4/18/1950 0:00:00    4/18/1950
 ## 3  2/20/1951 0:00:00    2/20/1951
 ## 4   6/8/1951 0:00:00     6/8/1951
 ## 5 11/15/1951 0:00:00   11/15/1951
 ## 6 11/15/1951 0:00:00   11/15/1951
-
-tail(rawData[,c("BGN_DATE", "TMP_BNG_DATE")])
-##                 BGN_DATE TMP_BNG_DATE
+tail(rawData[,c("BGN_DATE", "TMP_BGN_DATE")])
+##                 BGN_DATE TMP_BGN_DATE
 ## 107163 5/29/1967 0:00:00    5/29/1967
 ## 107164 6/25/1967 0:00:00    6/25/1967
 ## 107165 6/25/1967 0:00:00    6/25/1967
 ## 107166 7/11/1967 0:00:00    7/11/1967
 ## 107167 7/14/1967 0:00:00    7/14/1967
 ## 107168 7/16/1967 0:00:00    7/16/1967
+
+#Transform TMP_BGN_DATE (character) to (Date)
+rawData$TMP_BGN_DATE <- as.Date(rawData$TMP_BGN_DATE, format = "%m/%d/%Y")
+head(rawData[,c("BGN_DATE", "TMP_BGN_DATE")])
+##             BGN_DATE TMP_BGN_DATE
+## 1  4/18/1950 0:00:00   1950-04-18
+## 2  4/18/1950 0:00:00   1950-04-18
+## 3  2/20/1951 0:00:00   1951-02-20
+## 4   6/8/1951 0:00:00   1951-06-08
+## 5 11/15/1951 0:00:00   1951-11-15
+## 6 11/15/1951 0:00:00   1951-11-15
+tail(rawData[,c("BGN_DATE", "TMP_BGN_DATE")])
+##                 BGN_DATE TMP_BGN_DATE
+## 107163 5/29/1967 0:00:00   1967-05-29
+## 107164 6/25/1967 0:00:00   1967-06-25
+## 107165 6/25/1967 0:00:00   1967-06-25
+## 107166 7/11/1967 0:00:00   1967-07-11
+## 107167 7/14/1967 0:00:00   1967-07-14
+## 107168 7/16/1967 0:00:00   1967-07-16
+summary(rawData$TMP_BGN_DATE)
+##         Min.      1st Qu.       Median         Mean      3rd Qu. 
+## "1950-01-03" "1972-04-21" "1982-04-16" "1979-04-22" "1988-05-10" 
+##         Max. 
+## "1992-12-30"
 ```
 
 ##<a id="sel">`select`verb</a>
 The `select` function is used to select the columns of a data frame that you want to focus on.
 
-Example 1: select cols by col numbers  
+###Select cols by col numbers  
 
 ```r
 #Select only the following columns 
@@ -134,7 +157,7 @@ str(rawData.s)
 ##  $ EVTYPE    : chr  "TORNADO" "TORNADO" "TORNADO" "TORNADO" ...
 ```
 
-Example 2: select cols by col numbers (alternative)   
+An alternative way...
 
 ```r
 #Select only the following columns 
@@ -153,7 +176,7 @@ str(rawData.s)
 ##  $ EVTYPE    : chr  "TORNADO" "TORNADO" "TORNADO" "TORNADO" ...
 ```
 
-Example 3: select cols by col names  
+###Select cols by col names  
 
 ```r
 #Select only the following columns 
@@ -174,7 +197,7 @@ str(rawData.s)
 ##  $ EVTYPE    : chr  "TORNADO" "TORNADO" "TORNADO" "TORNADO" ...
 ```
 
-Example 4:  select cols by col names (alternative)  
+An alternative way...
 
 ```r
 #Select only the following columns 
@@ -190,7 +213,7 @@ str(rawData.s)
 ##  $ EVTYPE  : chr  "TORNADO" "TORNADO" "TORNADO" "TORNADO" ...
 ```
 
-Example 5: select cols by col names (alternative)  
+An alternative way...
 
 ```r
 #Remove the following columns 
@@ -236,10 +259,10 @@ str(rawData.s)
 ##  $ LONGITUDE_  : num  8806 0 0 0 0 ...
 ##  $ REMARKS     : logi  NA NA NA NA NA NA ...
 ##  $ REFNUM      : num  1 2 3 4 5 6 7 8 9 10 ...
-##  $ TMP_BNG_DATE: chr  "4/18/1950" "4/18/1950" "2/20/1951" "6/8/1951" ...
+##  $ TMP_BGN_DATE: Date, format: "1950-04-18" "1950-04-18" ...
 ```
 
-Example 6: select cols whose col names start with  
+###Select cols whose col names start with  
 
 ```r
 #Select the columns whose names start with "BGN")
@@ -255,7 +278,7 @@ str(rawData.s)
 ##  $ BGN_LOCATI: logi  NA NA NA NA NA NA ...
 ```
 
-Example 7: select cols whose col names end with  
+###Select cols whose col names end with  
 
 ```r
 #Select the columns whose names end with "DATE")
@@ -266,7 +289,7 @@ str(rawData.s)
 ## 'data.frame':	107168 obs. of  3 variables:
 ##  $ BGN_DATE    : chr  "4/18/1950 0:00:00" "4/18/1950 0:00:00" "2/20/1951 0:00:00" "6/8/1951 0:00:00" ...
 ##  $ END_DATE    : logi  NA NA NA NA NA NA ...
-##  $ TMP_BNG_DATE: chr  "4/18/1950" "4/18/1950" "2/20/1951" "6/8/1951" ...
+##  $ TMP_BGN_DATE: Date, format: "1950-04-18" "1950-04-18" ...
 ```
 
 ##<a id="fil">`filter`verb</a>
@@ -325,4 +348,52 @@ unique(rawData.tornadoAndMobile$COUNTYNAME)
 #Dimension filtered dataset
 dim(rawData.tornadoAndMobile)
 ## [1] 50 38
+```
+
+##<a id="arr">`arrange`verb</a>
+The `arrange` function is used to reorder rows of a data frame according to one of the col/ feature, preserving observations.
+
+
+```r
+head(rawData$TMP_BGN_DATE, 10)
+##  [1] "1950-04-18" "1950-04-18" "1951-02-20" "1951-06-08" "1951-11-15"
+##  [6] "1951-11-15" "1951-11-16" "1952-01-22" "1952-02-13" "1952-02-13"
+
+tail(rawData$TMP_BGN_DATE, 10)
+##  [1] "1967-05-20" "1967-05-20" "1967-05-20" "1967-05-29" "1967-05-29"
+##  [6] "1967-06-25" "1967-06-25" "1967-07-11" "1967-07-14" "1967-07-16"
+```
+###Order ascending
+Order the observations by `TMP_BGN_DATE` in ascending order (default).
+
+```r
+rawData.order.asc.by.TMP_BNG_DATE <- arrange(rawData, TMP_BGN_DATE)
+```
+Verify that observations have been actually ordered as expected.
+
+```r
+head(rawData.order.asc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
+##  [1] "1950-01-03" "1950-01-03" "1950-01-03" "1950-01-13" "1950-01-25"
+##  [6] "1950-01-25" "1950-02-12" "1950-02-12" "1950-02-12" "1950-02-12"
+
+tail(rawData.order.asc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
+##  [1] "1992-12-15" "1992-12-15" "1992-12-15" "1992-12-15" "1992-12-15"
+##  [6] "1992-12-17" "1992-12-17" "1992-12-17" "1992-12-29" "1992-12-30"
+```
+###Order descending
+Order the observations by `TMP_BGN_DATE` in descending order.
+
+```r
+rawData.order.desc.by.TMP_BNG_DATE <- arrange(rawData, desc(TMP_BGN_DATE))
+```
+Verify that observations have been actually ordered as expected.
+
+```r
+head(rawData.order.desc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
+##  [1] "1992-12-30" "1992-12-29" "1992-12-17" "1992-12-17" "1992-12-17"
+##  [6] "1992-12-15" "1992-12-15" "1992-12-15" "1992-12-15" "1992-12-15"
+
+tail(rawData.order.desc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
+##  [1] "1950-02-12" "1950-02-12" "1950-02-12" "1950-02-12" "1950-01-25"
+##  [6] "1950-01-25" "1950-01-13" "1950-01-03" "1950-01-03" "1950-01-03"
 ```

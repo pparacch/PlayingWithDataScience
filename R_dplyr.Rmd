@@ -19,7 +19,7 @@ The **dplyr** package provides a "vocabulary"/ "grammar" used for data manipulat
 
 * [`select`](#sel)
 * [`filter`](#fil) (`slice`)
-* `arrange`
+* [`arrange`](#arr)
 * `rename`
 * `mutate`
 * `summarize`
@@ -53,21 +53,21 @@ Preparing the data - specifically extracting the `BGN_DATE` (begin date) in orde
 all(grepl("^\\d{1,2}\\/\\d{1,2}\\/\\d{4}\\s0:00:00$", rawData$BGN_DATE))
 
 #Create a new col (temp feature): TMP_BGN_DATE
-rawData$TMP_BNG_DATE <- gsub("\\s0:00:00$", "", rawData$BGN_DATE)
-head(rawData[,c("BGN_DATE", "TMP_BNG_DATE")])
-tail(rawData[,c("BGN_DATE", "TMP_BNG_DATE")])
+rawData$TMP_BGN_DATE <- gsub("\\s0:00:00$", "", rawData$BGN_DATE)
+head(rawData[,c("BGN_DATE", "TMP_BGN_DATE")])
+tail(rawData[,c("BGN_DATE", "TMP_BGN_DATE")])
 
 #Transform TMP_BGN_DATE (character) to (Date)
-rawData$TMP_BNG_DATE <- as.Date(rawData$TMP_BNG_DATE, format = "%m/%d/%Y")
-head(rawData[,c("BGN_DATE", "TMP_BNG_DATE")])
-tail(rawData[,c("BGN_DATE", "TMP_BNG_DATE")])
-summary(rawData$TMP_BNG_DATE)
+rawData$TMP_BGN_DATE <- as.Date(rawData$TMP_BGN_DATE, format = "%m/%d/%Y")
+head(rawData[,c("BGN_DATE", "TMP_BGN_DATE")])
+tail(rawData[,c("BGN_DATE", "TMP_BGN_DATE")])
+summary(rawData$TMP_BGN_DATE)
 ```
 
 ##<a id="sel">`select`verb</a>
 The `select` function is used to select the columns of a data frame that you want to focus on.
 
-Example 1: select cols by col numbers  
+###Select cols by col numbers  
 ```{r selectExample1, collapse=TRUE}
 #Select only the following columns 
 #STATE__(1), BGN_DATE(2), BGN_TIME(3), TIME_ZONE(4), 
@@ -78,7 +78,7 @@ rawData.s <- select(rawData, 1:8)
 str(rawData.s)
 ```
 
-Example 2: select cols by col numbers (alternative)   
+An alternative way...
 ```{r selectExample2, collapse=TRUE}
 #Select only the following columns 
 #BGN_DATE(2), BGN_TIME(3), TIME_ZONE(4), 
@@ -89,7 +89,7 @@ rawData.s <- select(rawData, c(2,3,4,6,7,8))
 str(rawData.s)
 ```
 
-Example 3: select cols by col names  
+###Select cols by col names  
 ```{r selectExample3, collapse=TRUE}
 #Select only the following columns 
 #STATE__(1), BGN_DATE(2), BGN_TIME(3), TIME_ZONE(4), 
@@ -100,7 +100,7 @@ rawData.s <- select(rawData, STATE__:EVTYPE)
 str(rawData.s)
 ```
 
-Example 4:  select cols by col names (alternative)  
+An alternative way...
 ```{r selectExample4, collapse=TRUE}
 #Select only the following columns 
 #STATE__(1), BGN_DATE(2) 
@@ -111,7 +111,7 @@ rawData.s <- select(rawData, c(STATE__, BGN_DATE, EVTYPE))
 str(rawData.s)
 ```
 
-Example 5: select cols by col names (alternative)  
+An alternative way...
 ```{r selectExample5, collapse=TRUE}
 #Remove the following columns 
 #STATE__(1), BGN_DATE(2) 
@@ -123,7 +123,7 @@ rawData.s <- select(rawData, c(-STATE__, -BGN_DATE, -EVTYPE))
 str(rawData.s)
 ```
 
-Example 6: select cols whose col names start with  
+###Select cols whose col names start with  
 ```{r selectExample6, collapse=TRUE}
 #Select the columns whose names start with "BGN")
 
@@ -132,7 +132,7 @@ rawData.s <- select(rawData, starts_with("BGN"))
 str(rawData.s)
 ```
 
-Example 7: select cols whose col names end with  
+###Select cols whose col names end with  
 ```{r selectExample7, collapse=TRUE}
 #Select the columns whose names end with "DATE")
 
@@ -184,4 +184,35 @@ unique(rawData.tornadoAndMobile$COUNTYNAME)
 
 #Dimension filtered dataset
 dim(rawData.tornadoAndMobile)
+```
+
+##<a id="arr">`arrange`verb</a>
+The `arrange` function is used to reorder rows of a data frame according to one of the col/ feature, preserving observations.
+
+```{r collapse = TRUE}
+head(rawData$TMP_BGN_DATE, 10)
+
+tail(rawData$TMP_BGN_DATE, 10)
+```
+###Order ascending
+Order the observations by `TMP_BGN_DATE` in ascending order (default).
+```{r arrangeExample1, collapse = TRUE}
+rawData.order.asc.by.TMP_BNG_DATE <- arrange(rawData, TMP_BGN_DATE)
+```
+Verify that observations have been actually ordered as expected.
+```{r collapse = TRUE}
+head(rawData.order.asc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
+
+tail(rawData.order.asc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
+```
+###Order descending
+Order the observations by `TMP_BGN_DATE` in descending order.
+```{r arrangeExample2, collapse = TRUE}
+rawData.order.desc.by.TMP_BNG_DATE <- arrange(rawData, desc(TMP_BGN_DATE))
+```
+Verify that observations have been actually ordered as expected.
+```{r collapse = TRUE}
+head(rawData.order.desc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
+
+tail(rawData.order.desc.by.TMP_BNG_DATE$TMP_BGN_DATE, 10)
 ```
