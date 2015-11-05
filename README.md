@@ -17,6 +17,7 @@ Based on
 [Vectors](https://github.com/pparacch/PlayingWithDataScience/blob/master/R_vectors.md) 
 
 
-##Some "example" projects
+##Some Applications
+* Machine Learning
 
 * DVAwithAD - Driving Visual Analysis with Automobile Data (R) - "Practical Data Science Cookbook" book 
