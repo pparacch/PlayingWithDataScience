@@ -215,3 +215,47 @@ sms_dtm <- DocumentTermMatrix(corpus_clean)
 #basic information about the sparse matrix
 print(sms_dtm)
 ```
+###Training and Test datasets
+Using the `caTools` package, specifically `sample.split` function to create a test and training sets for rawData, clean corpus and sparse matrix.
+
+```{r createDatasets}
+library(caTools)
+set.seed(19711004)
+
+spl_data <- sample.split(rawData$type, SplitRatio = 0.7)
+
+train_dataset <- subset(rawData, spl_data == TRUE)
+sms_dtm_train <- sms_dtm[spl_data,] ##Get only where TRUE
+corpus_clean_train <- corpus_clean[spl_data] ##Get only where TRUE
+
+test_dataset <- subset(rawData, spl_data == FALSE)
+sms_dtm_test <- sms_dtm[!spl_data,] ##Get only where FALSE
+corpus_clean_test <- corpus_clean[!spl_data] ##Get only where FALSE
+```
+
+```{r, collapse=TRUE}
+#Training dataset info
+prop.table(table(train_dataset$type))
+
+#Test dataset info
+prop.table(table(test_dataset$type))
+```
+Using the `wordclod` package to visualize frequency of words in text data.
+
+```{r settingWordCloud, collapse=TRUE}
+library(wordcloud)
+pal <- brewer.pal(9,"YlGn")
+pal <- pal[-(1:4)]
+```
+
+Wordcloud for training dataset ....
+```{r wordCloudTrain, collapse=TRUE}
+wordcloud(corpus_clean_train, min.freq = 40, random.order = FALSE, colors = pal)
+```
+
+Wordcloud for training dataset by `SPAM`....
+```{r wordCloudTrain1, collapse=TRUE}
+spam <- subset(train_dataset, type == "SPAM")
+wordcloud(corpus_clean_train, min.freq = 40, random.order = FALSE, colors = pal)
+```
+

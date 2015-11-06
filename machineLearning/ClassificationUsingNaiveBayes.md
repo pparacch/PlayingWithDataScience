@@ -212,7 +212,8 @@ corpus_clean <- tm_map(corpus_clean, stripWhitespace)
 
 ```r
 #Be sure to use the following script once you have completed preprocessing.
-#This tells R to treat your preprocessed documents as text documents.
+#This tells R to treat your preprocessed documents as text documents because of the non standard
+#transformations
 corpus_clean <- tm_map(corpus_clean, PlainTextDocument)
 
 #Inspect the first 4 documents
@@ -245,4 +246,72 @@ From the __corpus__ a data structured called __sparse matrix__ is created. In th
 
 ```r
 sms_dtm <- DocumentTermMatrix(corpus_clean)
+
+#basic information about the sparse matrix
+print(sms_dtm)
+## <<DocumentTermMatrix (documents: 5559, terms: 7868)>>
+## Non-/sparse entries: 42595/43695617
+## Sparsity           : 100%
+## Maximal term length: 40
+## Weighting          : term frequency (tf)
 ```
+###Training and Test datasets
+Using the `caTools` package, specifically `sample.split` function to create a test and training sets for rawData, clean corpus and sparse matrix.
+
+
+```r
+library(caTools)
+set.seed(19711004)
+
+spl_data <- sample.split(rawData$type, SplitRatio = 0.7)
+
+train_dataset <- subset(rawData, spl_data == TRUE)
+sms_dtm_train <- sms_dtm[spl_data,] ##Get only where TRUE
+corpus_clean_train <- corpus_clean[spl_data] ##Get only where TRUE
+
+test_dataset <- subset(rawData, spl_data == FALSE)
+sms_dtm_test <- sms_dtm[!spl_data,] ##Get only where FALSE
+corpus_clean_test <- corpus_clean[!spl_data] ##Get only where FALSE
+```
+
+
+```r
+#Training dataset info
+prop.table(table(train_dataset$type))
+## 
+##       ham      spam 
+## 0.8655873 0.1344127
+
+#Test dataset info
+prop.table(table(test_dataset$type))
+## 
+##       ham      spam 
+## 0.8657074 0.1342926
+```
+Using the `wordclod` package to visualize frequency of words in text data.
+
+
+```r
+library(wordcloud)
+## Loading required package: RColorBrewer
+pal <- brewer.pal(9,"YlGn")
+pal <- pal[-(1:4)]
+```
+
+Wordcloud for training dataset ....
+
+```r
+wordcloud(corpus_clean_train, min.freq = 40, random.order = FALSE, colors = pal)
+```
+
+![](ClassificationUsingNaiveBayes_files/figure-html/wordCloudTrain-1.png) 
+
+Wordcloud for training dataset by `SPAM`....
+
+```r
+spam <- subset(train_dataset, type == "SPAM")
+wordcloud(corpus_clean_train, min.freq = 40, random.order = FALSE, colors = pal)
+```
+
+![](ClassificationUsingNaiveBayes_files/figure-html/wordCloudTrain1-1.png) 
+
