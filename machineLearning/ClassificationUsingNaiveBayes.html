@@ -92,17 +92,18 @@ img {
 <li><strong>mutually exclusive</strong>: the events cannot occur at the same time</li>
 <li><strong>exaustive</strong>: the events (e.g. spam and ham) are the only possible events.</li>
 </ul>
-<p>S = {all emails}<br />A = {<strong>spam</strong>} -&gt; <strong>1 = P(A) + P(B)</strong> -&gt; <strong>P(A) = 1 - P(B)</strong><br />B = {<strong>ham</strong>}</p>
+<p>S = {all emails}<br />A = {<strong>spam</strong>}<br />B = {<strong>ham</strong>}</p>
+<p><span class="math">\(P(S) = 1\)</span> -&gt; <span class="math">\(1 = P(A) + P(B)\)</span> -&gt; <span class="math">\(P(A) = 1 - P(B)\)</span></p>
 <div id="joint-probability" class="section level3">
 <h3>Joint Probability</h3>
-<p>Given two events, <strong>Event</strong> A and <strong>Event B</strong>, the the probability of both events happening at the same time <strong>P(A and B)</strong> depends on the <strong>joint probability</strong> of the two events, in other words how the probability of one event is related to the probability of the other.</p>
-<p>If the 2 events are totally unrelated <strong>independent events</strong> then <strong>P(A and B) = P(A) * P(B)</strong>. If the 2 events are related then ….</p>
+<p>Given two events, <strong>event</strong> A and <strong>event B</strong>, the the probability of both events happening at the same time <span class="math">\(P(A \cup B)\)</span> depends on the <strong>joint probability</strong> of the two events, in other words how the probability of one event is related to the probability of the other.</p>
+<p>If the 2 events are totally unrelated <strong>independent events</strong> then <span class="math">\(P(A \cup B) = P(A) * P(B)\)</span>. If the 2 events are related then ….</p>
 <p><strong>Note!!</strong> Consideration and understanding need to be used to identify the nature of the relationship between the events.</p>
 </div>
 <div id="conditional-probability-with-the-bayes-theorem" class="section level3">
 <h3>Conditional probability with the Bayes’ theorem</h3>
-<p>Given two events, <strong>Event</strong> A and <strong>Event B</strong>, the the probability of event A given that event B occured <strong>P(A|B)</strong> (conditional porbability) is defined as</p>
-<p><strong>P(A|B) = P(A and B)/ P(B) = (P(B|A) * P(A))/P(B)</strong></p>
+<p>Given two events, <strong>event</strong> A and <strong>event B</strong>, the probability of event A given that event B occured <span class="math">\(P(A|B)\)</span> (conditional porbability) is defined as</p>
+<p><span class="math">\(P(A|B) = P(A \cap B)/ P(B) = (P(B|A) * P(A))/P(B)\)</span></p>
 </div>
 </div>
 <div id="the-naive-bayes-algorithm" class="section level2">
@@ -122,16 +123,142 @@ img {
 <li>Estimated probabilities are less reliable than the predicted classes</li>
 </ul>
 <p><strong>Example</strong> (e.g. CLASS1 = SPAM and CLASS2 = HAM)</p>
-<p><strong>P(CLASS1|B1 and B2 and B3 and B4) = (P(B1 and B2 and B3 and B4|CLASS1) * P(CLASS1))/ P(B1 and B2 and B3 and B4)</strong></p>
+<p><span class="math">\(P(CLASS1|B1 \cap B2 \cap B3 \cap B4) = (P(B1 \cap B2 \cap B3 \cap B4|CLASS1) * P(CLASS1))/ P(B1 \cap B2 \cap B3 \cap B4)\)</span></p>
 <p>… naive Bayes assumes class-conditional independence , events are independent so long as they are conditioned on the same class value so …</p>
-<p><strong>P(CLASS1|B1 and B2 and B3 and B4) = (P(B1|CLASS1) P(B2|CLASS1) P(B3|CLASS1) P(B4|CLASS1) * P(CLASS1))/ (P(B1) P(B2) P(B3) P(B4))</strong></p>
-<p><strong>P(CLASS2|B1 and B2 and B3 and B4) = (P(B1|CLASS2) P(B2|CLASS2) P(B3|CLASS2) P(B4|CLASS2) * P(CLASS2))/ (P(B1) P(B2) P(B3) P(B4))</strong></p>
+<p><span class="math">\(P(CLASS1|B1 \cap B2 \cap B3 \cap B4) = (P(B1|CLASS1) * P(B2|CLASS1) * P(B3|CLASS1) * P(B4|CLASS1) * P(CLASS1))/ (P(B1) * P(B2) * P(B3) * P(B4))\)</span></p>
+<p><span class="math">\(P(CLASS2|B1 \cap B2 \cap B3 \cap B4) = (P(B1|CLASS2) * P(B2|CLASS2) * P(B3|CLASS2) * P(B4|CLASS2) * P(CLASS2))/ (P(B1) * P(B2) * P(B3) * P(B4))\)</span></p>
 <div id="generalized-formula-for-the-naive-bayes-algorithm" class="section level3">
 <h3>Generalized formula for the naive Bayes algorithm</h3>
 <p>CLASSi: level i for CLASS class Fj: feature j evidence (j=1..n)</p>
-<p><strong>P(CLASSi|F1,..,Fn) = (1/Z) p(CLASSi) [product(j=1,..,n) p(Fj|CLASSi)</strong></p>
+<p><span class="math">\(P(CLASSi|F1,..,Fn) = (1/Z) p(CLASSi) \prod_{j=1}^{n} p(F_j|CLASSi)\)</span></p>
 <p>the probability of level i for class CLASS, given the evidence provided by features F 1 through F n, is equal to the product of the probabilities of each piece of evidence conditioned on the class level, the prior probability of the class level, and a scaling factor 1 / Z, which converts the result to a probability.</p>
 <p><strong>Limitation!!</strong> Because probabilities in naive Bayes are multiplied, a 0 percent value in one of the p(Fj|CLASSi) gives the ability to effectively nullify and overrule all of the other evidence - this is problem. A solution to this problem is ti use the <strong>Laplace estimator</strong> - it adds a small number to each of the counts in a frequency table, ensuring that each feature has not a zero probability of occuring with each class. Note typically the <strong>laplace estimator</strong> is set to 1.</p>
+</div>
+<div id="using-numeric-features-with-naive-bayes" class="section level3">
+<h3>Using numeric features with naive Bayes</h3>
+<p>Because naive Bayes uses frequency tables for learning the data, each feature must be categorical in order to create the combinations of class and feature values comprising the matrix. Since numeric features do not have categories of values, the preceding algorithm does not work directly with numeric data. There are, however, ways that this can be addressed.</p>
+<p>One easy and effective solution is to <strong>discretize numeric features</strong>, which simply means that the numbers are put into categories known as bins. For this reason, discretization is also sometimes called binning. This method is ideal when there are large amounts of training data, a common condition when working with naive Bayes.</p>
+</div>
+</div>
+</div>
+<div id="example" class="section level1">
+<h1>Example</h1>
+<p>Filtering mobile phone spam with the <strong>naive Bayes</strong> algorithm. ##Problem Advertisers utilize Short Message Service (SMS) text messages to target potential consumers with unwanted advertising known as SMS spam. This type of spam is particularly troublesome because, unlike email spam, many cellular phone users pay a fee per SMS received. Developing a classification algorithm that could filter SMS spam would provide a useful tool for cellular phone providers.</p>
+<div id="data-processing" class="section level2">
+<h2>Data Processing</h2>
+<div id="loading-the-data-and-some-essential-changes" class="section level3">
+<h3>Loading the data and some essential changes</h3>
+<p>The data and relevant information can be found (here)[<a href="http://www.dt.fee.unicamp.br/~tiago/smsspamcollection/" class="uri">http://www.dt.fee.unicamp.br/~tiago/smsspamcollection/</a>].</p>
+<p>Load the raw data into R …</p>
+<pre class="r"><code>rawData &lt;-  read.csv(&quot;./datasets/Chapter 04/sms_spam.csv&quot;, header = TRUE, stringsAsFactors = FALSE)</code></pre>
+<pre class="r"><code>#Show the structure of the raw dataset
+str(rawData)
+## 'data.frame':    5559 obs. of  2 variables:
+##  $ type: chr  &quot;ham&quot; &quot;ham&quot; &quot;ham&quot; &quot;spam&quot; ...
+##  $ text: chr  &quot;Hope you are having a good week. Just checking in&quot; &quot;K..give back my thanks.&quot; &quot;Am also doing in cbe only. But have to pay.&quot; &quot;complimentary 4 STAR Ibiza Holiday or £10,000 cash needs your URGENT collection. 09066364349 NOW from Landline not to lose out!&quot;| __truncated__ ...
+
+#Summary of the raw dataset
+summary(rawData)
+##      type               text          
+##  Length:5559        Length:5559       
+##  Class :character   Class :character  
+##  Mode  :character   Mode  :character
+
+#Info about observations by type
+table(rawData$type)
+## 
+##  ham spam 
+## 4812  747</code></pre>
+<p>Transforming <code>type</code> feature from a <code>character</code> to a <code>factor</code> …</p>
+<pre class="r"><code>#Coverting the text to utf-8 format
+rawData$text &lt;- iconv(rawData$text, to = &quot;utf-8&quot;)
+
+#Type as factor
+rawData$type &lt;- factor(rawData$type)
+
+#Show the structure of the raw dataset
+str(rawData$type)
+##  Factor w/ 2 levels &quot;ham&quot;,&quot;spam&quot;: 1 1 1 2 2 1 1 1 2 1 ...
+
+#Info about observations by type
+table(rawData$type)
+## 
+##  ham spam 
+## 4812  747</code></pre>
+</div>
+<div id="processing-text-data-for-analysis" class="section level3">
+<h3>Processing text data for analysis</h3>
+<p>SMS messages are strings of text composed of words, spaces, numbers, and punctuation. We needs to consider how to remove numbers, punctuation, handle uninteresting words such as and, but, and or, and how to break apart sentences into individual words.</p>
+<p><strong>Note!</strong> <code>tm</code> package can be used for such purpose. For installing the package run <code>install.packages(&quot;tm&quot;)</code>.</p>
+<p><strong>First step</strong> is creating the <strong>corpus</strong>, a collection of text documents. In this specific case a text document refers to a single SMS message.</p>
+<pre class="r"><code>library(tm) #loading tm library for usage
+## Loading required package: NLP
+corpus &lt;- Corpus(VectorSource(rawData$text))
+
+#basic info about the corpus
+print(corpus)
+## &lt;&lt;VCorpus&gt;&gt;
+## Metadata:  corpus specific: 0, document level (indexed): 0
+## Content:  documents: 5559</code></pre>
+<p>Please note that the corpus contains 5559 text documents (aka sms text).</p>
+<pre class="r"><code>#Inspect the first 4 documents
+corpus[[1]]$content
+## [1] &quot;Hope you are having a good week. Just checking in&quot;
+corpus[[2]]$content
+## [1] &quot;K..give back my thanks.&quot;
+corpus[[3]]$content
+## [1] &quot;Am also doing in cbe only. But have to pay.&quot;
+corpus[[4]]$content
+## [1] &quot;complimentary 4 STAR Ibiza Holiday or £10,000 cash needs your URGENT collection. 09066364349 NOW from Landline not to lose out! Box434SK38WP150PPM18+&quot;</code></pre>
+<p>Before splitting the text into words some cleaning steps need to be performed in order to remove punctuation and other characters that may create problems.</p>
+<p>Standard <code>tm</code> transformations</p>
+<pre><code>## [1] &quot;removeNumbers&quot;     &quot;removePunctuation&quot; &quot;removeWords&quot;      
+## [4] &quot;stemDocument&quot;      &quot;stripWhitespace&quot;</code></pre>
+<pre class="r"><code>#1. normalize to lowercase
+corpus_clean &lt;- tm_map(corpus, tolower)
+
+#2. remove numbers
+corpus_clean &lt;- tm_map(corpus_clean, removeNumbers)
+
+#3. remove stopwords e.g. to, and, but, or (using predefined set of word in tm package)
+corpus_clean &lt;- tm_map(corpus_clean, removeWords, stopwords())
+
+#4. remove punctuation
+corpus_clean &lt;- tm_map(corpus_clean, removePunctuation)
+
+#5. normalize whitespaces
+#Now that we have removed numbers, stop words, and punctuation, the text messages are left with #blank spaces where these characters used to be. The last step then is to remove additional #whitespace, leaving only a single space between words.
+corpus_clean &lt;- tm_map(corpus_clean, stripWhitespace)</code></pre>
+<pre class="r"><code>#Be sure to use the following script once you have completed preprocessing.
+#This tells R to treat your preprocessed documents as text documents.
+corpus_clean &lt;- tm_map(corpus_clean, PlainTextDocument)
+
+#Inspect the first 4 documents
+corpus[[1]]$content
+## [1] &quot;Hope you are having a good week. Just checking in&quot;
+corpus_clean[[1]]$content
+## [1] &quot;hope good week just checking &quot;
+
+corpus[[2]]$content
+## [1] &quot;K..give back my thanks.&quot;
+corpus_clean[[2]]$content
+## [1] &quot;kgive back thanks&quot;
+
+corpus[[3]]$content
+## [1] &quot;Am also doing in cbe only. But have to pay.&quot;
+corpus_clean[[3]]$content
+## [1] &quot; also cbe pay&quot;
+
+corpus[[4]]$content
+## [1] &quot;complimentary 4 STAR Ibiza Holiday or £10,000 cash needs your URGENT collection. 09066364349 NOW from Landline not to lose out! Box434SK38WP150PPM18+&quot;
+corpus_clean[[4]]$content
+## [1] &quot;complimentary star ibiza holiday cash needs urgent collection now landline lose boxskwpppm&quot;</code></pre>
+</div>
+<div id="tokenization" class="section level3">
+<h3>Tokenization</h3>
+<p>Now that the data are processed to our <strong>liking</strong>, the final step is to split the messages into individual elements through a process called <strong>tokenization</strong>. A <strong>token</strong> is a single element of a text string; in this case, the tokens are words.</p>
+<p>From the <strong>corpus</strong> a data structured called <strong>sparse matrix</strong> is created. In the <strong>sparse matrix</strong>, each row (observation) represents a document (SMS text message) and each column is a token/ word. The number in a cell represents the number of time the token (col) is present the document represented by that row.</p>
+<pre class="r"><code>sms_dtm &lt;- DocumentTermMatrix(corpus_clean)</code></pre>
 </div>
 </div>
 </div>

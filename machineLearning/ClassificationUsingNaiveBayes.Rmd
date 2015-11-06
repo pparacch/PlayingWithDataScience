@@ -33,20 +33,22 @@ The __total probability of all possible outcomes for a trial__ must always be __
 * __exaustive__: the events (e.g. spam and ham) are the only possible events.
 
 S = {all emails}  
-A = {__spam__}          -> __1 = P(A) + P(B)__ -> __P(A) = 1 - P(B)__  
+A = {__spam__}  
 B = {__ham__}  
 
-###Joint Probability
-Given two events, __Event__ A and __Event B__, the the probability of both events happening at the same time __P(A and B)__ depends on the __joint probability__ of the two events, in other words how the probability of one event is related to the probability of the other.
+$P(S) = 1$ -> $1 = P(A) + P(B)$ -> $P(A) = 1 - P(B)$
 
-If the 2 events are totally unrelated __independent events__ then __P(A and B) = P(A) * P(B)__. If the 2 events are related then ....
+###Joint Probability
+Given two events, __event__ A and __event B__, the the probability of both events happening at the same time $P(A \cup B)$ depends on the __joint probability__ of the two events, in other words how the probability of one event is related to the probability of the other.
+
+If the 2 events are totally unrelated __independent events__ then $P(A \cup B) = P(A) * P(B)$. If the 2 events are related then ....
 
 __Note!!__ Consideration and understanding need to be used to identify the nature of the relationship between the events. 
 
 ###Conditional probability with the Bayes' theorem
-Given two events, __Event__ A and __Event B__, the the probability of event A given that event B occured __P(A|B)__ (conditional porbability) is defined as
+Given two events, __event__ A and __event B__, the probability of event A given that event B occured $P(A|B)$ (conditional porbability) is defined as
 
-__P(A|B) = P(A and B)/ P(B) = (P(B|A) * P(A))/P(B)__
+$P(A|B) = P(A \cap B)/ P(B) = (P(B|A) * P(A))/P(B)$
 
 ##The naive Bayes algorithm
 The naive Bayes (NB) algorithm describes a simple application using Bayes' theorem for classification (e.g. assign an observation to a specific class for example SPAM or HAM). It is the most common, particularly for text classification where it has become the de facto standard. 
@@ -69,13 +71,13 @@ __Weaknesses__:
 
 __Example__ (e.g. CLASS1 = SPAM and CLASS2 = HAM)
 
-__P(CLASS1|B1 and B2 and B3 and B4) = (P(B1 and B2 and B3 and B4|CLASS1) * P(CLASS1))/ P(B1 and B2 and B3 and B4)__
+$P(CLASS1|B1 \cap B2 \cap B3 \cap B4) = (P(B1 \cap B2 \cap B3 \cap B4|CLASS1) * P(CLASS1))/ P(B1 \cap B2 \cap B3 \cap B4)$
 
 ... naive Bayes assumes class-conditional independence , events are independent so long as they are conditioned on the same class value so ...
  
-__P(CLASS1|B1 and B2 and B3 and B4) = (P(B1|CLASS1) P(B2|CLASS1) P(B3|CLASS1) P(B4|CLASS1) * P(CLASS1))/ (P(B1) P(B2) P(B3) P(B4))__
+$P(CLASS1|B1 \cap B2 \cap B3 \cap B4) = (P(B1|CLASS1) * P(B2|CLASS1) * P(B3|CLASS1) * P(B4|CLASS1) * P(CLASS1))/ (P(B1) * P(B2) * P(B3) * P(B4))$
 
-__P(CLASS2|B1 and B2 and B3 and B4) = (P(B1|CLASS2) P(B2|CLASS2) P(B3|CLASS2) P(B4|CLASS2) * P(CLASS2))/ (P(B1) P(B2) P(B3) P(B4))__
+$P(CLASS2|B1 \cap B2 \cap B3 \cap B4) = (P(B1|CLASS2) * P(B2|CLASS2) * P(B3|CLASS2) * P(B4|CLASS2) * P(CLASS2))/ (P(B1) * P(B2) * P(B3) * P(B4))$
 
 
 ###Generalized formula for the naive Bayes algorithm
@@ -83,7 +85,7 @@ __P(CLASS2|B1 and B2 and B3 and B4) = (P(B1|CLASS2) P(B2|CLASS2) P(B3|CLASS2) P(
 CLASSi: level i for CLASS class
 Fj: feature j evidence (j=1..n)
 
-__P(CLASSi|F1,..,Fn) = (1/Z) p(CLASSi) [product(j=1,..,n) p(Fj|CLASSi)__
+$P(CLASSi|F1,..,Fn) = (1/Z) p(CLASSi) \prod_{j=1}^{n} p(F_j|CLASSi)$
 
 the probability of level i for class CLASS, given the evidence provided by features F 1 through F n, is equal to the product of the probabilities of each piece of evidence conditioned on the class level, the prior probability of the class level, and a scaling factor 1 / Z, which converts the result to a probability.
 
@@ -93,3 +95,123 @@ __Limitation!!__ Because probabilities in naive Bayes are multiplied, a 0 percen
 Because naive Bayes uses frequency tables for learning the data, each feature must be categorical in order to create the combinations of class and feature values comprising the matrix. Since numeric features do not have categories of values, the preceding algorithm does not work directly with numeric data. There are, however, ways that this can be addressed.
 
 One easy and effective solution is to __discretize numeric features__, which simply means that the numbers are put into categories known as bins. For this reason, discretization is also sometimes called binning. This method is ideal when there are large amounts of training data, a common condition when working with naive Bayes.
+
+#Example
+Filtering mobile phone spam with the __naive Bayes__ algorithm. 
+##Problem
+Advertisers utilize Short Message Service (SMS) text messages to target potential consumers with unwanted advertising known as SMS spam. This type of spam is particularly troublesome because, unlike email spam, many cellular phone users pay a fee per SMS received. Developing a classification algorithm that could filter SMS spam would provide a useful tool for cellular phone providers.
+
+##Data Processing
+###Loading the data and some essential changes
+The data and relevant information can be found (here)[http://www.dt.fee.unicamp.br/~tiago/smsspamcollection/].
+
+Load the raw data into R ...
+```{r loadData}
+rawData <-  read.csv("./datasets/Chapter 04/sms_spam.csv", header = TRUE, stringsAsFactors = FALSE)
+```
+
+```{r dataOverview, collapse = TRUE}
+#Show the structure of the raw dataset
+str(rawData)
+
+#Summary of the raw dataset
+summary(rawData)
+
+#Info about observations by type
+table(rawData$type)
+```
+
+Transforming `type` feature from a `character` to a `factor` ...
+```{r dataProcessingFactors, collapse = TRUE}
+#Coverting the text to utf-8 format
+rawData$text <- iconv(rawData$text, to = "utf-8")
+
+#Type as factor
+rawData$type <- factor(rawData$type)
+
+#Show the structure of the raw dataset
+str(rawData$type)
+
+#Info about observations by type
+table(rawData$type)
+```
+###Processing text data for analysis
+SMS messages are strings of text composed of words, spaces, numbers, and punctuation. We needs to consider how to remove numbers, punctuation, handle uninteresting words such as and, but, and or, and how to break apart sentences into individual words.
+
+__Note!__ `tm` package can be used for such purpose. For installing the package run `install.packages("tm")`.
+
+__First step__ is creating the **corpus**, a collection of text documents. In this specific case a text document refers to a single SMS message.
+
+```{r corpusCreation, collapse=TRUE}
+library(tm) #loading tm library for usage
+corpus <- Corpus(VectorSource(rawData$text))
+
+#basic info about the corpus
+print(corpus)
+```  
+Please note that the corpus contains 5559 text documents (aka sms text).
+
+```{r inspectCorpus, collapse=TRUE}
+#Inspect the first 4 documents
+corpus[[1]]$content
+corpus[[2]]$content
+corpus[[3]]$content
+corpus[[4]]$content
+```
+
+Before splitting the text into words some cleaning steps need to be performed in order to remove punctuation and other characters that may create problems.
+
+Standard `tm` transformations
+```{r echo = FALSE}
+getTransformations()
+```
+
+```{r cleanUpCorpus}
+#1. normalize to lowercase
+corpus_clean <- tm_map(corpus, tolower)
+
+#2. remove numbers
+corpus_clean <- tm_map(corpus_clean, removeNumbers)
+
+#3. remove stopwords e.g. to, and, but, or (using predefined set of word in tm package)
+corpus_clean <- tm_map(corpus_clean, removeWords, stopwords())
+
+#4. remove punctuation
+corpus_clean <- tm_map(corpus_clean, removePunctuation)
+
+#5. normalize whitespaces
+#Now that we have removed numbers, stop words, and punctuation, the text messages are left with #blank spaces where these characters used to be. The last step then is to remove additional #whitespace, leaving only a single space between words.
+corpus_clean <- tm_map(corpus_clean, stripWhitespace)
+```
+
+```{r inspectCleanCorpus, collapse=TRUE}
+#Be sure to use the following script once you have completed preprocessing.
+#This tells R to treat your preprocessed documents as text documents because of the non standard
+#transformations
+corpus_clean <- tm_map(corpus_clean, PlainTextDocument)
+
+#Inspect the first 4 documents
+corpus[[1]]$content
+corpus_clean[[1]]$content
+
+corpus[[2]]$content
+corpus_clean[[2]]$content
+
+corpus[[3]]$content
+corpus_clean[[3]]$content
+
+corpus[[4]]$content
+corpus_clean[[4]]$content
+```
+
+###Tokenization
+Now that the data are processed to our __liking__, the final step is to split the messages into individual elements through a process called __tokenization__. A __token__ is a single element of a text string; in this case, the tokens are words.
+
+From the __corpus__ a data structured called __sparse matrix__ is created. In the __sparse matrix__, each row (observation) represents a document (SMS text message) and each column is a token/ word. The number in a cell represents the number of time the token (col) is present the document represented by that row.
+
+```{r generateSparseMatrix, collapse=TRUE}
+sms_dtm <- DocumentTermMatrix(corpus_clean)
+
+#basic information about the sparse matrix
+print(sms_dtm)
+```
