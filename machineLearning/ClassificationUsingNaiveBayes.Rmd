@@ -174,8 +174,8 @@ corpus_clean <- tm_map(corpus, tolower)
 corpus_clean <- tm_map(corpus_clean, removeNumbers)
 
 #3. remove stopwords e.g. to, and, but, or (using predefined set of word in tm package)
-corpus_clean <- tm_map(corpus_clean, removeWords, stopwords())
 
+corpus_clean <- tm_map(corpus_clean, removeWords, stopwords())
 #4. remove punctuation
 corpus_clean <- tm_map(corpus_clean, removePunctuation)
 
@@ -248,14 +248,88 @@ pal <- brewer.pal(9,"YlGn")
 pal <- pal[-(1:4)]
 ```
 
-Wordcloud for training dataset ....
+###Visualization: wordclouds
+__Wordcloud for training dataset__ ....
 ```{r wordCloudTrain, collapse=TRUE}
+#min.freq initial settings -> around 10% of the number of docs in the corpus
 wordcloud(corpus_clean_train, min.freq = 40, random.order = FALSE, colors = pal)
 ```
 
-Wordcloud for training dataset by `SPAM`....
-```{r wordCloudTrain1, collapse=TRUE}
-spam <- subset(train_dataset, type == "SPAM")
-wordcloud(corpus_clean_train, min.freq = 40, random.order = FALSE, colors = pal)
+Another interesting visualization involves comparing teh clouds of SMS __spam__ and __ham__ using the raw text messages ... 
+```{r dataWordCloudRawTrainig, collapse=TRUE}
+rawData_train_spam <- subset(train_dataset, type == "spam")
+rawData_train_ham <- subset(train_dataset, type == "ham")
 ```
 
+__Spam__ ...
+```{r wordCloudRawTrainigSpam, collapse=TRUE}
+wordcloud(rawData_train_spam$text, min.freq = 40, random.order = FALSE, colors = pal)
+```
+
+__Ham__ ...
+```{r wordCloudRawTrainigHam, collapse=TRUE}
+wordcloud(rawData_train_ham$text, min.freq = 40, random.order = FALSE, colors = pal)
+```
+
+Spam SMS messages include words such as urgent, free, mobile, call, claim, and stop; these terms do not appear in the ham cloud at all. Instead, ham messages use words such as can, sorry, need, and time. These stark differences suggest that our naive Bayes model will have some strong key words to differentiate between the classes.
+
+###Creating indicator features for frequnet words
+Transform the sparse matrix into a data structure that can be used to train a __naive Bayes classifier__.
+
+```{r}
+print(sms_dtm_train)
+```
+ The sparse matrix used for training include 3891 documents and 7868 features (terms). Not all of these terms will be useful for classification. In order to reduce thenumber of features we can proceed to consider the words that appears at least a certain number of times...
+
+```{r,collapse=TRUE}
+sms_dict <- findFreqTerms(sms_dtm_train, 5)
+summary(sms_dict)
+```
+
+To limit our training and test matrix to only the words in the dictionary we can use the following commands ...
+
+```{r, collapse=TRUE}
+sms_train <- DocumentTermMatrix(corpus_clean_train, list(dictionary = sms_dict))
+
+print(sms_train)
+
+sms_test <- DocumentTermMatrix(corpus_clean_test, list(dictionary = sms_dict))
+
+print(sms_test)
+```
+
+The naive Bayes classifier is typically trained on data with categorical features. This poses a problem since the cells in the sparse matrix indicate a count of the times a word appears in a message. We should change this to a factor variable that simply indicates yes or no depending on whether the word appears at all.
+
+Let's create a function for that ...
+```{r supportingFunctions}
+convert_counts <- function(x){
+  x <- ifelse(x > 0, 1, 0)
+  x <- factor(x, levels = c(0,1), labels = c("No", "Yes"))
+  return (x)
+}
+```
+
+Let's apply the function to each column in the sparse matrices ...
+```{r}
+sms_train <- apply(sms_train, MARGIN = 2, convert_counts)
+sms_test <- apply(sms_test, MARGIN = 2, convert_counts)
+```
+
+Now we have two matrixes each with a "Yes" or "No" indicating if a specific word (feature) appears in the messages (rows).
+
+##Model Training
+```{r}
+#Library implementing the naive Bayes algorithm
+library(e1071)
+```
+
+```{r}
+sms_classifier <- naiveBayes(sms_train, train_dataset$type)
+```
+##Evaluating model performance
+```{r, collapse=TRUE}
+sms_test_pred <- predict(sms_classifier, sms_test)
+#table actual (row) vs. predicted (col)
+table(test_dataset$type, sms_test_pred)
+```
+Looking at the table we can see that 29 messages out of 1467 ham messages (`r 29/ 1467`) have been incorrcetly classified as spam, while 6 messages out of 201 spam messages (`r 6/ 201`) have been incorrectly classified as ham.
