@@ -18,6 +18,10 @@ Based on
 
 
 ##Some Applications
-* Machine Learning
+###Machine Learning Algorithms
+Naive Bayes Algorithm - [theory](https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/ClassificationUsingNaiveBayes.md) and  some applications
+
+* [SMS messages - spam or ham?](https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/ClassificationUsingNaiveBayes_example.md)
+
 
 * DVAwithAD - Driving Visual Analysis with Automobile Data (R) - "Practical Data Science Cookbook" book 
