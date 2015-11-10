@@ -1,0 +1,211 @@
+---
+title: "Managing Unstructured Data with the `tm` package"
+author: "ppar"
+date: "10. nov. 2015"
+output:
+  html_document:
+    fig_height: 9
+    fig_width: 9
+    keep_md: yes
+---
+##Reference
+The following material is extracted from `chapter 7` of ["Mastering Data Analysis with R"](https://www.packtpub.com/big-data-and-business-intelligence/mastering-data-analysis-r) by _Gergely Daróczi_.
+
+##Required packages
+
+* `tm` package, used perform text mining operations on unstructured data
+* `XML` package, used to perfom some web scraping
+* `wordcloud` package, used for visualization purpose
+* `SnowballC` package, used for stemming
+
+```{r echo = FALSE, message=FALSE}
+require(tm)
+require(XML)
+require(wordcloud)
+require(SnowballC)
+```
+
+##Introduction
+Text mining is the process of analysing natural language text.A __corpus__ is a collection of text document that we want to include in the analysis.
+
+Available options in `tm` to import a corpus can be seen using `getSources()`
+```{r collapse=TRUE}
+getSources()
+```
+
+We can import text documents using a dataframe, a vector, a URI, a directory, etc. The `URISource` stands for a collection of hyperlinks or file paths, although this is somewhat easier to handle with `DirSource`, which imports all the textual documents found in the referenced directory on our hard drive.
+
+Using `getReaders()` we can see teh supported text file formats
+```{r collapse=TRUE}
+getReaders()
+```
+
+##Getting the data and creating the __corpus__
+The data representing our __corpus__ is the list of R package names and short description available [here](http://cran.r-project.org/web/packages/available_packages_by_name.html). For dowloading the data we will use the `readHTMTable` function in the `XLM` package.
+
+```{r getData, collapse=TRUE, cache=TRUE}
+dataUri <- "http://cran.r-project.org/web/packages/available_packages_by_name.html"
+rawData <- XML::readHTMLTable(paste0(dataUri), stringsAsFactors = FALSE, which = 1)
+```
+
+```{r dataOverview, collapse=TRUE}
+class(rawData)
+
+str(rawData)
+
+tail(rawData, 3)
+```
+
+`rawData` is a dataframe of `r dim(rawData)[1]` entries, where each entry includes the package name and a short description of the package.
+
+The features/ columns do not have proper names (just the standard names assigned by R). Proper names are given to the columns - `packageName` and `description` respectively. 
+```{r namefeatures, collapse=TRUE}
+names(rawData)
+
+names(rawData) <- c("packageName", "description")
+names(rawData)
+
+rawData$packageName[1:3]
+```
+
+We have a dataframe containing all of the documents that should be part of our corpus. Let's build a corpus using the `vectorSource` and the package decsription.
+
+```{r buildCorpus, collapse=TRUE}
+theCorpus <- Corpus(VectorSource(x = rawData$description))
+print(theCorpus)
+#created a VCorpus (in-memory) object of 7492 documents - aka a description is a document
+```
+Here we can see the first 2 documents in the corpus (not very meaningful) and their contents. Note the corpus is a `list`. 
+
+```{r inspectCorpus, collapse=TRUE}
+inspect(head(theCorpus,2))
+theCorpus[[1]]$content
+theCorpus[[2]]$content
+```
+
+##Cleaning the __corpus__
+The `tm` package offfers a variety of __predefined transformations__ that can be applied on __corpora__ (__corpuses__).
+
+```{r showTrasformations, collapse=TRUE}
+getTransformations()
+```
+
+Usually one of the first steps is to remove the most frequently used words from the  corpus, called __stopwords__.  __Stopwords__ are the most common, short function terms, whit no important meaning. The `tm` package already offers a list of such a word (predefined)
+
+```{r stopWords, collapse=TRUE}
+stopwords()
+```
+
+As we can see stopwords are unimportant words that will not actually change the meaning of the documents (each package description). 
+
+Example of a simple transformation on a document, we can see that the "and" word is replaced with an empty space. But "And" is not removed cause of the uppercase letter (case sensitive) and also "punctuation" symbol are not removed.
+
+```{r simpleTransformation, collapse=TRUE}
+removeWords("live long and prosper", stopwords())
+
+removeWords("live long And prosper.", stopwords())
+```
+
+In order to remove the possible challenges connected with uppercases and punctuation symbols, common practices are to simply
+
+* transform the uppercase to lowercase
+* remove the stopwords
+* remove punctuation symbols
+* remove numbers
+* normalize the white spaces (a words removed is transofrmed into a white space) 
+
+To iteratively apply transformations to the corpus we use the `tm_map` function. Lets apply the different transformations and see how the content of some documents have changed.
+```{r transformCorpus, collapse=TRUE}
+theCorpus <- tm_map(theCorpus, content_transformer(tolower))
+#we had to wrap the tolower function in the content_transformer function, so that
+#our transformation really complies with the tm package's object structure. 
+#This is usually required when using a transformation function outside of the 
+#tm package.
+theCorpus <- tm_map(theCorpus, removeWords, stopwords())
+theCorpus <- tm_map(theCorpus, removePunctuation)
+theCorpus <- tm_map(theCorpus, removeNumbers)
+theCorpus <- tm_map(theCorpus, stripWhitespace)
+
+##see the content fo 3 documents
+theCorpus[[1]]$content
+theCorpus[[10]]$content
+theCorpus[[100]]$content
+```
+##Visualizing most frequent words in the corpus
+The `wordcloud` function in the `wordcloud` package can be used to generate useful wordclouds from the corpus. It is a valuable tool to visualize the some of teh information hidden in the corpus.
+
+```{r generateWordcloud, warning=FALSE}
+wordcloud(theCorpus, random.order = FALSE)
+```
+
+##More cleanup
+Another possible improvement is to remove some frequent domain-specific words not meaningful for our analysis. In order to find the most common words in the corpus we need to create a sparse matrix from the corpus using `TermDocumentMatrix`.
+
+A `TermDocumentMatrix` is sparse matrix is basically a matrix which includes the words in the rows and the documents in the columns. Each cell represents tne number of occurences of that specific word in that specific document.
+
+```{r sparseMatrix, collapse=TRUE}
+tdm <- TermDocumentMatrix(theCorpus)
+inspect(tdm[1:5, 1:20])
+```
+
+Lets' find the most frequent terms using our sparse matrix... actually we are looking at the terms which compares at least 100 times.  
+```{r findFrequentTerms, collapse=TRUE}
+findFreqTerms(tdm, lowfreq = 100)
+```
+
+Inspecting this list fo words we can see that there could be some words that do not add any value (meaningless) e.g. "based", "using", "package". We can actually create a new list of words that need to be removed 
+
+```{r removeExtraWords}
+myStopWords <- c("package", "using", "based")
+theCorpus <- tm_map(theCorpus, removeWords, myStopWords)
+theCorpus <- tm_map(theCorpus, stripWhitespace)
+```
+###Stemming words
+Let's get rid fo the plural form of nouns using some stemming algorithms - specifically we will use the `SnowballC` package. This package has a `wordStem` function that support 16 languages based on the __Porter's stemming algorithm__.
+
+```{r wordStem}
+#example for word stemming
+wordStem(c("cats", "mastering", "using", "modelling", "models", "model"))
+
+#Note that the Porter's algorithm does not provide real english words in all cases
+#Something to consider later when looking at the results.
+wordStem(c("are", "analyst", "analyze", "analysis"))
+```
+
+```{r stemCorpus}
+theCorpus_noStem <- theCorpus
+theCorpus <- tm_map(theCorpus, stemDocument, language = "english")
+#Note that stemDocument is a tm function - using the wordStem in SnowballC
+```
+'And now, lets call the stemCompletion function on our previously defined `theCorpus_noStem`, and let's formulate each stem to the shortest relevant word found in the database. Unfortunately, it's not as straightforward as the previous examples, as the stemCompletion function takes a character vector of words instead of documents that we have in our corpus. So thus, we have to write our own transformation function with the previously used `content_transformer` helper. The basic idea is to split each documents into words by a space, apply the stemCompletion function, and then concatenate the words into sentences again' _from the book_.
+
+```{r stemCompletionExample, collapse=TRUE}
+a <- c("mining", "miners", "mining")
+b <- stemDocument(a)
+d <- stemCompletion(b, dictionary = a)
+#Original words
+a
+#Stemmed words
+b
+#Completion Stemmed Words
+d
+```
+
+```{r stemCorpusCompletion}
+##Be aware!! This simple steps - take more than a hour to run!
+#theCorpus <- tm_map(theCorpus, content_transformer(function(x, d){
+#  paste(stemCompletion(
+#    strsplit(stemDocument(x), " ")[[1]],
+#    d), collapse = " ")}), theCorpus_noStem)
+```
+
+_'While stemming terms, we started to remove characters from the end of words in the hope of finding the stem, which is a heuristic process often resulting in not-existing words, as we have seen previously. We tried to overcome this issue by completing these stems to the shortest meaningful words by using a dictionary, which might result in derivation in the meaning of the term.'_ __lemmatisation__
+
+```{r recreateTermDocumentMatrix, collapse=lapse = TRUE}
+tmd <- TermDocumentMatrix(theCorpus)
+#Show the frequent terms
+findFreqTerms(tmd, lowfreq = 100)
+
+#Show content of tmd
+print(tmd)
+```
