@@ -12,24 +12,21 @@ Based on
 
 __Basics__
 
-[Plumbing: Fundamentals](https://github.com/pparacch/PlayingWithDataScience/blob/master/R_plumbing.md)  
+* [Plumbing: Fundamentals](https://github.com/pparacch/PlayingWithDataScience/blob/master/R_plumbing.md)  
 
-[Data Types And Basic Operations](https://github.com/pparacch/PlayingWithDataScience/blob/master/R_data_types_and_basic_operations.md)  
+* [Data Types And Basic Operations](https://github.com/pparacch/PlayingWithDataScience/blob/master/R_data_types_and_basic_operations.md)  
 
-[Vectors](https://github.com/pparacch/PlayingWithDataScience/blob/master/R_vectors.md)  
+* [Vectors](https://github.com/pparacch/PlayingWithDataScience/blob/master/R_vectors.md)  
 
 __Interesting Packages__  
 
-[A grammar for data frame management (dyplr)](https://github.com/pparacch/PlayingWithDataScience/blob/master/R_dplyr.md)
+* [A grammar for data frame management (dyplr)](https://github.com/pparacch/PlayingWithDataScience/blob/master/R_dplyr.md)
 
-[A grammar for unstructured data management (tm)](https://github.com/pparacch/PlayingWithDataScience/blob/master/unstructuredData/managingUnstructuredData.md)
+* [A grammar for unstructured data management (tm)](https://github.com/pparacch/PlayingWithDataScience/blob/master/unstructuredData/managingUnstructureData.md)
 
 ##Some Applications
 ###Machine Learning Algorithms
 __Naive Bayes Algorithm__  
-[theory](https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/ClassificationUsingNaiveBayes.md) and  some applications
+* [theory](https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/ClassificationUsingNaiveBayes.md) and  some applications
 
-* [SMS messages - spam or ham?](https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/ClassificationUsingNaiveBayes_example.md)
-
-
-* DVAwithAD - Driving Visual Analysis with Automobile Data (R) - "Practical Data Science Cookbook" book 
+  * [SMS messages - spam or ham?](https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/ClassificationUsingNaiveBayes_example.md)
