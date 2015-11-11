@@ -68,6 +68,14 @@ names(rawData)
 rawData$packageName[1:3]
 ```
 
+__Simplification__: _in order to be able to run the example we will consider just a subset of 500 documents from the `rawData` dataframe. The following code chunk can be commented out in order to work with the complete set of documents._
+
+```{r dataReduction}
+set.seed(10711004)
+tmp <- sample(1:dim(rawData)[1], 500, replace = FALSE)
+rawData <- rawData[tmp,]
+dim(rawData)
+```
 We have a dataframe containing all of the documents that should be part of our corpus. Let's build a corpus using the `vectorSource` and the package decsription.
 
 ```{r buildCorpus, collapse=TRUE}
@@ -117,10 +125,7 @@ In order to remove the possible challenges connected with uppercases and punctua
 To iteratively apply transformations to the corpus we use the `tm_map` function. Lets apply the different transformations and see how the content of some documents have changed.
 ```{r transformCorpus, collapse=TRUE}
 theCorpus <- tm_map(theCorpus, content_transformer(tolower))
-#we had to wrap the tolower function in the content_transformer function, so that
-#our transformation really complies with the tm package's object structure. 
-#This is usually required when using a transformation function outside of the 
-#tm package.
+#we had to wrap the tolower function in the content_transformer function, so that our transformation really complies with the tm package's object structure.This is usually required when using a transformation function outside of the tm package.
 theCorpus <- tm_map(theCorpus, removeWords, stopwords())
 theCorpus <- tm_map(theCorpus, removePunctuation)
 theCorpus <- tm_map(theCorpus, removeNumbers)
@@ -150,7 +155,8 @@ inspect(tdm[1:5, 1:20])
 
 Lets' find the most frequent terms using our sparse matrix... actually we are looking at the terms which compares at least 100 times.  
 ```{r findFrequentTerms, collapse=TRUE}
-findFreqTerms(tdm, lowfreq = 100)
+#Note the bigger the number of documents, the bigger the lowfreq numer - use 100 if using all of the documents.
+findFreqTerms(tdm, lowfreq = 10)
 ```
 
 Inspecting this list fo words we can see that there could be some words that do not add any value (meaningless) e.g. "based", "using", "package". We can actually create a new list of words that need to be removed 
@@ -185,27 +191,84 @@ b <- stemDocument(a)
 d <- stemCompletion(b, dictionary = a)
 #Original words
 a
+
 #Stemmed words
 b
+
 #Completion Stemmed Words
 d
+
+#Do u see anything strange?
 ```
 
+__Be aware!! This step is time and resource demanding - even for a small subset of documents! Commente it out if necessary.__
 ```{r stemCorpusCompletion}
-##Be aware!! This simple steps - take more than a hour to run!
-#theCorpus <- tm_map(theCorpus, content_transformer(function(x, d){
-#  paste(stemCompletion(
-#    strsplit(stemDocument(x), " ")[[1]],
-#    d), collapse = " ")}), theCorpus_noStem)
+theCorpus <- tm_map(theCorpus, content_transformer(function(x, d){
+  paste(stemCompletion(
+    strsplit(stemDocument(x), " ")[[1]],
+    d), collapse = " ")}), theCorpus_noStem)
 ```
 
 _'While stemming terms, we started to remove characters from the end of words in the hope of finding the stem, which is a heuristic process often resulting in not-existing words, as we have seen previously. We tried to overcome this issue by completing these stems to the shortest meaningful words by using a dictionary, which might result in derivation in the meaning of the term.'_ __lemmatisation__
 
-```{r recreateTermDocumentMatrix, collapse=lapse = TRUE}
-tmd <- TermDocumentMatrix(theCorpus)
+```{r recreateTermDocumentMatrix, collapse= TRUE}
+tdm <- TermDocumentMatrix(theCorpus)
 #Show the frequent terms
-findFreqTerms(tmd, lowfreq = 100)
+#Note the bigger the number of documents, the bigger the lowfreq numer - use 100 if using all of the documents.
+findFreqTerms(tdm, lowfreq = 10)
 
 #Show content of tmd
-print(tmd)
+print(tdm)
+```
+
+##Analysing the Associations among terms
+The `TermDocumentMatrix` can be used to identify the association between the cleaned terms found in the corpus. For this purpose we can use the `findAssocs` function in the `tm` package.
+
+```{r findAssocsData}
+#Lets find the associations between the data term and others terms that have a correlation higher than 0.2
+findAssocs(tdm, "data", 0.15)
+```
+
+```{r findAssocsBig}
+#Lets find the associations between the bayesian term and others terms that have a correlation higher than 0.2
+findAssocs(tdm, "bayesian", 0.15)
+```
+
+##Some other metrics
+Statistics around the number of characters used in the package description
+
+```{r statisticDescription, collapse=TRUE}
+theCorpus_nchar <- sapply(theCorpus, function(x) nchar(x$content))
+
+#Basic statistics
+summary(theCorpus_nchar)
+```
+
+Show the document with the shortest/ longest description
+```{r viewDescription, collapse=TRUE}
+#min
+tmp <- theCorpus[[which.min(theCorpus_nchar)]]
+tmp$content
+
+#max
+tmp <- theCorpus[[which.max(theCorpus_nchar)]]
+tmp$content
+```
+
+Lets visualize the ditribution of the document lengths 
+```{r visualizeDistributionDocumentLength}
+hist(theCorpus_nchar, main = "Length of R package description", xlab = "Number of characters")
+```
+
+From the distribution we can see that most packages have a short description.
+
+##The segmentation of documents
+
+```{r segmentation}
+thePacks <- c("caTools", "lisp", "GOplot", "metafor")
+w <- which(rawData$packageName %in% thePacks)
+```
+
+```{r segmentationPlot}
+plot(hclust(dist(DocumentTermMatrix(theCorpus[w]))), xlab = "packages")
 ```
