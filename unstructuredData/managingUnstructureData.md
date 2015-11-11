@@ -379,13 +379,40 @@ findAssocs(tdm, "data", 0.15)
 
 
 ```r
-#Lets find the associations between the big term and others terms that have a correlation higher than 0.2
-findAssocs(tdm, "big", 0.15)
+#Lets find the associations between the bayesian term and others terms that have a correlation higher than 0.2
+findAssocs(tdm, "bayesian", 0.15)
 ```
 
 ```
-## $big
-## numeric(0)
+## $bayesian
+##                 adjustment                       area 
+##                       0.25                       0.25 
+##                        bac                confounding 
+##                       0.25                       0.25 
+##                       dina                     growth 
+##                       0.25                       0.25 
+##                  haplotype             hyperparameter 
+##                       0.25                       0.25 
+##                 incoherent marketingmicroeconometrics 
+##                       0.25                       0.25 
+##             mixtureweibull                    neutron 
+##                       0.25                       0.25 
+##                      omega                      small 
+##                       0.25                       0.25 
+##              stickbreaking             stratification 
+##                       0.25                       0.25 
+##                   velocity                    weibull 
+##                       0.25                       0.25 
+##                  shrinkage                 background 
+##                       0.24                       0.17 
+##                     hazard                      joint 
+##                       0.17                       0.17 
+##                      lasso                   quantile 
+##                       0.17                       0.17 
+##                recognition             reconstruction 
+##                       0.17                       0.17 
+##                    learned 
+##                       0.16
 ```
 
 ##Some other metrics
@@ -415,7 +442,7 @@ tmp$content
 ## [1] "implementation elm extreme learned machine algorithm slfn single hidden layer feedforward neural network"
 ```
 
-Letsvisualize the ditribution of the document lengths 
+Lets visualize the ditribution of the document lengths 
 
 ```r
 hist(theCorpus_nchar, main = "Length of R package description", xlab = "Number of characters")
@@ -424,3 +451,23 @@ hist(theCorpus_nchar, main = "Length of R package description", xlab = "Number o
 ![](managingUnstructureData_files/figure-html/visualizeDistributionDocumentLength-1.png) 
 
 From the distribution we can see that most packages have a short description.
+
+##The segmentation of documents
+
+
+```r
+thePacks <- c("caTools", "lisp", "GOplot", "metafor")
+w <- which(rawData$packageName %in% thePacks)
+tmpHclust <- hclust(dist(DocumentTermMatrix(theCorpus[w])))
+print(tmpHclust)
+```
+
+```
+## 
+## Call:
+## hclust(d = dist(DocumentTermMatrix(theCorpus[w])))
+## 
+## Cluster method   : complete 
+## Distance         : euclidean 
+## Number of objects: 2
+```

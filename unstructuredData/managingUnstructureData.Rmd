@@ -267,8 +267,6 @@ From the distribution we can see that most packages have a short description.
 ```{r segmentation}
 thePacks <- c("caTools", "lisp", "GOplot", "metafor")
 w <- which(rawData$packageName %in% thePacks)
-```
-
-```{r segmentationPlot}
-plot(hclust(dist(DocumentTermMatrix(theCorpus[w]))), xlab = "packages")
+tmpHclust <- hclust(dist(DocumentTermMatrix(theCorpus[w])))
+print(tmpHclust)
 ```
