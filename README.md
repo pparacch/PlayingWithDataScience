@@ -30,3 +30,6 @@ __Naive Bayes Algorithm__
 * [theory](https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/ClassificationUsingNaiveBayes.md) and  some applications
 
   * [SMS messages - spam or ham?](https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/ClassificationUsingNaiveBayes_example.md)
+  
+__Clustering__
+  * [Automatic categorization of Wikipedia articles](https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/automaticCategorizationWikiArticles.md)

@@ -5,8 +5,7 @@ date: "13 Nov 2015"
 output:
   html_document:
     fig_caption: yes
-    toc: yes
-  pdf_document:
+    keep_md: yes
     toc: yes
 ---
 
@@ -22,7 +21,7 @@ require(proxy)
 ```
 
 ##Loading the data
-Let´s prepare a list of Wikipedia articles by _title_ that are going to be used for this exercise.
+Let??s prepare a list of Wikipedia articles by _title_ that are going to be used for this exercise.
 
 * Articles
     * 4 mathematical articles
@@ -59,13 +58,13 @@ str(theCorpus[1])
 ```
 
 ##Processing the Corpus
-This is the first step of text analysis. It’s important because preparing the data strongly affects the results. 
+This is the first step of text analysis. It???s important because preparing the data strongly affects the results. 
 
-* Replace all “html” elements with a space. We do it because there are not a part of text document but in general a html code.
-* Replace all “/t” with a space.
+* Replace all ???html??? elements with a space. We do it because there are not a part of text document but in general a html code.
+* Replace all ???/t??? with a space.
 * Transform characters to lower case.
 * Remove punctuation marks and numbers
-* Remove from the documents words which we find redundant for text mining (e.g. pronouns, conjunctions). We set this words as stopwords(“english”) which is a built-in list for English language (this argument is passed to the function removeWords.
+* Remove from the documents words which we find redundant for text mining (e.g. pronouns, conjunctions). We set this words as stopwords(???english???) which is a built-in list for English language (this argument is passed to the function removeWords.
 * Remove extra whitespaces from the documents.
 
 ```{r corpusProcessing}
@@ -133,7 +132,7 @@ theCorpusDTM_s_m <- as.matrix(theCorpusDTM_s)
 print(as.matrix(theCorpusDTM_m[,9:10]))
 ```
 
-Based on it we create a matrix of dissimilarities – it measures dissimilarity between documents (the function dissimilarity returns an object of class dist – it is a convenience because clustering functions require this type of argument).
+Based on it we create a matrix of dissimilarities ??? it measures dissimilarity between documents (the function dissimilarity returns an object of class dist ??? it is a convenience because clustering functions require this type of argument).
 ```{r dissimilarityMatrix, collapse=TRUE}
 distanceDocs <- dist(theCorpusDTM_s_m, method = "Hellinger")
 distanceDocs_m <- as.matrix(distanceDocs)

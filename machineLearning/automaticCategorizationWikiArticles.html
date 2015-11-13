@@ -104,7 +104,7 @@ require(proxy)
 ##     as.matrix</code></pre>
 <div id="loading-the-data" class="section level2">
 <h2>Loading the data</h2>
-<p>Let<U+00B4>s prepare a list of Wikipedia articles by <em>title</em> that are going to be used for this exercise.</p>
+<p>Let??s prepare a list of Wikipedia articles by <em>title</em> that are going to be used for this exercise.</p>
 <ul>
 <li>Articles
 <ul>
@@ -146,7 +146,7 @@ str(theCorpus[1])
 ##   ..$ content: chr &quot;&lt;!DOCTYPE html&gt;\n&lt;html lang=\&quot;en\&quot; dir=\&quot;ltr\&quot; class=\&quot;client-nojs\&quot;&gt;\n&lt;head&gt;\n&lt;meta charset=\&quot;UTF-8\&quot; /&gt;\n&lt;title&gt;Integral - Wi&quot;| __truncated__
 ##   ..$ meta   :List of 7
 ##   .. ..$ author       : chr(0) 
-##   .. ..$ datetimestamp: POSIXlt[1:1], format: &quot;2015-11-13 19:37:32&quot;
+##   .. ..$ datetimestamp: POSIXlt[1:1], format: &quot;2015-11-13 19:44:28&quot;
 ##   .. ..$ description  : chr(0) 
 ##   .. ..$ heading      : chr(0) 
 ##   .. ..$ id           : chr &quot;1&quot;
@@ -158,13 +158,13 @@ str(theCorpus[1])
 </div>
 <div id="processing-the-corpus" class="section level2">
 <h2>Processing the Corpus</h2>
-<p>This is the first step of text analysis. It<U+2019>s important because preparing the data strongly affects the results.</p>
+<p>This is the first step of text analysis. It???s important because preparing the data strongly affects the results.</p>
 <ul>
-<li>Replace all <U+201C>html<U+201D> elements with a space. We do it because there are not a part of text document but in general a html code.</li>
-<li>Replace all <U+201C>/t<U+201D> with a space.</li>
+<li>Replace all ???html??? elements with a space. We do it because there are not a part of text document but in general a html code.</li>
+<li>Replace all ???/t??? with a space.</li>
 <li>Transform characters to lower case.</li>
 <li>Remove punctuation marks and numbers</li>
-<li>Remove from the documents words which we find redundant for text mining (e.g. pronouns, conjunctions). We set this words as stopwords(<U+201C>english<U+201D>) which is a built-in list for English language (this argument is passed to the function removeWords.</li>
+<li>Remove from the documents words which we find redundant for text mining (e.g. pronouns, conjunctions). We set this words as stopwords(???english???) which is a built-in list for English language (this argument is passed to the function removeWords.</li>
 <li>Remove extra whitespaces from the documents.</li>
 </ul>
 <pre class="r"><code>#Removing &lt;..&gt; elements
@@ -267,7 +267,7 @@ print(as.matrix(theCorpusDTM_m[,9:10]))
 ##   8               0           0
 ##   9               2           0
 ##   10              0           0</code></pre>
-<p>Based on it we create a matrix of dissimilarities <U+2013> it measures dissimilarity between documents (the function dissimilarity returns an object of class dist <U+2013> it is a convenience because clustering functions require this type of argument).</p>
+<p>Based on it we create a matrix of dissimilarities ??? it measures dissimilarity between documents (the function dissimilarity returns an object of class dist ??? it is a convenience because clustering functions require this type of argument).</p>
 <pre class="r"><code>distanceDocs &lt;- dist(theCorpusDTM_s_m, method = &quot;Hellinger&quot;)
 distanceDocs_m &lt;- as.matrix(distanceDocs)
 distanceDocs_m[, 1:5]
