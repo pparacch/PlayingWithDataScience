@@ -1,0 +1,143 @@
+---
+title: "Automatica Categorization of Wikipedia articles"
+author: "ppar"
+date: "13 Nov 2015"
+output:
+  html_document:
+    fig_caption: yes
+    toc: yes
+  pdf_document:
+    toc: yes
+---
+
+The following exercise is based on the blog ["Text Mining in R - Automatic categorization of Wikipedia articles"](http://www.r-bloggers.com/text-mining-in-r-automatic-categorization-of-wikipedia-articles/) by Norbert Ryciak appeared on R-bloggers on June 16, 2014.
+
+An example of __hierarchical__ categorization of Wikipedia articles taking adavantage of the text mining and analysis capability of R and specifically the `RCurl` and `tm` packages.
+
+```{r requiredPaclages, collapse = TRUE}
+Sys.setlocale("LC_ALL", "C")
+require(RCurl)
+require(tm)
+require(proxy)
+```
+
+##Loading the data
+Let´s prepare a list of Wikipedia articles by _title_ that are going to be used for this exercise.
+
+* Articles
+    * 4 mathematical articles
+    * 3 articles about painters
+    * 3 articles about writers
+
+```{r getData, cache=TRUE}
+wiki <- "https://en.wikipedia.org/wiki/"
+titles <- c(
+    "Integral", "Riemann_integral", "Riemann_Stieltjes_integral", "Derivative",
+    "Edvard_Munch", "Vincent_van_Gogh", "Jan_Matejko",
+    "Lev_Tolstoj", "Franz_Kafka", "J._R._R._Tolkien"
+)
+
+articleUris <- paste(wiki, titles, sep = "")
+
+#data stucture to contain each article
+articles <- character(length(titles))
+
+for(i in 1 : length(titles)){
+    articles[i] <- getURL(articleUris[i])
+}
+```
+
+##Creating the Corpus
+First step is to create the corpus from our set of documents (articles) ...
+```{r corpusCreation, collapse=TRUE}
+theCorpus <- Corpus(VectorSource(articles))
+print(theCorpus)
+#The corpus contains the 10 documents
+
+#Structure of a document in the corpus
+str(theCorpus[1])
+```
+
+##Processing the Corpus
+This is the first step of text analysis. It’s important because preparing the data strongly affects the results. 
+
+* Replace all “html” elements with a space. We do it because there are not a part of text document but in general a html code.
+* Replace all “/t” with a space.
+* Transform characters to lower case.
+* Remove punctuation marks and numbers
+* Remove from the documents words which we find redundant for text mining (e.g. pronouns, conjunctions). We set this words as stopwords(“english”) which is a built-in list for English language (this argument is passed to the function removeWords.
+* Remove extra whitespaces from the documents.
+
+```{r corpusProcessing}
+#Removing <..> elements
+#Note when doing the transformation - content_transformer must be used cause
+#this transformation is not a std transformation defined into the tm package
+theCorpus <- tm_map(theCorpus, content_transformer(function(a){ gsub("<.+?>", " ", a)}))
+
+#Removing "\t"" tab elements
+#Note when doing the transformation - content_transformer must be used cause
+#this transformation is not a std transformation defined into the tm package
+theCorpus <- tm_map(theCorpus, content_transformer(function(b) {gsub("\t", " ", b)}))
+
+#To lowercase
+#Note when doing the transformation - content_transformer must be used cause
+#this transformation is not a std transformation defined into the tm package
+theCorpus <- tm_map(theCorpus, content_transformer(tolower))
+
+#Remove numbers
+theCorpus <- tm_map(theCorpus, removeNumbers)
+
+#Remove punctuations
+theCorpus <- tm_map(theCorpus, removePunctuation)
+
+#Remove stopwords
+theCorpus <- tm_map(theCorpus, removeWords, stopwords("english"))
+
+#Normalize whitespaces
+theCorpus <- tm_map(theCorpus, stripWhitespace)
+```
+
+Lets visualize the outcome of the text processing ...
+```{r resultProcessing}
+substr(articles[1], 1, 500)
+
+substr(theCorpus[[1]]$content, 1, 500)
+```
+##Analysis of the Corpus
+The starting point is creating `DocumentTermMatrix` - define the frequency of each term in each document in the corpus. This is a fundamental object in the text analysis. 
+
+```{r corpusDocumentTermMatrix, collapse=TRUE}
+theCorpusDTM <- DocumentTermMatrix(theCorpus)
+theCorpusDTM
+
+#Visualize the content of the matrix
+theCorpusDTM_m <- as.matrix(theCorpusDTM)
+print(as.matrix(theCorpusDTM_m[,9:10]))
+
+#find words that appears at least 10 times
+theCorpus_dict <- findFreqTerms(theCorpusDTM, lowfreq = 11) 
+summary(theCorpus_dict)
+theCorpus_dict[1:10]
+
+theCorpusDTM_s <- DocumentTermMatrix(theCorpus, list(dictionary = theCorpus_dict))
+theCorpusDTM_s
+
+#Visualize the content of the matrix
+theCorpusDTM_s_m <- as.matrix(theCorpusDTM_s)
+print(as.matrix(theCorpusDTM_m[,9:10]))
+```
+
+Based on it we create a matrix of dissimilarities – it measures dissimilarity between documents (the function dissimilarity returns an object of class dist – it is a convenience because clustering functions require this type of argument).
+```{r dissimilarityMatrix, collapse=TRUE}
+distanceDocs <- dist(theCorpusDTM_s_m, method = "Hellinger")
+distanceDocs_m <- as.matrix(distanceDocs)
+distanceDocs_m[, 1:5]
+rownames(distanceDocs_m) <- titles
+colnames(distanceDocs_m) <- titles
+```
+
+At last we apply the function hclust (but it can be any clusterig function) and we see result on the plot.
+```{r clustering}
+h <- hclust(distanceDocs, method = "ward.D2")
+plot(h, labels = titles, sub = "")
+```
