@@ -113,7 +113,13 @@ theCorpusDTM
 #Visualize the content of the matrix
 theCorpusDTM_m <- as.matrix(theCorpusDTM)
 print(as.matrix(theCorpusDTM_m[,9:10]))
+```
 
+The current corpus of 10 documents has 12256 terms. A possible approach is to reduce the number of relevant terms, removing all of the terms that are under a certain frequency.
+
+Lets find the frequent terms, starting with a lower frequency set to 11, and lets use these terms to create a dictionary that will be use to recreate the `DocumentTermMatrix`.
+
+```{r corpusSimplification, collapse=TRUE}
 #find words that appears at least 10 times
 theCorpus_dict <- findFreqTerms(theCorpusDTM, lowfreq = 11) 
 summary(theCorpus_dict)
