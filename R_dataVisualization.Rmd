@@ -1,0 +1,31 @@
+---
+title: "Data Visualization"
+author: "ppar"
+output: html_document
+---
+
+Examples based on the following books
+
+* ["R Data Visualization Cookbook"]([https://www.packtpub.com/packtlib/book/Big%20Data%20&%20Business%20Intelligence/9781783989508), Atmajitsinh Gohil.
+
+
+#Scatterplot
+```{r data}
+install.packages("ISLR")
+library(ISLR)
+attach(Carseats)
+head(Carseats)
+```
+
+```{r plot}
+#Creating a basic scatterplot
+plot(Income, Sales, col = c(Urban), pch = 20, main = "Sales of Child Car Seats", xlab = "Income (000's of dollars)", ylab = "Unit Sales (in 000's)")
+#Adding a legend
+legend("topright", cex = 0.6, fill = c("red", "black"), legend = c("yes", "no"))
+```
+
+`col` used to assign a color to the data points and in this specific case a qualitative data colum `Urban` is used to color the points.
+
+`pch` defines the point symbol - see `?point` for more info.
+
+`cex` character expansion factor.
