@@ -9,9 +9,10 @@ Examples based on the following books
 * ["R Data Visualization Cookbook"]([https://www.packtpub.com/packtlib/book/Big%20Data%20&%20Business%20Intelligence/9781783989508), Atmajitsinh Gohil.
 
 
-#Scatterplot
-```{r data}
-install.packages("ISLR")
+#Visualization1
+##Basic Scatterplot
+```{r data1}
+#install.packages("ISLR",  repos="http://cran.rstudio.com/")
 library(ISLR)
 attach(Carseats)
 head(Carseats)
@@ -29,3 +30,31 @@ legend("topright", cex = 0.6, fill = c("red", "black"), legend = c("yes", "no"))
 `pch` defines the point symbol - see `?point` for more info.
 
 `cex` character expansion factor.
+
+#Visualization2
+##Scatterplot with texts, lables and lines
+
+```{r data2}
+child <- read.csv("./data/chlmort.csv", header = TRUE, sep = ",")
+```
+```{r data2Info}
+summary(child)
+str(child)
+head(child)
+```
+```{r plotData2}
+plot(child$gdp_bil, child$child, pch = 20, col = "#756bb1", xlim = c(0,max(child$gdp_bil)), ylim = c(0, 190), xlab = "GDP in billions in current US$", ylab = "Child Mortality Rate", main = "Child Mortality Rate in selected countries for 2012")
+
+#Plot horizontal or vertical lines arg h=() - for horizontal
+abline(h = (36.18), lwd = 1, col = "blue")
+
+#Add labels to extreme points
+text(8000,25, labels = c("Luxemburg"), cex = 0.75)
+text(700,182, labels = c("Sierra Leone"), col = "red", cex = 0.75)
+text(4000,50, labels = c("Average Child Mortality"), col = "blue", cex = 0.75)
+```
+```{r plot2Data}
+##Adding a trend line
+scatter.smooth(child$gdp_bil, child$child, pch = 20, lwd =0.75, col = "Blue", lpars = list(lty = 3, col ="black", lwd = 2),xlab ="GDP in Billions in current US$", ylab ="Child Mortality rate", main = "child Mortality Rate in selected countries for 2012" )
+#Note! lpars() function to beautify the trend line
+```
