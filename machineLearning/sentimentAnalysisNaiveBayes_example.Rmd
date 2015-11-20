@@ -31,6 +31,10 @@ rm(rawData)
 ```{r prepareData, cache=TRUE}
 #Interested in the data type and the unprocessed sentences
 names(rawData_s) <- c("type", "sentence")
+
+#Focus teh data on the question
+rawData_s$type <- ifelse(rawData_s$type != "Sentiment", "NonSentiment", "Sentiment")
+
 #Transforming type from character to factor
 rawData_s$type <- as.factor(rawData_s$type) 
 ```
@@ -43,13 +47,6 @@ str(rawData_s)
 table(rawData_s$type)
 ```
 
-```{r enrichData}
-#Add a sentiment feature
-rawData_s$sentiment <- rawData_s$type == "Sentiment"
-
-#Sentiment Relevant Data
-table(rawData_s$sentiment)
-```
 
 From the simplified raw dataset - there are 3825 messages - 1962 (`r 1962/3825`) classified as __Sentiment__, 1863 (`r 1863/3825`) __not__ classified as __sentiment__.
 
@@ -148,13 +145,13 @@ print(dtm)
 
 #print out part of matrix in order to visualize the structure and content (how)
 tmp <- as.matrix(dtm)
-tmp[1:3, c(1:3, 1000:1003)]
+tmp[1:3, c(1, 1000:1003)]
 ```
 
 __Note!!__ The sparse matrix has the following dimensions
 
 * nrows = 3825 -> the number of documents
-* ncols = 4706 -> the number of features/ terms found in the corpus.
+* ncols = 4768 -> the number of features/ terms found in the corpus.
 
 ###Creation of the __Training__ and __Test__ datasets
 Using the `caTools` package, specifically `sample.split` function to create a test and training sets for rawData, clean corpus and sparse matrix. Advantage of using such a function is _preserving relative ratios of different labels in X_.
@@ -231,7 +228,7 @@ fw_dict <- findFreqTerms(trainingDtm, 5) #find words that appears at least 5 tim
 summary(fw_dict)
 ```
 
-There are 1553 terms/ features idendified as frequent terms. __To limit our training and test matrix to only the words in the dictionary of frequent terms__ we can use the following commands ...
+There are 1595 terms/ features idendified as frequent terms. __To limit our training and test matrix to only the words in the dictionary of frequent terms__ we can use the following commands ...
 
 ```{r reduceSparseMatrixToFrequentTerms, collapse=TRUE}
 #trainingDtm_dic <- DocumentTermMatrix(trainingCorpus, list(dictionary = fw_dict))
@@ -272,15 +269,15 @@ library(e1071)
 ```
 
 ```{r trainTheModel}
-sentiment_classifier <- naiveBayes(trainingDtm_dic, trainingData$sentiment,, laplace = 1)
+sentiment_classifier <- naiveBayes(trainingDtm_dic, trainingData$type, laplace = 1)
 ```
 ##Test the model against the test dataset and evaluate model performance
 
 ```{r testTheModel, collapse=TRUE}
-test_pred <- predict(sentiment_classifier, testDtm_dic, threshold = 0.05)
+test_pred <- predict(sentiment_classifier, testDtm_dic)
 ```
 
 ```{r evaluateTheModel, collapse=TRUE}
 #table actual (row) vs. predicted (col)
-table(testData$sentiment, test_pred)
+table(testData$type, test_pred)
 ```
