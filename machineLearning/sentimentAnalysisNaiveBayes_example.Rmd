@@ -1,0 +1,286 @@
+---
+title: "Naive Bayes Applied - Sentiment Analysis"
+author: "ppar"
+date: "20. nov. 2015"
+output:
+  html_document:
+    keep_md: yes
+---
+
+```{r requiredPaclages, collapse = TRUE}
+Sys.setlocale("LC_ALL", "C")
+```
+
+#Sentences from Statoil Corpus: Sentiment Analysis
+
+#Data Processing
+##Loading the data and some basic changes
+Load the raw data into R ...
+
+```{r loadData, cache=TRUE}
+rawData <-  read.csv("./datasets/statoil//training.csv", header = TRUE, stringsAsFactors = FALSE)
+```
+
+```{r simplifyData}
+#Show the structure of the raw dataset
+str(rawData)
+rawData_s <- rawData[,c("Data.Type", "Unprocessed.Sentence")]
+rm(rawData)
+```
+
+```{r prepareData, cache=TRUE}
+#Interested in the data type and the unprocessed sentences
+names(rawData_s) <- c("type", "sentence")
+#Transforming type from character to factor
+rawData_s$type <- as.factor(rawData_s$type) 
+```
+
+```{r dataOverview}
+#Show the structure of the raw dataset
+str(rawData_s)
+
+#Overview of Type observations
+table(rawData_s$type)
+```
+
+```{r enrichData}
+#Add a sentiment feature
+rawData_s$sentiment <- rawData_s$type == "Sentiment"
+
+#Sentiment Relevant Data
+table(rawData_s$sentiment)
+```
+
+From the simplified raw dataset - there are 3825 messages - 1962 (`r 1962/3825`) classified as __Sentiment__, 1863 (`r 1863/3825`) __not__ classified as __sentiment__.
+
+##Exploring and preparing the data for analysis
+
+```{r exploreMessages, collapse=TRUE}
+head(rawData_s$sentence, 5)
+
+tail(rawData_s$sentence, 5)
+```
+
+###Creating and cleaning the corpus
+The sentences are strings of text composed of words, spaces, numbers, and punctuation. We needs to consider how to remove numbers, punctuation, handle uninteresting words such as and, but, and or, and how to break apart sentences into individual words.
+
+__Note!__ `tm` package - Text Mining package in R - can be used for such purpose. For installing the package run `install.packages("tm")`.
+
+__First step__ is creating the **corpus**, a R object representing a collection of text documents. In this specific case a text document refers to a single sentence.
+
+```{r corpusCreation, collapse=TRUE}
+library(tm) #loading tm library for usage
+corpus <- Corpus(VectorSource(rawData_s$sentence))
+
+#basic info about the corpus
+print(corpus)
+```  
+Please note that the corpus contains 3825 documents.
+
+```{r inspectCorpus, collapse=TRUE}
+#Inspect the first 4 documents
+bc0001 <- corpus[[1]]$content
+bc0002 <- corpus[[2]]$content
+bc0010 <- corpus[[10]]$content
+bc0200 <- corpus[[200]]$content
+
+bc0001
+bc0002
+bc0010
+bc0200
+```
+
+Before splitting the text into words some __cleaning steps__ need to be performed in order to remove punctuation and other characters that may create problems.
+
+```{r cleanUpCorpus}
+#1. normalize to lowercase
+corpus <- tm_map(corpus, content_transformer(tolower))
+
+#2. remove numbers
+corpus <- tm_map(corpus, removeNumbers)
+
+#3. remove stopwords e.g. to, and, but, or (using predefined set of word in tm package)
+corpus <- tm_map(corpus, removeWords, stopwords())
+
+#4. remove punctuation
+corpus <- tm_map(corpus, removePunctuation)
+
+#5. normalize whitespaces
+#Now that we have removed numbers, stop words, and punctuation, the text messages are left with #blank spaces where these characters used to be. The last step then is to remove additional #whitespace, leaving only a single space between words.
+corpus <- tm_map(corpus, stripWhitespace)
+```
+
+```{r inspectCleanCorpus, collapse=TRUE}
+#Inspect the first 4 documents
+ac0001 <- corpus[[1]]$content
+ac0002 <- corpus[[2]]$content
+ac0010 <- corpus[[10]]$content
+ac0200 <- corpus[[200]]$content
+
+#Before and After
+bc0001
+ac0001
+
+bc0002
+ac0002
+
+bc0010
+ac0010
+
+bc0200
+ac0200
+```
+
+###Tokenization
+Now that the data are processed to our __liking__, the final step is to split the messages into individual elements through a process called __tokenization__. A __token__ is a single element of a text string; in this case, the tokens are words.
+
+From the __corpus__ a data structured called __sparse matrix__ is created. In the __sparse matrix__, each row (observation) represents a document and each column is a token/ word. The number in a cell represents the number of time the token (col) is present in the document represented by that row.
+
+```{r generateSparseMatrix, collapse=TRUE}
+dtm <- DocumentTermMatrix(corpus)
+
+#basic information about the sparse matrix
+#dimension matrix
+dim(dtm)
+
+#print matrix information 
+print(dtm)
+
+#print out part of matrix in order to visualize the structure and content (how)
+tmp <- as.matrix(dtm)
+tmp[1:3, c(1:3, 1000:1003)]
+```
+
+__Note!!__ The sparse matrix has the following dimensions
+
+* nrows = 3825 -> the number of documents
+* ncols = 4706 -> the number of features/ terms found in the corpus.
+
+###Creation of the __Training__ and __Test__ datasets
+Using the `caTools` package, specifically `sample.split` function to create a test and training sets for rawData, clean corpus and sparse matrix. Advantage of using such a function is _preserving relative ratios of different labels in X_.
+
+```{r createDatasets}
+library(caTools)
+set.seed(19711004)
+
+spl_data <- sample.split(rawData_s$type, SplitRatio = 0.7)
+
+trainingData <- subset(rawData_s, spl_data) #Get only where TRUE
+trainingDtm <- dtm[spl_data,] #Get only where TRUE
+trainingCorpus <- corpus[spl_data] #Get only where TRUE
+
+testData <- subset(rawData_s, !spl_data) #Get only where FALSE
+testDtm <- dtm[!spl_data,] #Get only where FALSE
+testCorpus <- corpus[!spl_data] #Get only where FALSE
+```
+
+```{r infoTrainingTestDatasets, collapse=TRUE}
+#Raw dataset info
+prop.table(table(rawData_s$type))
+
+#Training dataset info
+prop.table(table(trainingData$type))
+
+#Test dataset info
+prop.table(table(testData$type))
+```
+
+###(Optional) Visual Analysis
+Using the `wordcloud` package to visualize frequency of words in prepared text data.
+
+```{r settingWordCloud, collapse=TRUE}
+library(wordcloud)
+pal <- brewer.pal(9,"YlGn")
+pal <- pal[-(1:4)]
+```
+
+__Wordcloud for training dataset__ ....
+```{r wordCloudTrain, collapse=TRUE}
+#min.freq initial settings -> around 10% of the number of docs in the corpus (40 times)
+wordcloud(trainingCorpus, min.freq = 30, random.order = FALSE, colors = pal)
+```
+
+Another interesting visualization involves comparing the clouds of __sentiment__ vs. __non sentiment__ using the all text sentences that are going to be used to train the algorith... 
+```{r dataWordCloudRawTrainig, collapse=TRUE}
+trainingData_nonSentiment <- subset(trainingData, type != "Sentiment")
+trainingData_sentiment <- subset(trainingData, type == "Sentiment")
+```
+
+__Non Sentiment__ overview...
+```{r wordCloudRawTrainigNonSentiment, collapse=TRUE}
+wordcloud(trainingData_nonSentiment$sentence, min.freq = 30, random.order = FALSE, colors = pal)
+```
+
+__Sentiment__ overview...
+```{r wordCloudRawTrainigSentiment, collapse=TRUE}
+wordcloud(trainingData_sentiment$sentence, min.freq = 30, random.order = FALSE, colors = pal)
+```
+
+Any difference between the 2 subsets looking at the wordclouds?
+
+###Creating indicator features for frequent words
+The next step is to transform the sparse matrix into a data structure that can be used to train a __naive Bayes classifier__.
+
+```{r showSparseMatrixInfo}
+print(trainingDtm)
+```
+ The sparse matrix used for training include 2677 documents and 4706 features (terms). __Not all of these terms will be useful for classification__. __TO BE INVESTIGATED__ In order to reduce thenumber of features we can proceed to consider the words that appears at least a certain number of times (__frequent words__)...
+
+```{r findFreqTerms,collapse=TRUE}
+fw_dict <- findFreqTerms(trainingDtm, 5) #find words that appears at least 5 times
+summary(fw_dict)
+```
+
+There are 1553 terms/ features idendified as frequent terms. __To limit our training and test matrix to only the words in the dictionary of frequent terms__ we can use the following commands ...
+
+```{r reduceSparseMatrixToFrequentTerms, collapse=TRUE}
+#trainingDtm_dic <- DocumentTermMatrix(trainingCorpus, list(dictionary = fw_dict))
+trainingDtm_dic <- DocumentTermMatrix(trainingCorpus)
+print(trainingDtm_dic)
+
+#testDtm_dic <- DocumentTermMatrix(testCorpus, list(dictionary = fw_dict))
+testDtm_dic <- DocumentTermMatrix(testCorpus)
+print(testDtm_dic)
+```
+
+The naive Bayes classifier is typically trained on data with categorical features. This poses a problem since the cells in the sparse matrix indicate a count of the times a word appears in a message. We should change this to a factor variable that simply indicates yes or no depending on whether the word appears at all in a document.
+
+Let's create a function for that ...
+```{r supportingFunctions}
+convert_counts <- function(x){
+  x <- ifelse(x > 0, 1, 0)
+  x <- factor(x, levels = c(0,1), labels = c("No", "Yes"))
+  return (x)
+}
+```
+
+Let's apply the function to each column in the sparse matrices ...
+```{r categoricalizeSparseMatrix}
+trainingDtm_dic <- apply(trainingDtm_dic, MARGIN = 2, convert_counts)
+as.matrix(trainingDtm_dic)[1:3, 1:10]
+
+testDtm_dic <- apply(testDtm_dic, MARGIN = 2, convert_counts)
+as.matrix(testDtm_dic)[1:3, 1000:1010]
+```
+
+Now we have two matrixes each with a "Yes" or "No" indicating if a specific word (feature) appears in the messages (rows).
+
+##Train the model using the training dataset
+```{r loadMLlibrary}
+#Library implementing the naive Bayes algorithm
+library(e1071)
+```
+
+```{r trainTheModel}
+sentiment_classifier <- naiveBayes(trainingDtm_dic, trainingData$sentiment,, laplace = 1)
+```
+##Test the model against the test dataset and evaluate model performance
+
+```{r testTheModel, collapse=TRUE}
+test_pred <- predict(sentiment_classifier, testDtm_dic, threshold = 0.05)
+```
+
+```{r evaluateTheModel, collapse=TRUE}
+#table actual (row) vs. predicted (col)
+table(testData$sentiment, test_pred)
+```
