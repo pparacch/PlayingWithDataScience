@@ -262,7 +262,7 @@ The __ANOVA__ table
     * SSE, two parameters are estimated from the data $\hat a$ and $\hat b$ so `n-2` degrees of freedom
     * SSR, `1` degree of freedom, _"how many extra parameters, over and above the mean value of y, did you estimate when fitting the regression model to the data?"_
 * __Mean squares__ is the variance calculated as $Sum of Squares / Degrees of Freedom$
-*F ratio = Variance(SSR) / Variance(SSE) 
+* F ratio = Variance(SSR) / Variance(SSE) 
   
 |Variability Source|Variability (Sum of Squares)|Degrees of Freedom|Mean squares|F ratio|
 |-|-|-|-|-|
