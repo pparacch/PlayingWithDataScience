@@ -184,9 +184,48 @@ Corrected Sum of Squares of products xy: $SSXY = \sum x_i * y_i - (\sum x_i * \s
 
 These corrected sum are absolutely central to everything that follows about regression and analysis of variance. Specifically ...
 
-Explained variation is the __Regression Sum of Squares__: $SSR = SSXY^2/SSX$  
-Unexplained variation is the __Error Sum of Squares__: $SSE = SSY - SSR = \sum (y_i - \hat a - \hat b * x_i)^2$  
-Correlation Coefficient __r__: $r = SSXY / (\sqrt{SSX * SSY})$  
+__Total Variability__: $SSY = SSR + SSE = \sum (y_i - \overline{y})^2 =  \sum y_i^2 - (\sum y_i)^2 / n$
+
+__Regression Variability__ (Regression Sum of Squares): $SSR = \sum (\hat y_i - \overline{y})^2 = SSXY^2/SSX$
+The variability that is explained by the model.
+
+
+__Residual Variability__ (Error Sum of Squares): $SSE = \sum (y_i - \hat y_i)^2 = SSY - SSR = \sum (y_i - \hat a - \hat b * x_i)^2$
+The variability that is not explained by the model/ leftover around the regression line.
+
+Correlation Coefficient __R__: $R^2 = SSR/ SSY = (SSXY / (\sqrt{SSX * SSY}))^2$  
+
+
+```r
+n <- length(growth)
+
+SSX <- sum(tannin ^ 2) - sum(tannin) ^ 2 / n
+SSXY <- sum(growth * tannin) - (sum(growth) * sum(tannin))/n
+
+SSY <- sum(growth ^ 2) - sum(growth) ^ 2 / n
+SSY.1 <- sum((growth - mean(growth))^2)
+
+SSR <- (SSXY^2) / SSX
+SSR.1 <- sum((reg.model.prediction - mean(growth))^2)
+
+SSE <- SSY - SSR
+SSE.1 <- sum((growth - reg.model.prediction)^2)
+
+SSY.2 <- SSR + SSE
+
+Rs <- SSR/ SSY
+Rs.1 <- (SSXY / (sqrt(SSX * SSY)))^2
+
+
+variabilitiesTbl <- rbind(c(SSY, SSR, SSE, Rs), c(SSY.1, SSR.1, SSE.1, Rs.1), c(SSY.2, NA, NA, NA))
+colnames(variabilitiesTbl) <- c("SSY", "SSR", "SSE", "R^2")
+
+variabilitiesTbl
+##           SSY      SSR      SSE       R^2
+## [1,] 108.8889 88.81667 20.07222 0.8156633
+## [2,] 108.8889 88.81667 20.07222 0.8156633
+## [3,] 108.8889       NA       NA        NA
+```
 
 The maximum likelihood estimate for the slope b and the intercept a can be calculated using the folowing formulas:
 
@@ -214,6 +253,45 @@ b_coeff
 ```
 
 In addition to the estimates of the parameters we need to measure the __unreliability associated with each one of them__. In other words we need to calculate the __standard error of the intercept__ and the __standard error of the slope__.
+
+The __ANOVA__ table
+
+* Variability (SSR, SSR, SSY)
+* Degrees of Freedom (for each variability source)
+    * SSY, only one parameter is estimated from the data $\overline{y}$ so `n-1` degrees of freedom
+    * SSE, two parameters are estimated from the data $\hat a$ and $\hat b$ so `n-2` degrees of freedom
+    * SSR, `1` degree of freedom, _"how many extra parameters, over and above the mean value of y, did you estimate when fitting the regression model to the data?"_
+* __Mean squares__ is the variance calculated as $Sum of Squares / Degrees of Freedom$
+*F ratio = Variance(SSR) / Variance(SSE) 
+  
+|Variability Source|Variability (Sum of Squares)|Degrees of Freedom|Mean squares|F ratio|
+|-|-|-|-|-|
+|Regression|88.8166667|1|88.8166667|30.9739828|
+|Residual/ Error|20.0722222|7|2.8674603||
+|Total|108.8888889|8|||
+
+
+"The null hypothesis under test in a linear regression is that the slope of the regression line is zero (i.e. no dependence of y on x). The two-tailed alternative hypothesis is that the slope is significantly different from zero (either positive or negative). In many applications it is not particularly interesting to reject the null hypothesis, because we are interested in the effect sizes (estimates of the slope and intercept) and their standard errors. We often know from the outset that the null hypothesis is false. Nevertheless, to test whether the F ratio is sufficiently large to reject the null hypothesis, we compare our test statistic (the calculated value of F in the final column of the ANOVA table) with the critical value of F. Recall that the test statistic is the value of F that is expected by chance alone when the null hypothesis is true. We find the critical value of F from quantiles of the F distribution qf, with 1 d.f. in the numerator and n <U+2212> 2 d.f. in the denominator (as described below)."
+
+
+```r
+criticalF.95 <- qf(0.95, 1, (n-2))
+criticalF.95
+```
+
+```
+## [1] 5.591448
+```
+Calculated F value is 30.9739828 and the critical F value (95%) is 5.5914479. Being the calculated much bigger than the critical value we can __reject the null hypothesis__.
+
+
+```r
+pp <- 1 - pf((SSR / 1) / (SSE / (n-2)), 1, (n-2))
+```
+
+The probability of getting a value for F as large as the calculated on if the null hypothesis is true is 8.4607384\times 10^{-4} - quite small so very unlikely to get such statistic under the null hypothesis.
+
+
 
 #Reference
 

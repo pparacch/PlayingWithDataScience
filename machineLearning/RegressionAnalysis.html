@@ -184,7 +184,38 @@ arrows(-1.216,20.07225,-1.216,19,col=&quot;red&quot;)</code></pre>
 <p>Basic elements: the <strong>corrected sums</strong> calculations.l</p>
 <p>Corrected Sum of Squares of y: <span class="math">\(SSY = \sum y_i^2 - (\sum y_i)^2 / n\)</span><br />Corrected Sum of Squares of x: <span class="math">\(SSX = \sum x_i^2 - (\sum x_i)^2 / n\)</span><br />Corrected Sum of Squares of products xy: <span class="math">\(SSXY = \sum x_i * y_i - (\sum x_i * \sum y_i) / n\)</span></p>
 <p>These corrected sum are absolutely central to everything that follows about regression and analysis of variance. Specifically …</p>
-<p>Explained variation is the <strong>Regression Sum of Squares</strong>: <span class="math">\(SSR = SSXY^2/SSX\)</span><br />Unexplained variation is the <strong>Error Sum of Squares</strong>: <span class="math">\(SSE = SSY - SSR = \sum (y_i - \hat a - \hat b * x_i)^2\)</span><br />Correlation Coefficient <strong>r</strong>: <span class="math">\(r = SSXY / (\sqrt{SSX * SSY})\)</span></p>
+<p><strong>Total Variability</strong>: <span class="math">\(SSY = SSR + SSE = \sum (y_i - \overline{y})^2 = \sum y_i^2 - (\sum y_i)^2 / n\)</span></p>
+<p><strong>Regression Variability</strong> (Regression Sum of Squares): <span class="math">\(SSR = \sum (\hat y_i - \overline{y})^2 = SSXY^2/SSX\)</span> The variability that is explained by the model.</p>
+<p><strong>Residual Variability</strong> (Error Sum of Squares): <span class="math">\(SSE = \sum (y_i - \hat y_i)^2 = SSY - SSR = \sum (y_i - \hat a - \hat b * x_i)^2\)</span> The variability that is not explained by the model/ leftover around the regression line.</p>
+<p>Correlation Coefficient <strong>R</strong>: <span class="math">\(R^2 = SSR/ SSY = (SSXY / (\sqrt{SSX * SSY}))^2\)</span></p>
+<pre class="r"><code>n &lt;- length(growth)
+
+SSX &lt;- sum(tannin ^ 2) - sum(tannin) ^ 2 / n
+SSXY &lt;- sum(growth * tannin) - (sum(growth) * sum(tannin))/n
+
+SSY &lt;- sum(growth ^ 2) - sum(growth) ^ 2 / n
+SSY.1 &lt;- sum((growth - mean(growth))^2)
+
+SSR &lt;- (SSXY^2) / SSX
+SSR.1 &lt;- sum((reg.model.prediction - mean(growth))^2)
+
+SSE &lt;- SSY - SSR
+SSE.1 &lt;- sum((growth - reg.model.prediction)^2)
+
+SSY.2 &lt;- SSR + SSE
+
+Rs &lt;- SSR/ SSY
+Rs.1 &lt;- (SSXY / (sqrt(SSX * SSY)))^2
+
+
+variabilitiesTbl &lt;- rbind(c(SSY, SSR, SSE, Rs), c(SSY.1, SSR.1, SSE.1, Rs.1), c(SSY.2, NA, NA, NA))
+colnames(variabilitiesTbl) &lt;- c(&quot;SSY&quot;, &quot;SSR&quot;, &quot;SSE&quot;, &quot;R^2&quot;)
+
+variabilitiesTbl
+##           SSY      SSR      SSE       R^2
+## [1,] 108.8889 88.81667 20.07222 0.8156633
+## [2,] 108.8889 88.81667 20.07222 0.8156633
+## [3,] 108.8889       NA       NA        NA</code></pre>
 <p>The maximum likelihood estimate for the slope b and the intercept a can be calculated using the folowing formulas:</p>
 <p><span class="math">\(b = SSXY/SSX\)</span><br /><span class="math">\(a = \overline{y} - b * \overline{x}\)</span>, where <span class="math">\(\overline{y} = \sum y_i / n\)</span> and <span class="math">\(\overline{x} = \sum x_i / n\)</span></p>
 <p>Estimation of the coefficients done using the previous formulas are identical to estimation done using the <code>lm</code> function.</p>
@@ -202,6 +233,58 @@ a_coeff
 b_coeff
 ## [1] -1.216667</code></pre>
 <p>In addition to the estimates of the parameters we need to measure the <strong>unreliability associated with each one of them</strong>. In other words we need to calculate the <strong>standard error of the intercept</strong> and the <strong>standard error of the slope</strong>.</p>
+<p>The <strong>ANOVA</strong> table</p>
+<ul>
+<li>Variability (SSR, SSR, SSY)</li>
+<li>Degrees of Freedom (for each variability source)
+<ul>
+<li>SSY, only one parameter is estimated from the data <span class="math">\(\overline{y}\)</span> so <code>n-1</code> degrees of freedom</li>
+<li>SSE, two parameters are estimated from the data <span class="math">\(\hat a\)</span> and <span class="math">\(\hat b\)</span> so <code>n-2</code> degrees of freedom</li>
+<li>SSR, <code>1</code> degree of freedom, <em>“how many extra parameters, over and above the mean value of y, did you estimate when fitting the regression model to the data?”</em></li>
+</ul></li>
+<li><strong>Mean squares</strong> is the variance calculated as <span class="math">\(Sum of Squares / Degrees of Freedom\)</span> *F ratio = Variance(SSR) / Variance(SSE)</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Variability Source</th>
+<th align="left">Variability (Sum of Squares)</th>
+<th align="left">Degrees of Freedom</th>
+<th align="left">Mean squares</th>
+<th align="left">F ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Regression</td>
+<td align="left">88.8166667</td>
+<td align="left">1</td>
+<td align="left">88.8166667</td>
+<td align="left">30.9739828</td>
+</tr>
+<tr class="even">
+<td align="left">Residual/ Error</td>
+<td align="left">20.0722222</td>
+<td align="left">7</td>
+<td align="left">2.8674603</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Total</td>
+<td align="left">108.8888889</td>
+<td align="left">8</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+<p>“The null hypothesis under test in a linear regression is that the slope of the regression line is zero (i.e. no dependence of y on x). The two-tailed alternative hypothesis is that the slope is significantly different from zero (either positive or negative). In many applications it is not particularly interesting to reject the null hypothesis, because we are interested in the effect sizes (estimates of the slope and intercept) and their standard errors. We often know from the outset that the null hypothesis is false. Nevertheless, to test whether the F ratio is sufficiently large to reject the null hypothesis, we compare our test statistic (the calculated value of F in the final column of the ANOVA table) with the critical value of F. Recall that the test statistic is the value of F that is expected by chance alone when the null hypothesis is true. We find the critical value of F from quantiles of the F distribution qf, with 1 d.f. in the numerator and n <U+2212> 2 d.f. in the denominator (as described below).”</p>
+<pre class="r"><code>criticalF.95 &lt;- qf(0.95, 1, (n-2))
+criticalF.95</code></pre>
+<pre><code>## [1] 5.591448</code></pre>
+<p>Calculated F value is 30.9739828 and the critical F value (95%) is 5.5914479. Being the calculated much bigger than the critical value we can <strong>reject the null hypothesis</strong>.</p>
+<pre class="r"><code>pp &lt;- 1 - pf((SSR / 1) / (SSE / (n-2)), 1, (n-2))</code></pre>
+<p>The probability of getting a value for F as large as the calculated on if the null hypothesis is true is 8.460738410^{-4} - quite small so very unlikely to get such statistic under the null hypothesis.</p>
 </div>
 </div>
 <div id="reference" class="section level1">
