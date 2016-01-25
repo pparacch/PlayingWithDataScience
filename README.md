@@ -25,6 +25,9 @@ __Interesting Packages__
 * [A grammar for unstructured data management (tm)](https://github.com/pparacch/PlayingWithDataScience/blob/master/unstructuredData/managingUnstructureData.md)
 
 ##Some Applications
+###Practice
+[Titanic: Machine Learning from Disaster]()
+
 ###Machine Learning Algorithms
 __Naive Bayes Algorithm__  
 * [theory](https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/ClassificationUsingNaiveBayes.md) and  some applications
