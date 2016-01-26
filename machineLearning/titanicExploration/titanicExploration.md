@@ -246,6 +246,11 @@ sapply(rawData, percNAs)
 ####Managing missing values: the strategy
 `Cabin` contains a high number of `NA`s (around 70%) so it is quite difficult to find a replecement strategy. Another option could be to remove the obeservations with NAs but we will lose around 70% of the observation.
 
+
+```r
+rawData$Cabin <- NULL
+```
+
 `Embarked` contains a very limited number of `NA`s so the strategy that could be used for the missing values is to use the more probable setting for that specific feature. Another possible option could be to remove such observations with the missing value.
 
 
@@ -269,6 +274,36 @@ table(rawData$Embarked_f, useNA = "always")
 ```
 
 `Age` contains around 20% of observations with a missing value.
+One possible strategy is to identify the connection between the title and age for the observation with `age` value. Use then title to provide the best guess of the age (for observatios with missing age).
+
+
+```r
+head(rawData[, c("Name", "Age")], 20)
+```
+
+```
+##                                                       Name Age
+## 1                                  Braund, Mr. Owen Harris  22
+## 2      Cumings, Mrs. John Bradley (Florence Briggs Thayer)  38
+## 3                                   Heikkinen, Miss. Laina  26
+## 4             Futrelle, Mrs. Jacques Heath (Lily May Peel)  35
+## 5                                 Allen, Mr. William Henry  35
+## 6                                         Moran, Mr. James  NA
+## 7                                  McCarthy, Mr. Timothy J  54
+## 8                           Palsson, Master. Gosta Leonard   2
+## 9        Johnson, Mrs. Oscar W (Elisabeth Vilhelmina Berg)  27
+## 10                     Nasser, Mrs. Nicholas (Adele Achem)  14
+## 11                         Sandstrom, Miss. Marguerite Rut   4
+## 12                                Bonnell, Miss. Elizabeth  58
+## 13                          Saundercock, Mr. William Henry  20
+## 14                             Andersson, Mr. Anders Johan  39
+## 15                    Vestrom, Miss. Hulda Amanda Adolfina  14
+## 16                        Hewlett, Mrs. (Mary D Kingcome)   55
+## 17                                    Rice, Master. Eugene   2
+## 18                            Williams, Mr. Charles Eugene  NA
+## 19 Vander Planke, Mrs. Julius (Emelia Maria Vandemoortele)  31
+## 20                                 Masselmani, Mrs. Fatima  NA
+```
 
 
 ```r
@@ -290,8 +325,176 @@ sort(words_tbl[grep("\\.", names(words_tbl))], decreasing = TRUE)
 #Knowing the title associated to a missing value age can give some informtion oh how
 #to recover the missing age
 indexAge_NAs <- which(is.na(rawData$Age))
-nameNAs <- rawData[indexAge_NAs, c("Age", "Name")]
-nameNAs$StartPos <- regexpr("[a-zA-Z]+\\.", nameNAs$Name)
-nameNAs$EndPos <- regexpr("\\.\\s+[a-zA-Z(]", nameNAs$Name)
-nameNAs$Title <- substr(nameNAs$Name, nameNAs$StartPos, nameNAs$EndPos)
+indexAge_notNAs <- which(!is.na(rawData$Age))
+passengersTitle <- rawData[, c("Age", "Name")]
+passengersTitle$StartPos <- regexpr("[a-zA-Z]+\\.", passengersTitle$Name)
+passengersTitle$EndPos <- regexpr("\\.\\s+[a-zA-Z(]", passengersTitle$Name)
+passengersTitle$Title <- substr(passengersTitle$Name, passengersTitle$StartPos, passengersTitle$EndPos)
 ```
+Title in the observations with calculate average age for title (excluding observation having age value set to `NA`).
+
+```r
+table(passengersTitle$Title[indexAge_notNAs])
+```
+
+```
+## 
+##     Capt.      Col. Countess.      Don.       Dr. Jonkheer.     Lady. 
+##         1         2         1         1         6         1         1 
+##    Major.   Master.     Miss.     Mlle.      Mme.       Mr.      Mrs. 
+##         2        36       146         2         1       398       108 
+##       Ms.      Rev.      Sir. 
+##         1         6         1
+```
+
+```r
+titleMeans <- aggregate(passengersTitle$Age[indexAge_notNAs], by = list(title = passengersTitle$Title[indexAge_notNAs]), mean)
+titleMeans
+```
+
+```
+##        title         x
+## 1      Capt. 70.000000
+## 2       Col. 58.000000
+## 3  Countess. 33.000000
+## 4       Don. 40.000000
+## 5        Dr. 42.000000
+## 6  Jonkheer. 38.000000
+## 7      Lady. 48.000000
+## 8     Major. 48.500000
+## 9    Master.  4.574167
+## 10     Miss. 21.773973
+## 11     Mlle. 24.000000
+## 12      Mme. 24.000000
+## 13       Mr. 32.368090
+## 14      Mrs. 35.898148
+## 15       Ms. 28.000000
+## 16      Rev. 43.166667
+## 17      Sir. 49.000000
+```
+Adding ages for the observation with missing values `NA`s ...
+
+```r
+gestBestGuessOnAge <- function(title){
+    ##titleMeans is a variable defined in the global environment
+    titleMeans$x[titleMeans$title == title]
+}
+
+guessedAge <- sapply(passengersTitle$Title[indexAge_NAs],FUN = gestBestGuessOnAge)
+rawData$Age[indexAge_NAs] <- round(guessedAge)
+head(rawData[, c("Name", "Age")], 20)
+```
+
+```
+##                                                       Name Age
+## 1                                  Braund, Mr. Owen Harris  22
+## 2      Cumings, Mrs. John Bradley (Florence Briggs Thayer)  38
+## 3                                   Heikkinen, Miss. Laina  26
+## 4             Futrelle, Mrs. Jacques Heath (Lily May Peel)  35
+## 5                                 Allen, Mr. William Henry  35
+## 6                                         Moran, Mr. James  32
+## 7                                  McCarthy, Mr. Timothy J  54
+## 8                           Palsson, Master. Gosta Leonard   2
+## 9        Johnson, Mrs. Oscar W (Elisabeth Vilhelmina Berg)  27
+## 10                     Nasser, Mrs. Nicholas (Adele Achem)  14
+## 11                         Sandstrom, Miss. Marguerite Rut   4
+## 12                                Bonnell, Miss. Elizabeth  58
+## 13                          Saundercock, Mr. William Henry  20
+## 14                             Andersson, Mr. Anders Johan  39
+## 15                    Vestrom, Miss. Hulda Amanda Adolfina  14
+## 16                        Hewlett, Mrs. (Mary D Kingcome)   55
+## 17                                    Rice, Master. Eugene   2
+## 18                            Williams, Mr. Charles Eugene  32
+## 19 Vander Planke, Mrs. Julius (Emelia Maria Vandemoortele)  31
+## 20                                 Masselmani, Mrs. Fatima  36
+```
+###Visualizing the Data
+
+
+```r
+barplot(table(rawData$Survived), main = "Passenger Survivals", names = c("Died", "Survived"))
+```
+
+![](titanicExploration_files/figure-html/visualizations-1.png) 
+
+```r
+barplot(table(rawData$Pclass_f), main = "Passenger Class")
+```
+
+![](titanicExploration_files/figure-html/visualizations-2.png) 
+
+```r
+barplot(table(rawData$Sex), main = "Passenger Gender")
+```
+
+![](titanicExploration_files/figure-html/visualizations-3.png) 
+
+```r
+hist(rawData$Age, main = "Passenger Age Distribution",breaks = 20)
+```
+
+![](titanicExploration_files/figure-html/visualizations-4.png) 
+
+```r
+barplot(table(rawData$SibSp), main = "Number of Siblings OnBoard")
+```
+
+![](titanicExploration_files/figure-html/visualizations-5.png) 
+
+```r
+barplot(table(rawData$Parch), main = "Number of Parents/ Children OnBoard")
+```
+
+![](titanicExploration_files/figure-html/visualizations-6.png) 
+
+```r
+hist(rawData$Fare, main = "Passenger Fare Distribution")
+```
+
+![](titanicExploration_files/figure-html/visualizations-7.png) 
+
+```r
+barplot(table(rawData$Embarked), main = "Port of Origin")
+```
+
+![](titanicExploration_files/figure-html/visualizations-8.png) 
+
+
+```r
+barplot(table(rawData$Survived, rawData$Sex_f), main = "Passenger Survival by Gender", col = c("red", "green"), legend = c("Died", "Survived"))
+```
+
+![](titanicExploration_files/figure-html/someMoreVisualization-1.png) 
+
+```r
+barplot(table(rawData$Survived, rawData$Pclass_f), main = "Passenger Survival by Class", col = c("red", "green"), legend = c("Died", "Survived"))
+```
+
+![](titanicExploration_files/figure-html/someMoreVisualization-2.png) 
+
+```r
+barplot(table(rawData$Sex_f, rawData$Pclass_f), main = "Passenger Gender by Class", col = c("pink", "blue"), legend = c("Female", "Male"))
+```
+
+![](titanicExploration_files/figure-html/someMoreVisualization-3.png) 
+
+```r
+survivalBySexClass <- as.data.frame(table(rawData$Survived, rawData$Pclass_f, rawData$Sex_f))
+survivalBySexClass_f <- subset(survivalBySexClass, survivalBySexClass$Var3 == "F")
+survivalBySexClass_m <- subset(survivalBySexClass, survivalBySexClass$Var3 == "M")
+sf_matrix <- matrix(survivalBySexClass_f$Freq, nrow = 2, ncol = 3)
+rownames(sf_matrix) <- c("0", "1")
+colnames(sf_matrix) <- c("1st", "2nd", "3rd")
+barplot(sf_matrix, col = c("red", "green"), main = "Survival Female Passenger By Class", legend = c("Died", "Survived"))
+```
+
+![](titanicExploration_files/figure-html/someMoreVisualization-4.png) 
+
+```r
+sf_matrix <- matrix(survivalBySexClass_m$Freq, nrow = 2, ncol = 3)
+rownames(sf_matrix) <- c("0", "1")
+colnames(sf_matrix) <- c("1st", "2nd", "3rd")
+barplot(sf_matrix, col = c("red", "green"), main = "Survival Male Passenger By Class", legend = c("Died", "Survived"))
+```
+
+![](titanicExploration_files/figure-html/someMoreVisualization-5.png) 

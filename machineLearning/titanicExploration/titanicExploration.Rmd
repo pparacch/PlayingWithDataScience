@@ -168,6 +168,10 @@ sapply(rawData, percNAs)
 ####Managing missing values: the strategy
 `Cabin` contains a high number of `NA`s (around 70%) so it is quite difficult to find a replecement strategy. Another option could be to remove the obeservations with NAs but we will lose around 70% of the observation.
 
+```{r removingCabin}
+rawData$Cabin <- NULL
+```
+
 `Embarked` contains a very limited number of `NA`s so the strategy that could be used for the missing values is to use the more probable setting for that specific feature. Another possible option could be to remove such observations with the missing value.
 
 ```{r managingEmbarked, collapse = TRUE}
@@ -181,6 +185,11 @@ table(rawData$Embarked_f, useNA = "always")
 ```
 
 `Age` contains around 20% of observations with a missing value.
+One possible strategy is to identify the connection between the title and age for the observation with `age` value. Use then title to provide the best guess of the age (for observatios with missing age).
+
+```{r showAgeData}
+head(rawData[, c("Name", "Age")], 20)
+```
 
 ```{r managingAge}
 words_tbl <- table(unlist(strsplit(rawData$Name, "\\s+")))
@@ -189,9 +198,59 @@ sort(words_tbl[grep("\\.", names(words_tbl))], decreasing = TRUE)
 #Knowing the title associated to a missing value age can give some informtion oh how
 #to recover the missing age
 indexAge_NAs <- which(is.na(rawData$Age))
-nameNAs <- rawData[indexAge_NAs, c("Age", "Name")]
-nameNAs$StartPos <- regexpr("[a-zA-Z]+\\.", nameNAs$Name)
-nameNAs$EndPos <- regexpr("\\.\\s+[a-zA-Z(]", nameNAs$Name)
-nameNAs$Title <- substr(nameNAs$Name, nameNAs$StartPos, nameNAs$EndPos)
+indexAge_notNAs <- which(!is.na(rawData$Age))
+passengersTitle <- rawData[, c("Age", "Name")]
+passengersTitle$StartPos <- regexpr("[a-zA-Z]+\\.", passengersTitle$Name)
+passengersTitle$EndPos <- regexpr("\\.\\s+[a-zA-Z(]", passengersTitle$Name)
+passengersTitle$Title <- substr(passengersTitle$Name, passengersTitle$StartPos, passengersTitle$EndPos)
+```
+Title in the observations with calculate average age for title (excluding observation having age value set to `NA`).
+```{r titleAgeInfoSummary}
+table(passengersTitle$Title[indexAge_notNAs])
+titleMeans <- aggregate(passengersTitle$Age[indexAge_notNAs], by = list(title = passengersTitle$Title[indexAge_notNAs]), mean)
+titleMeans
+```
+Adding ages for the observation with missing values `NA`s ...
+```{r ageNAsReplacement}
+gestBestGuessOnAge <- function(title){
+    ##titleMeans is a variable defined in the global environment
+    titleMeans$x[titleMeans$title == title]
+}
 
+guessedAge <- sapply(passengersTitle$Title[indexAge_NAs],FUN = gestBestGuessOnAge)
+rawData$Age[indexAge_NAs] <- round(guessedAge)
+head(rawData[, c("Name", "Age")], 20)
+```
+###Visualizing the Data
+
+```{R visualizations}
+barplot(table(rawData$Survived), main = "Passenger Survivals", names = c("Died", "Survived"))
+barplot(table(rawData$Pclass_f), main = "Passenger Class")
+barplot(table(rawData$Sex), main = "Passenger Gender")
+hist(rawData$Age, main = "Passenger Age Distribution",breaks = 20)
+barplot(table(rawData$SibSp), main = "Number of Siblings OnBoard")
+barplot(table(rawData$Parch), main = "Number of Parents/ Children OnBoard")
+hist(rawData$Fare, main = "Passenger Fare Distribution")
+barplot(table(rawData$Embarked), main = "Port of Origin")
+```
+
+```{r someMoreVisualization}
+barplot(table(rawData$Survived, rawData$Sex_f), main = "Passenger Survival by Gender", col = c("red", "green"), legend = c("Died", "Survived"))
+barplot(table(rawData$Survived, rawData$Pclass_f), main = "Passenger Survival by Class", col = c("red", "green"), legend = c("Died", "Survived"))
+barplot(table(rawData$Sex_f, rawData$Pclass_f), main = "Passenger Gender by Class", col = c("pink", "blue"), legend = c("Female", "Male"))
+
+
+
+survivalBySexClass <- as.data.frame(table(rawData$Survived, rawData$Pclass_f, rawData$Sex_f))
+survivalBySexClass_f <- subset(survivalBySexClass, survivalBySexClass$Var3 == "F")
+survivalBySexClass_m <- subset(survivalBySexClass, survivalBySexClass$Var3 == "M")
+sf_matrix <- matrix(survivalBySexClass_f$Freq, nrow = 2, ncol = 3)
+rownames(sf_matrix) <- c("0", "1")
+colnames(sf_matrix) <- c("1st", "2nd", "3rd")
+barplot(sf_matrix, col = c("red", "green"), main = "Survival Female Passenger By Class", legend = c("Died", "Survived"))
+
+sf_matrix <- matrix(survivalBySexClass_m$Freq, nrow = 2, ncol = 3)
+rownames(sf_matrix) <- c("0", "1")
+colnames(sf_matrix) <- c("1st", "2nd", "3rd")
+barplot(sf_matrix, col = c("red", "green"), main = "Survival Male Passenger By Class", legend = c("Died", "Survived"))
 ```
