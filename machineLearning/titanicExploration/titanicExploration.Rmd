@@ -177,9 +177,9 @@ rawData$Cabin <- NULL
 ```{r managingEmbarked, collapse = TRUE}
 table(rawData$Embarked, useNA = "always")
 #Note that S is the more probable port so we can set the missing values to S
-index_NAs <- which(is.na(rawData$Embarked))
-rawData$Embarked[index_NAs] <- "S"
-rawData$Embarked_f[index_NAs] <- "S"
+indexEmbarked_NAs <- which(is.na(rawData$Embarked))
+rawData$Embarked[indexEmbarked_NAs] <- "S"
+rawData$Embarked_f[indexEmbarked_NAs] <- "S"
 table(rawData$Embarked, useNA = "always")
 table(rawData$Embarked_f, useNA = "always")
 ```
@@ -199,11 +199,17 @@ sort(words_tbl[grep("\\.", names(words_tbl))], decreasing = TRUE)
 #to recover the missing age
 indexAge_NAs <- which(is.na(rawData$Age))
 indexAge_notNAs <- which(!is.na(rawData$Age))
+
+#What is the suvival status for passengers with a missing age
+table(rawData$Survived_f[indexAge_NAs])
+
 passengersTitle <- rawData[, c("Age", "Name")]
 passengersTitle$StartPos <- regexpr("[a-zA-Z]+\\.", passengersTitle$Name)
 passengersTitle$EndPos <- regexpr("\\.\\s+[a-zA-Z(]", passengersTitle$Name)
 passengersTitle$Title <- substr(passengersTitle$Name, passengersTitle$StartPos, passengersTitle$EndPos)
 ```
+
+
 Title in the observations with calculate average age for title (excluding observation having age value set to `NA`).
 ```{r titleAgeInfoSummary}
 table(passengersTitle$Title[indexAge_notNAs])
@@ -253,4 +259,37 @@ sf_matrix <- matrix(survivalBySexClass_m$Freq, nrow = 2, ncol = 3)
 rownames(sf_matrix) <- c("0", "1")
 colnames(sf_matrix) <- c("1st", "2nd", "3rd")
 barplot(sf_matrix, col = c("red", "green"), main = "Survival Male Passenger By Class", legend = c("Died", "Survived"))
+```
+
+```{r someSomeMoreVisualization}
+index_survived <- which(rawData$Survived_f == "Yes")
+index_notSurvived <- which(rawData$Survived_f == "No")
+hist(rawData$Age[index_notSurvived], main = "Passenger Age Distribution", xlab = "Age", ylab = "No Of Passengers", col = "red", breaks = seq(0,80, by=2))
+hist(rawData$Age[index_survived], col = "green", breaks = seq(0,80, by=2), add = TRUE)
+legend("topright", c("Died", "Survived"), col=c("red", "green"), lwd=10)
+```
+
+```{R andSomeMore}
+boxplot(rawData$Age ~ rawData$Survived_f, main = "Passenger by Age", xlab = "Survived", ylab = "Age")
+```
+
+Some reference [Quantiles & the Boxplot](https://en.wikipedia.org/wiki/Quartile).
+
+
+```{R categorizedPassengerByAge, collapse = TRUE}
+rawData$isChild <- rawData$Age < 13
+rawData$isAdolescent <- rawData$Age >= 14 & rawData$Age < 20
+rawData$isAdult <- rawData$Age >= 20 & rawData$Age < 65
+rawData$isSenior <- rawData$Age >= 65
+table(rawData$Survived_f, rawData$isChild)
+sum(rawData$Survived_f == "Yes" & rawData$isChild == TRUE)/ sum(rawData$isChild)
+
+table(rawData$Survived_f, rawData$isAdolescent)
+sum(rawData$Survived_f == "Yes" & rawData$isAdolescent == TRUE)/ sum(rawData$isAdolescent)
+
+table(rawData$Survived_f, rawData$isAdult)
+sum(rawData$Survived_f == "Yes" & rawData$isAdult == TRUE)/ sum(rawData$isAdult)
+
+table(rawData$Survived_f, rawData$isSenior)
+sum(rawData$Survived_f == "Yes" & rawData$isSenior == TRUE)/ sum(rawData$isSenior)
 ```

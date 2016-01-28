@@ -260,9 +260,9 @@ table(rawData$Embarked, useNA = "always")
 ##    C    Q    S <NA> 
 ##  168   77  644    2
 #Note that S is the more probable port so we can set the missing values to S
-index_NAs <- which(is.na(rawData$Embarked))
-rawData$Embarked[index_NAs] <- "S"
-rawData$Embarked_f[index_NAs] <- "S"
+indexEmbarked_NAs <- which(is.na(rawData$Embarked))
+rawData$Embarked[indexEmbarked_NAs] <- "S"
+rawData$Embarked_f[indexEmbarked_NAs] <- "S"
 table(rawData$Embarked, useNA = "always")
 ## 
 ##    C    Q    S <NA> 
@@ -326,11 +326,25 @@ sort(words_tbl[grep("\\.", names(words_tbl))], decreasing = TRUE)
 #to recover the missing age
 indexAge_NAs <- which(is.na(rawData$Age))
 indexAge_notNAs <- which(!is.na(rawData$Age))
+
+#What is the suvival status for passengers with a missing age
+table(rawData$Survived_f[indexAge_NAs])
+```
+
+```
+## 
+##  No Yes 
+## 125  52
+```
+
+```r
 passengersTitle <- rawData[, c("Age", "Name")]
 passengersTitle$StartPos <- regexpr("[a-zA-Z]+\\.", passengersTitle$Name)
 passengersTitle$EndPos <- regexpr("\\.\\s+[a-zA-Z(]", passengersTitle$Name)
 passengersTitle$Title <- substr(passengersTitle$Name, passengersTitle$StartPos, passengersTitle$EndPos)
 ```
+
+
 Title in the observations with calculate average age for title (excluding observation having age value set to `NA`).
 
 ```r
@@ -498,3 +512,63 @@ barplot(sf_matrix, col = c("red", "green"), main = "Survival Male Passenger By C
 ```
 
 ![](titanicExploration_files/figure-html/someMoreVisualization-5.png) 
+
+
+```r
+index_survived <- which(rawData$Survived_f == "Yes")
+index_notSurvived <- which(rawData$Survived_f == "No")
+hist(rawData$Age[index_notSurvived], main = "Passenger Age Distribution", xlab = "Age", ylab = "No Of Passengers", col = "red", breaks = seq(0,80, by=2))
+hist(rawData$Age[index_survived], col = "green", breaks = seq(0,80, by=2), add = TRUE)
+legend("topright", c("Died", "Survived"), col=c("red", "green"), lwd=10)
+```
+
+![](titanicExploration_files/figure-html/someSomeMoreVisualization-1.png) 
+
+
+```r
+boxplot(rawData$Age ~ rawData$Survived_f, main = "Passenger by Age", xlab = "Survived", ylab = "Age")
+```
+
+![](titanicExploration_files/figure-html/andSomeMore-1.png) 
+
+Some reference [Quantiles & the Boxplot](https://en.wikipedia.org/wiki/Quartile).
+
+
+
+```r
+rawData$isChild <- rawData$Age < 13
+rawData$isAdolescent <- rawData$Age >= 14 & rawData$Age < 20
+rawData$isAdult <- rawData$Age >= 20 & rawData$Age < 65
+rawData$isSenior <- rawData$Age >= 65
+table(rawData$Survived_f, rawData$isChild)
+##      
+##       FALSE TRUE
+##   No    518   31
+##   Yes   300   42
+sum(rawData$Survived_f == "Yes" & rawData$isChild == TRUE)/ sum(rawData$isChild)
+## [1] 0.5753425
+
+table(rawData$Survived_f, rawData$isAdolescent)
+##      
+##       FALSE TRUE
+##   No    493   56
+##   Yes   305   37
+sum(rawData$Survived_f == "Yes" & rawData$isAdolescent == TRUE)/ sum(rawData$isAdolescent)
+## [1] 0.3978495
+
+table(rawData$Survived_f, rawData$isAdult)
+##      
+##       FALSE TRUE
+##   No     97  452
+##   Yes    82  260
+sum(rawData$Survived_f == "Yes" & rawData$isAdult == TRUE)/ sum(rawData$isAdult)
+## [1] 0.3651685
+
+table(rawData$Survived_f, rawData$isSenior)
+##      
+##       FALSE TRUE
+##   No    539   10
+##   Yes   341    1
+sum(rawData$Survived_f == "Yes" & rawData$isSenior == TRUE)/ sum(rawData$isSenior)
+## [1] 0.09090909
+```
