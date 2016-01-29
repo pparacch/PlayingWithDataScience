@@ -572,3 +572,208 @@ table(rawData$Survived_f, rawData$isSenior)
 sum(rawData$Survived_f == "Yes" & rawData$isSenior == TRUE)/ sum(rawData$isSenior)
 ## [1] 0.09090909
 ```
+
+##Survival Model using Trees 
+CART = Classification And Regression Trees
+Conditional Inference Tree
+
+###Training and Test dataset
+Splitting the training dataset in two different datasets  
+
+- __training__ dataset, used to build the model
+- __test__ dataset, used to validate the model
+
+
+```r
+require(caTools)
+## Loading required package: caTools
+#Contains basic utility functions like sample.split
+index_split <- sample.split(rawData$Survived_f, SplitRatio = 0.7)
+
+#Preparing the raw dataset - removing not needed feature
+rawData$Pclass <- NULL
+rawData$Survived <- NULL
+rawData$Sex <- NULL
+rawData$Embarked <- NULL
+
+dataset.train <- rawData[index_split,]
+dataset.test <- rawData[!index_split,]
+#sample.split keeps the same ratio of the provided feature
+table(dataset.test$Survived_f)[2]/ nrow(dataset.test)
+##       Yes 
+## 0.3843284
+table(dataset.train$Survived_f)[2]/nrow(dataset.train)
+##       Yes 
+## 0.3836276
+```
+
+##Modelling using `rpart` package
+Load the required packages ...
+
+```r
+#install.packages("rpart")
+#install.packages("rpart.plot")
+#install.packages("ROCR")
+require(rpart)
+```
+
+```
+## Loading required package: rpart
+```
+
+```r
+require(rpart.plot)
+```
+
+```
+## Loading required package: rpart.plot
+```
+
+```r
+require(ROCR)
+```
+
+```
+## Loading required package: ROCR
+## Loading required package: gplots
+## 
+## Attaching package: 'gplots'
+## 
+## The following object is masked from 'package:stats':
+## 
+##     lowess
+```
+
+Create the CART model ...
+
+```r
+survivalModel1 <- rpart(Survived_f ~ Age + Pclass_f + Sex_f + Fare + SibSp + Parch + Embarked_f, data = dataset.train, minbucket = 15)
+
+prp(survivalModel1, main = "Classification & Regression Tree")
+```
+
+![](titanicExploration_files/figure-html/cartModel1-1.png) 
+
+Validate the model ...
+
+```r
+predictionOnModel1_c <- predict(survivalModel1, newdata = dataset.test, type = "class")
+
+#Create the confusion matrix 
+table(dataset.test$Survived_f, predictionOnModel1_c)
+##      predictionOnModel1_c
+##        No Yes
+##   No  142  23
+##   Yes  29  74
+
+#Accuracy (TP + TN)/ Total
+(table(dataset.test$Survived_f, predictionOnModel1_c)[1] + table(dataset.test$Survived_f, predictionOnModel1_c)[4])/nrow(dataset.test)
+## [1] 0.8059701
+```
+
+
+```r
+predictionOnModel1_p <- predict(survivalModel1, newdata = dataset.test)
+
+pred <- prediction(predictionOnModel1_p[,2], dataset.test$Survived_f)
+perf <- performance(pred, "tpr", "fpr")
+
+plot(perf, main = "ROC")
+```
+
+![](titanicExploration_files/figure-html/rocrCurve-1.png) 
+
+##Modelling using `party` package
+Load the required packages ...
+
+```r
+#install.packages("party")
+#install.packages("caret")
+require(party)
+require(caret)
+```
+
+Create the CART model ...
+
+```r
+survivalModel2 <- ctree(Survived_f ~ Age + Pclass_f + Sex_f + Fare + SibSp + Parch + Embarked_f, data = dataset.train)
+
+survivalModel2
+## 
+## 	 Conditional inference tree with 7 terminal nodes
+## 
+## Response:  Survived_f 
+## Inputs:  Age, Pclass_f, Sex_f, Fare, SibSp, Parch, Embarked_f 
+## Number of observations:  623 
+## 
+## 1) Sex_f == {F}; criterion = 1, statistic = 175.586
+##   2) Pclass_f == {3rd}; criterion = 1, statistic = 42.535
+##     3) Fare <= 23.25; criterion = 0.991, statistic = 10.315
+##       4)*  weights = 90 
+##     3) Fare > 23.25
+##       5)*  weights = 14 
+##   2) Pclass_f == {1st, 2nd}
+##     6)*  weights = 111 
+## 1) Sex_f == {M}
+##   7) Age <= 9; criterion = 0.996, statistic = 13.811
+##     8) SibSp <= 2; criterion = 1, statistic = 20.986
+##       9)*  weights = 18 
+##     8) SibSp > 2
+##       10)*  weights = 7 
+##   7) Age > 9
+##     11) Pclass_f == {1st}; criterion = 1, statistic = 20.447
+##       12)*  weights = 80 
+##     11) Pclass_f == {2nd, 3rd}
+##       13)*  weights = 303
+par(ps = 4, cex = 1, cex.main = 1)
+plot(survivalModel2, main = "Conditional Inference Tree")
+```
+
+![](titanicExploration_files/figure-html/cartModel2-1.png) 
+
+Validate the model ...
+
+```r
+predictionOnModel2_c <- predict(survivalModel2, newdata = dataset.test)
+
+#Create the confusion matrix 
+table(dataset.test$Survived_f, predictionOnModel2_c)
+##      predictionOnModel2_c
+##        No Yes
+##   No  150  15
+##   Yes  30  73
+
+#Accuracy (TP + TN)/ Total
+(table(dataset.test$Survived_f, predictionOnModel2_c)[1] + table(dataset.test$Survived_f, predictionOnModel2_c)[4])/nrow(dataset.test)
+## [1] 0.8320896
+
+#Another approach using the caret package
+confusionMatrix(predictionOnModel2_c, dataset.test$Survived_f)
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction  No Yes
+##        No  150  30
+##        Yes  15  73
+##                                           
+##                Accuracy : 0.8321          
+##                  95% CI : (0.7819, 0.8748)
+##     No Information Rate : 0.6157          
+##     P-Value [Acc > NIR] : 9.763e-15       
+##                                           
+##                   Kappa : 0.6352          
+##  Mcnemar's Test P-Value : 0.03689         
+##                                           
+##             Sensitivity : 0.9091          
+##             Specificity : 0.7087          
+##          Pos Pred Value : 0.8333          
+##          Neg Pred Value : 0.8295          
+##              Prevalence : 0.6157          
+##          Detection Rate : 0.5597          
+##    Detection Prevalence : 0.6716          
+##       Balanced Accuracy : 0.8089          
+##                                           
+##        'Positive' Class : No              
+## 
+```
+

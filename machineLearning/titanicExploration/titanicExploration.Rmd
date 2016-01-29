@@ -293,3 +293,102 @@ sum(rawData$Survived_f == "Yes" & rawData$isAdult == TRUE)/ sum(rawData$isAdult)
 table(rawData$Survived_f, rawData$isSenior)
 sum(rawData$Survived_f == "Yes" & rawData$isSenior == TRUE)/ sum(rawData$isSenior)
 ```
+
+##Survival Model using Trees 
+CART = Classification And Regression Trees
+Conditional Inference Tree
+
+###Training and Test dataset
+Splitting the training dataset in two different datasets  
+
+- __training__ dataset, used to build the model
+- __test__ dataset, used to validate the model
+
+```{r splittingData, collapse = TRUE}
+require(caTools)
+#Contains basic utility functions like sample.split
+index_split <- sample.split(rawData$Survived_f, SplitRatio = 0.7)
+
+#Preparing the raw dataset - removing not needed feature
+rawData$Pclass <- NULL
+rawData$Survived <- NULL
+rawData$Sex <- NULL
+rawData$Embarked <- NULL
+
+dataset.train <- rawData[index_split,]
+dataset.test <- rawData[!index_split,]
+#sample.split keeps the same ratio of the provided feature
+table(dataset.test$Survived_f)[2]/ nrow(dataset.test)
+table(dataset.train$Survived_f)[2]/nrow(dataset.train)
+```
+
+##Modelling using `rpart` package
+Load the required packages ...
+```{r loadingCartTools}
+#install.packages("rpart")
+#install.packages("rpart.plot")
+#install.packages("ROCR")
+require(rpart)
+require(rpart.plot)
+require(ROCR)
+```
+
+Create the CART model ...
+```{r cartModel1}
+survivalModel1 <- rpart(Survived_f ~ Age + Pclass_f + Sex_f + Fare + SibSp + Parch + Embarked_f, data = dataset.train, minbucket = 15)
+
+prp(survivalModel1, main = "Classification & Regression Tree")
+```
+
+Validate the model ...
+```{r validateModel1, collapse = TRUE}
+predictionOnModel1_c <- predict(survivalModel1, newdata = dataset.test, type = "class")
+
+#Create the confusion matrix 
+table(dataset.test$Survived_f, predictionOnModel1_c)
+
+#Accuracy (TP + TN)/ Total
+(table(dataset.test$Survived_f, predictionOnModel1_c)[1] + table(dataset.test$Survived_f, predictionOnModel1_c)[4])/nrow(dataset.test)
+```
+
+```{r rocrCurve}
+predictionOnModel1_p <- predict(survivalModel1, newdata = dataset.test)
+
+pred <- prediction(predictionOnModel1_p[,2], dataset.test$Survived_f)
+perf <- performance(pred, "tpr", "fpr")
+
+plot(perf, main = "ROC")
+```
+
+##Modelling using `party` package
+Load the required packages ...
+```{r loadingPartyTools, message=F,warning=F}
+#install.packages("party")
+#install.packages("caret")
+require(party)
+require(caret)
+```
+
+Create the CART model ...
+```{r cartModel2, collapse=T,  fig.height=12, fig.width=12}
+survivalModel2 <- ctree(Survived_f ~ Age + Pclass_f + Sex_f + Fare + SibSp + Parch + Embarked_f, data = dataset.train)
+
+survivalModel2
+par(ps = 4, cex = 1, cex.main = 1)
+plot(survivalModel2, main = "Conditional Inference Tree")
+```
+
+Validate the model ...
+```{r validateModel2, collapse = TRUE}
+predictionOnModel2_c <- predict(survivalModel2, newdata = dataset.test)
+
+#Create the confusion matrix 
+table(dataset.test$Survived_f, predictionOnModel2_c)
+
+#Accuracy (TP + TN)/ Total
+(table(dataset.test$Survived_f, predictionOnModel2_c)[1] + table(dataset.test$Survived_f, predictionOnModel2_c)[4])/nrow(dataset.test)
+
+#Another approach using the caret package
+confusionMatrix(predictionOnModel2_c, dataset.test$Survived_f)
+```
+
