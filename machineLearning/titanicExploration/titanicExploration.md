@@ -663,8 +663,8 @@ predictionOnModel1_c <- predict(survivalModel1, newdata = dataset.test, type = "
 table(dataset.test$Survived_f, predictionOnModel1_c)
 ##      predictionOnModel1_c
 ##        No Yes
-##   No  142  23
-##   Yes  29  74
+##   No  149  16
+##   Yes  36  67
 
 #Accuracy (TP + TN)/ Total
 (table(dataset.test$Survived_f, predictionOnModel1_c)[1] + table(dataset.test$Survived_f, predictionOnModel1_c)[4])/nrow(dataset.test)
@@ -700,31 +700,34 @@ survivalModel2 <- ctree(Survived_f ~ Age + Pclass_f + Sex_f + Fare + SibSp + Par
 
 survivalModel2
 ## 
-## 	 Conditional inference tree with 7 terminal nodes
+## 	 Conditional inference tree with 8 terminal nodes
 ## 
 ## Response:  Survived_f 
 ## Inputs:  Age, Pclass_f, Sex_f, Fare, SibSp, Parch, Embarked_f 
 ## Number of observations:  623 
 ## 
-## 1) Sex_f == {F}; criterion = 1, statistic = 175.586
-##   2) Pclass_f == {3rd}; criterion = 1, statistic = 42.535
-##     3) Fare <= 23.25; criterion = 0.991, statistic = 10.315
-##       4)*  weights = 90 
-##     3) Fare > 23.25
-##       5)*  weights = 14 
-##   2) Pclass_f == {1st, 2nd}
-##     6)*  weights = 111 
-## 1) Sex_f == {M}
-##   7) Age <= 9; criterion = 0.996, statistic = 13.811
-##     8) SibSp <= 2; criterion = 1, statistic = 20.986
-##       9)*  weights = 18 
-##     8) SibSp > 2
-##       10)*  weights = 7 
-##   7) Age > 9
-##     11) Pclass_f == {1st}; criterion = 1, statistic = 20.447
-##       12)*  weights = 80 
-##     11) Pclass_f == {2nd, 3rd}
-##       13)*  weights = 303
+## 1) Sex_f == {M}; criterion = 1, statistic = 188.332
+##   2) Pclass_f == {1st}; criterion = 1, statistic = 24.547
+##     3)*  weights = 88 
+##   2) Pclass_f == {2nd, 3rd}
+##     4) Age <= 6; criterion = 1, statistic = 18.246
+##       5) SibSp <= 2; criterion = 0.998, statistic = 12.984
+##         6)*  weights = 12 
+##       5) SibSp > 2
+##         7)*  weights = 10 
+##     4) Age > 6
+##       8)*  weights = 291 
+## 1) Sex_f == {F}
+##   9) Pclass_f == {3rd}; criterion = 1, statistic = 46.109
+##     10) SibSp <= 2; criterion = 0.996, statistic = 13.192
+##       11) Age <= 38; criterion = 0.965, statistic = 7.858
+##         12)*  weights = 88 
+##       11) Age > 38
+##         13)*  weights = 8 
+##     10) SibSp > 2
+##       14)*  weights = 13 
+##   9) Pclass_f == {1st, 2nd}
+##     15)*  weights = 113
 par(ps = 4, cex = 1, cex.main = 1)
 plot(survivalModel2, main = "Conditional Inference Tree")
 ```
@@ -740,12 +743,12 @@ predictionOnModel2_c <- predict(survivalModel2, newdata = dataset.test)
 table(dataset.test$Survived_f, predictionOnModel2_c)
 ##      predictionOnModel2_c
 ##        No Yes
-##   No  150  15
-##   Yes  30  73
+##   No  147  18
+##   Yes  35  68
 
 #Accuracy (TP + TN)/ Total
 (table(dataset.test$Survived_f, predictionOnModel2_c)[1] + table(dataset.test$Survived_f, predictionOnModel2_c)[4])/nrow(dataset.test)
-## [1] 0.8320896
+## [1] 0.8022388
 
 #Another approach using the caret package
 confusionMatrix(predictionOnModel2_c, dataset.test$Survived_f)
@@ -753,25 +756,25 @@ confusionMatrix(predictionOnModel2_c, dataset.test$Survived_f)
 ## 
 ##           Reference
 ## Prediction  No Yes
-##        No  150  30
-##        Yes  15  73
+##        No  147  35
+##        Yes  18  68
 ##                                           
-##                Accuracy : 0.8321          
-##                  95% CI : (0.7819, 0.8748)
+##                Accuracy : 0.8022          
+##                  95% CI : (0.7494, 0.8482)
 ##     No Information Rate : 0.6157          
-##     P-Value [Acc > NIR] : 9.763e-15       
+##     P-Value [Acc > NIR] : 3.778e-11       
 ##                                           
-##                   Kappa : 0.6352          
-##  Mcnemar's Test P-Value : 0.03689         
+##                   Kappa : 0.5687          
+##  Mcnemar's Test P-Value : 0.02797         
 ##                                           
-##             Sensitivity : 0.9091          
-##             Specificity : 0.7087          
-##          Pos Pred Value : 0.8333          
-##          Neg Pred Value : 0.8295          
+##             Sensitivity : 0.8909          
+##             Specificity : 0.6602          
+##          Pos Pred Value : 0.8077          
+##          Neg Pred Value : 0.7907          
 ##              Prevalence : 0.6157          
-##          Detection Rate : 0.5597          
-##    Detection Prevalence : 0.6716          
-##       Balanced Accuracy : 0.8089          
+##          Detection Rate : 0.5485          
+##    Detection Prevalence : 0.6791          
+##       Balanced Accuracy : 0.7756          
 ##                                           
 ##        'Positive' Class : No              
 ## 
