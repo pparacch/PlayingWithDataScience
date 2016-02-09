@@ -1,0 +1,148 @@
+---
+title: "Caret Package"
+author: "Pier Lorenzo Paracchini"
+date: "February 9, 2016"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+The `caret` package is a set of functions that attemt to streamline the process of creating predictive models. It includes functions to:
+
+* preprocess the data
+* split the data
+* train models (fit) and test nodels
+* comparison of models
+
+`caret` acts as a **wrapper** around other packages used for predictive models.
+
+##Packages, Installations (with Dependencies)
+
+```{r eval = FALSE}
+#The caret package
+install.packages("caret", dependencies = c("Depends", "Suggests"))
+
+#Binning Support
+install.packages("Hmisc")
+
+#Multiple plots in same grid
+install.packages("gridExtra")
+
+#Data
+install.packages("ISLR")
+install.packages("AppliedPredictiveModeling")
+```
+
+```{r loadingRequiredPackages, echo = FALSE, message=FALSE, warning=FALSE}
+require(caret)
+require(Hmisc)
+require(gridExtra)
+require(ggplot2)
+```
+
+
+##The datasets  
+The `ISLR::Wage` dataset:  
+```{r theData1, message=FALSE, warning=FALSE, echo = FALSE}
+require(ISLR)
+data(Wage)
+str(Wage)
+summary(Wage)
+```
+
+The `iris` dataset:  
+```{r theData2, message=FALSE, warning=FALSE, echo = FALSE}
+data(iris)
+str(iris)
+summary(iris)
+```
+
+#The Caret Vocabulary
+
+##Plotting the Predictors::Visualizations
+**Important!** When performing exploratory analysis on the available dataset is a **good preactice** to **split the available data set in a training dataset and a testing dataset** and perform the relevant exploration on the **training dataset**.
+
+Visual inspection/ exploration is important for building up an "initial" understanding of the available predictors, "possible" patterns and relationships. E.g. looking for skewness, outliers, ...
+
+##Plots
+###Scatterplot Matrix (caret)
+The `pairs` plot option is available for **regression** and **classification** problems.
+
+```{r visualizationData1}
+featurePlot(x=Wage[, c("age", "education", "jobclass")], y=Wage$wage, plot="pairs")
+```
+
+```{r visualizationData2}
+featurePlot(x=iris[, 1:4], y=iris$Species, plot="pairs", auto.key = list(colums= 3))
+```
+
+###Scatterplot Matrix with Ellipses (caret)
+The `ellipse` plot option is available for **classification** problems.
+
+```{r visualizationData2_1}
+featurePlot(x=iris[, 1:4], y=iris$Species, plot="ellipse", auto.key = list(colums= 3))
+```
+
+###Scatterplot (ggplot2)
+Simple Scatterplot:  
+```{r}
+qplot(x=age, y=wage, data=Wage)
+```
+
+Adding the `jobclass` dimension:  
+```{r}
+qplot(x=age, y=wage, colour=jobclass, data=Wage)
+```
+
+Using `education` dimension and adding regression smoothers:  
+```{r}
+qq <- qplot(x=age, y=wage, colour=education, data=Wage)
+qq + geom_smooth(method="lm", formula = y~x)
+```
+
+###Boxplot (Hmisc + ggplot2 + gridExtra)
+A boxplot example using `qplot` ...  
+```{r}
+cutWage <- cut2(Wage$wage, g=3) #g: number of quantiles group
+p1 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot"))
+p1
+```
+
+Adding the points overlayed...  
+```{r}
+p2 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot", "jitter"))
+grid.arrange(p1, p2, ncol=2)
+```
+
+###Boxplot (caret)
+A boxplot example using `featurePlot` ...  
+```{r}
+featurePlot(x = iris[, 1:4],
+            y = iris$Species,
+            plot = "box",
+            ##pass in options to bwplot
+            scales = list(y = list(relation="free"), x = list(rot = 90)),
+            layout= c(4,1), auto.key = list(columns = 2))
+```
+
+###Tables
+```{r}
+t1 <- table(cut2(Wage$wage, g=3), Wage$jobclass)
+##Show table content
+t1
+
+##Show Proportion by row
+prop.table(t1, 1)
+
+##Show Proportion by col
+prop.table(t1, 2)
+```
+
+##Pre-processing
+###Binning: making factors out of quantitative predictors (Hmisc)
+An example on how to break a quantitative variables into different categories.
+
+```{r binningExample}
+cutWage <- cut2(Wage$wage, g=3) #g: number of quantiles group
+table(cutWage)
+```

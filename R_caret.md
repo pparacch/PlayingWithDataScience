@@ -1,0 +1,268 @@
+# Caret Package
+Pier Lorenzo Paracchini  
+February 9, 2016  
+
+The `caret` package is a set of functions that attemt to streamline the process of creating predictive models. It includes functions to:
+
+* preprocess the data
+* split the data
+* train models (fit) and test nodels
+* comparison of models
+
+`caret` acts as a **wrapper** around other packages used for predictive models.
+
+##Packages, Installations (with Dependencies)
+
+
+```r
+#The caret package
+install.packages("caret", dependencies = c("Depends", "Suggests"))
+
+#Binning Support
+install.packages("Hmisc")
+
+#Multiple plots in same grid
+install.packages("gridExtra")
+
+#Data
+install.packages("ISLR")
+install.packages("AppliedPredictiveModeling")
+```
+
+
+
+
+##The datasets  
+The `ISLR::Wage` dataset:  
+
+```
+## 'data.frame':	3000 obs. of  12 variables:
+##  $ year      : int  2006 2004 2003 2003 2005 2008 2009 2008 2006 2004 ...
+##  $ age       : int  18 24 45 43 50 54 44 30 41 52 ...
+##  $ sex       : Factor w/ 2 levels "1. Male","2. Female": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ maritl    : Factor w/ 5 levels "1. Never Married",..: 1 1 2 2 4 2 2 1 1 2 ...
+##  $ race      : Factor w/ 4 levels "1. White","2. Black",..: 1 1 1 3 1 1 4 3 2 1 ...
+##  $ education : Factor w/ 5 levels "1. < HS Grad",..: 1 4 3 4 2 4 3 3 3 2 ...
+##  $ region    : Factor w/ 9 levels "1. New England",..: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ jobclass  : Factor w/ 2 levels "1. Industrial",..: 1 2 1 2 2 2 1 2 2 2 ...
+##  $ health    : Factor w/ 2 levels "1. <=Good","2. >=Very Good": 1 2 1 2 1 2 2 1 2 2 ...
+##  $ health_ins: Factor w/ 2 levels "1. Yes","2. No": 2 2 1 1 1 1 1 1 1 1 ...
+##  $ logwage   : num  4.32 4.26 4.88 5.04 4.32 ...
+##  $ wage      : num  75 70.5 131 154.7 75 ...
+```
+
+```
+##       year           age               sex                    maritl    
+##  Min.   :2003   Min.   :18.00   1. Male  :3000   1. Never Married: 648  
+##  1st Qu.:2004   1st Qu.:33.75   2. Female:   0   2. Married      :2074  
+##  Median :2006   Median :42.00                    3. Widowed      :  19  
+##  Mean   :2006   Mean   :42.41                    4. Divorced     : 204  
+##  3rd Qu.:2008   3rd Qu.:51.00                    5. Separated    :  55  
+##  Max.   :2009   Max.   :80.00                                           
+##                                                                         
+##        race                   education                     region    
+##  1. White:2480   1. < HS Grad      :268   2. Middle Atlantic   :3000  
+##  2. Black: 293   2. HS Grad        :971   1. New England       :   0  
+##  3. Asian: 190   3. Some College   :650   3. East North Central:   0  
+##  4. Other:  37   4. College Grad   :685   4. West North Central:   0  
+##                  5. Advanced Degree:426   5. South Atlantic    :   0  
+##                                           6. East South Central:   0  
+##                                           (Other)              :   0  
+##            jobclass               health      health_ins      logwage     
+##  1. Industrial :1544   1. <=Good     : 858   1. Yes:2083   Min.   :3.000  
+##  2. Information:1456   2. >=Very Good:2142   2. No : 917   1st Qu.:4.447  
+##                                                            Median :4.653  
+##                                                            Mean   :4.654  
+##                                                            3rd Qu.:4.857  
+##                                                            Max.   :5.763  
+##                                                                           
+##       wage       
+##  Min.   : 20.09  
+##  1st Qu.: 85.38  
+##  Median :104.92  
+##  Mean   :111.70  
+##  3rd Qu.:128.68  
+##  Max.   :318.34  
+## 
+```
+
+The `iris` dataset:  
+
+```
+## 'data.frame':	150 obs. of  5 variables:
+##  $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+##  $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+##  $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+##  $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+##  $ Species     : Factor w/ 3 levels "setosa","versicolor",..: 1 1 1 1 1 1 1 1 1 1 ...
+```
+
+```
+##   Sepal.Length    Sepal.Width     Petal.Length    Petal.Width   
+##  Min.   :4.300   Min.   :2.000   Min.   :1.000   Min.   :0.100  
+##  1st Qu.:5.100   1st Qu.:2.800   1st Qu.:1.600   1st Qu.:0.300  
+##  Median :5.800   Median :3.000   Median :4.350   Median :1.300  
+##  Mean   :5.843   Mean   :3.057   Mean   :3.758   Mean   :1.199  
+##  3rd Qu.:6.400   3rd Qu.:3.300   3rd Qu.:5.100   3rd Qu.:1.800  
+##  Max.   :7.900   Max.   :4.400   Max.   :6.900   Max.   :2.500  
+##        Species  
+##  setosa    :50  
+##  versicolor:50  
+##  virginica :50  
+##                 
+##                 
+## 
+```
+
+#The Caret Vocabulary
+
+##Plotting the Predictors::Visualizations
+**Important!** When performing exploratory analysis on the available dataset is a **good preactice** to **split the available data set in a training dataset and a testing dataset** and perform the relevant exploration on the **training dataset**.
+
+Visual inspection/ exploration is important for building up an "initial" understanding of the available predictors, "possible" patterns and relationships. E.g. looking for skewness, outliers, ...
+
+##Plots
+###Scatterplot Matrix (caret)
+The `pairs` plot option is available for **regression** and **classification** problems.
+
+
+```r
+featurePlot(x=Wage[, c("age", "education", "jobclass")], y=Wage$wage, plot="pairs")
+```
+
+![](R_caret_files/figure-html/visualizationData1-1.png) 
+
+
+```r
+featurePlot(x=iris[, 1:4], y=iris$Species, plot="pairs", auto.key = list(colums= 3))
+```
+
+![](R_caret_files/figure-html/visualizationData2-1.png) 
+
+###Scatterplot Matrix with Ellipses (caret)
+The `ellipse` plot option is available for **classification** problems.
+
+
+```r
+featurePlot(x=iris[, 1:4], y=iris$Species, plot="ellipse", auto.key = list(colums= 3))
+```
+
+![](R_caret_files/figure-html/visualizationData2_1-1.png) 
+
+###Scatterplot (ggplot2)
+Simple Scatterplot:  
+
+```r
+qplot(x=age, y=wage, data=Wage)
+```
+
+![](R_caret_files/figure-html/unnamed-chunk-2-1.png) 
+
+Adding the `jobclass` dimension:  
+
+```r
+qplot(x=age, y=wage, colour=jobclass, data=Wage)
+```
+
+![](R_caret_files/figure-html/unnamed-chunk-3-1.png) 
+
+Using `education` dimension and adding regression smoothers:  
+
+```r
+qq <- qplot(x=age, y=wage, colour=education, data=Wage)
+qq + geom_smooth(method="lm", formula = y~x)
+```
+
+![](R_caret_files/figure-html/unnamed-chunk-4-1.png) 
+
+###Boxplot (Hmisc + ggplot2 + gridExtra)
+A boxplot example using `qplot` ...  
+
+```r
+cutWage <- cut2(Wage$wage, g=3) #g: number of quantiles group
+p1 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot"))
+p1
+```
+
+![](R_caret_files/figure-html/unnamed-chunk-5-1.png) 
+
+Adding the points overlayed...  
+
+```r
+p2 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot", "jitter"))
+grid.arrange(p1, p2, ncol=2)
+```
+
+![](R_caret_files/figure-html/unnamed-chunk-6-1.png) 
+
+###Boxplot (caret)
+A boxplot example using `featurePlot` ...  
+
+```r
+featurePlot(x = iris[, 1:4],
+            y = iris$Species,
+            plot = "box",
+            ##pass in options to bwplot
+            scales = list(y = list(relation="free"), x = list(rot = 90)),
+            layout= c(4,2), auto.key = TRUE)
+```
+
+![](R_caret_files/figure-html/unnamed-chunk-7-1.png) 
+
+###Tables
+
+```r
+t1 <- table(cut2(Wage$wage, g=3), Wage$jobclass)
+##Show table content
+t1
+```
+
+```
+##                
+##                 1. Industrial 2. Information
+##   [ 20.1, 92.2)           629            371
+##   [ 92.2,118.9)           533            507
+##   [118.9,318.3]           382            578
+```
+
+```r
+##Show Proportion by row
+prop.table(t1, 1)
+```
+
+```
+##                
+##                 1. Industrial 2. Information
+##   [ 20.1, 92.2)     0.6290000      0.3710000
+##   [ 92.2,118.9)     0.5125000      0.4875000
+##   [118.9,318.3]     0.3979167      0.6020833
+```
+
+```r
+##Show Proportion by col
+prop.table(t1, 2)
+```
+
+```
+##                
+##                 1. Industrial 2. Information
+##   [ 20.1, 92.2)     0.4073834      0.2548077
+##   [ 92.2,118.9)     0.3452073      0.3482143
+##   [118.9,318.3]     0.2474093      0.3969780
+```
+
+##Pre-processing
+###Binning: making factors out of quantitative predictors (Hmisc)
+An example on how to break a quantitative variables into different categories.
+
+
+```r
+cutWage <- cut2(Wage$wage, g=3) #g: number of quantiles group
+table(cutWage)
+```
+
+```
+## cutWage
+## [ 20.1, 92.2) [ 92.2,118.9) [118.9,318.3] 
+##          1000          1040           960
+```
