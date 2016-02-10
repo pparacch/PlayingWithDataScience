@@ -114,15 +114,68 @@ The `iris` dataset:
 ## 
 ```
 
-#The Caret Vocabulary
+#The Caret Vocabulary & Process  
+##Data Splitting
+Techniques that can be used to create a **training** and **testing** dataset from the vailable data.  
+###Simple Splitting Based On Outcome
+Create a balanced split of the data based on the outcome, keeping the overall distribution of the data (if outcome is a classifier)....  
 
-##Plotting the Predictors::Visualizations
-**Important!** When performing exploratory analysis on the available dataset is a **good preactice** to **split the available data set in a training dataset and a testing dataset** and perform the relevant exploration on the **training dataset**.
+
+```r
+prop.table(table(iris$Species))
+## 
+##     setosa versicolor  virginica 
+##  0.3333333  0.3333333  0.3333333
+
+#split 75%/25% - training/ test
+inTraining <- createDataPartition(iris$Species, times = 1, p = 0.75, list = FALSE)
+#If list = TRUE - a listy is returned
+
+iris.train <- iris[inTraining,]
+dim(iris.train)[1]/dim(iris)[1] * 100
+## [1] 76
+prop.table(table(iris.train$Species))
+## 
+##     setosa versicolor  virginica 
+##  0.3333333  0.3333333  0.3333333
+
+iris.test <- iris[-inTraining,]
+dim(iris.test)[1]/dim(iris)[1] * 100
+## [1] 24
+prop.table(table(iris.test$Species))
+## 
+##     setosa versicolor  virginica 
+##  0.3333333  0.3333333  0.3333333
+```
+
+###Splittimg Based On Predictors
+The data can be splitted on the basis of teh predictor values using the _maximum dissimilarity sampling_. Note!! Dissimilarity between two sample can be  measured in a number of ways. Simplest approach is to use the distance between predictor values - if the distance is small then the 2 values are in near proximity. Larger distances are indication for dissimilarities.
+
+
+
+##Visualizations
+**Important!** When performing exploratory analysis on the available dataset is a **good practice** to **split the available data set in a training dataset and a testing dataset** and perform the relevant exploration/ visualization on the **training** dataset.
 
 Visual inspection/ exploration is important for building up an "initial" understanding of the available predictors, "possible" patterns and relationships. E.g. looking for skewness, outliers, ...
 
-##Plots
-###Scatterplot Matrix (caret)
+Things to look for  
+
+* Imbalance in outcomes/ predictors
+* Outliers
+* Group of points not explained by a predictor
+* Skewed predictors
+
+###Plots
+####Histograms 
+Using `graphics` ...  
+
+```r
+hist(Wage$wage)
+```
+
+![](R_caret_files/figure-html/unnamed-chunk-3-1.png) 
+
+####Scatterplot Matrix (caret)
 The `pairs` plot option is available for **regression** and **classification** problems.
 
 
@@ -139,7 +192,7 @@ featurePlot(x=iris[, 1:4], y=iris$Species, plot="pairs", auto.key = list(colums=
 
 ![](R_caret_files/figure-html/visualizationData2-1.png) 
 
-###Scatterplot Matrix with Ellipses (caret)
+####Scatterplot Matrix with Ellipses (caret)
 The `ellipse` plot option is available for **classification** problems.
 
 
@@ -149,14 +202,14 @@ featurePlot(x=iris[, 1:4], y=iris$Species, plot="ellipse", auto.key = list(colum
 
 ![](R_caret_files/figure-html/visualizationData2_1-1.png) 
 
-###Scatterplot (ggplot2)
+####Scatterplot (ggplot2)
 Simple Scatterplot:  
 
 ```r
 qplot(x=age, y=wage, data=Wage)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-2-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-4-1.png) 
 
 Adding the `jobclass` dimension:  
 
@@ -164,7 +217,7 @@ Adding the `jobclass` dimension:
 qplot(x=age, y=wage, colour=jobclass, data=Wage)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-3-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-5-1.png) 
 
 Using `education` dimension and adding regression smoothers:  
 
@@ -173,9 +226,9 @@ qq <- qplot(x=age, y=wage, colour=education, data=Wage)
 qq + geom_smooth(method="lm", formula = y~x)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-4-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-6-1.png) 
 
-###Boxplot (Hmisc + ggplot2 + gridExtra)
+####Boxplot (Hmisc + ggplot2 + gridExtra)
 A boxplot example using `qplot` ...  
 
 ```r
@@ -184,7 +237,7 @@ p1 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot"))
 p1
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-5-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-7-1.png) 
 
 Adding the points overlayed...  
 
@@ -193,9 +246,9 @@ p2 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot", "j
 grid.arrange(p1, p2, ncol=2)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-6-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-8-1.png) 
 
-###Boxplot (caret)
+####Boxplot (caret)
 A boxplot example using `featurePlot` ...  
 
 ```r
@@ -204,12 +257,34 @@ featurePlot(x = iris[, 1:4],
             plot = "box",
             ##pass in options to bwplot
             scales = list(y = list(relation="free"), x = list(rot = 90)),
-            layout= c(4,2), auto.key = TRUE)
+            layout= c(4,1), auto.key = list(columns = 2))
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-7-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-9-1.png) 
 
-###Tables
+####Density Plots  
+Using `ggplot2` ...  
+
+```r
+qplot(x = wage, colour = education, data = Wage, geom = "density")
+```
+
+![](R_caret_files/figure-html/unnamed-chunk-10-1.png) 
+
+Using `caret` ...  
+
+```r
+featurePlot(Wage$wage, y = Wage$education, plot = "density", scales = list(x = list(relation="free"), y = list(releation="free")), adjust = 1.5, pch = "|", auto.key = list(columns = 3))
+```
+
+```
+## Warning in complete_names(y, y.scales): Invalid or ambiguous component
+## names: releation
+```
+
+![](R_caret_files/figure-html/unnamed-chunk-11-1.png) 
+
+####Tables
 
 ```r
 t1 <- table(cut2(Wage$wage, g=3), Wage$jobclass)
@@ -252,6 +327,7 @@ prop.table(t1, 2)
 ```
 
 ##Pre-processing
+The addition, deletion or transformation of **training** dataset.  
 ###Binning: making factors out of quantitative predictors (Hmisc)
 An example on how to break a quantitative variables into different categories.
 

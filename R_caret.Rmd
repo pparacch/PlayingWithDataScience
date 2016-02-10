@@ -57,15 +57,82 @@ str(iris)
 summary(iris)
 ```
 
-#The Caret Vocabulary
+#The Caret Vocabulary & Process  
+##Data Splitting
+Techniques that can be used to create a **training** and **testing** dataset from the vailable data.  
+###Simple Splitting Based On Outcome
+Create a balanced split of the data based on the outcome, keeping the overall distribution of the data (if outcome is a classifier)....  
 
-##Plotting the Predictors::Visualizations
-**Important!** When performing exploratory analysis on the available dataset is a **good preactice** to **split the available data set in a training dataset and a testing dataset** and perform the relevant exploration on the **training dataset**.
+```{r collapse = TRUE}
+prop.table(table(iris$Species))
+
+#split 75%/25% - training/ test
+inTraining <- createDataPartition(iris$Species, times = 1, p = 0.75, list = FALSE)
+#If list = TRUE - a listy is returned
+
+iris.train <- iris[inTraining,]
+dim(iris.train)[1]/dim(iris)[1] * 100
+prop.table(table(iris.train$Species))
+
+iris.test <- iris[-inTraining,]
+dim(iris.test)[1]/dim(iris)[1] * 100
+prop.table(table(iris.test$Species))
+```
+
+###Splitting Based On Predictors
+The data can be splitted on the basis of teh predictor values using the _maximum dissimilarity sampling_. Note!! Dissimilarity between two sample can be  measured in a number of ways. Simplest approach is to use the distance between predictor values - if the distance is small then the 2 values are in near proximity. Larger distances are indication for dissimilarities. See `caret::maxDissim` function.
+
+###Cross-Validation and Resampling Techniques
+Cross-Validation is a model validation technique for assessing how teh results of a statistical analysis will generalize to an independent dataset - using the same dataset e.g. **training** dataset to create different sets of test/training datasets (different cross-validation rounds).
+
+####k-fold
+Creating **training** folds...  
+```{r}
+set.seed(32323)
+folds.training <- createFolds(y = iris$Species, k = 10, list = TRUE, returnTrain = TRUE)
+#return a list objects, each list element contains info on the training dataset for each specific fold
+sapply(folds.training, length)
+```
+
+Creating **testing** folds...  
+```{r}
+set.seed(32323)
+folds.testing <- createFolds(y = iris$Species, k = 10, list = TRUE, returnTrain = FALSE)
+#return a list objects, each list element contains info on the testing dataset for each specific fold
+sapply(folds.testing, length)
+```
+
+If `list=FALSE` then `returnTrain` is not used - the **testing** dataset is returned - and a vector is returned telling which fold each element in y should be
+
+```{r}
+set.seed(32323)
+folds.testing <- createFolds(y = iris$Species, k = 5, list = FALSE)
+head(folds.testing)
+fold1.testing.idx <- which(folds.testing == 1)
+fold1.testing <- iris[fold1.testing.idx,]
+head(fold1.testing)
+```
+
+##Visualizations
+**Important!** When performing exploratory analysis on the available dataset is a **good practice** to **split the available data set in a training dataset and a testing dataset** and perform the relevant exploration/ visualization on the **training** dataset.
 
 Visual inspection/ exploration is important for building up an "initial" understanding of the available predictors, "possible" patterns and relationships. E.g. looking for skewness, outliers, ...
 
-##Plots
-###Scatterplot Matrix (caret)
+Things to look for  
+
+* Imbalance in outcomes/ predictors
+* Outliers
+* Group of points not explained by a predictor
+* Skewed predictors
+
+###Plots
+####Histograms 
+Using `graphics` ...  
+```{r}
+hist(Wage$wage)
+```
+
+####Scatterplot Matrix (caret)
 The `pairs` plot option is available for **regression** and **classification** problems.
 
 ```{r visualizationData1}
@@ -76,14 +143,14 @@ featurePlot(x=Wage[, c("age", "education", "jobclass")], y=Wage$wage, plot="pair
 featurePlot(x=iris[, 1:4], y=iris$Species, plot="pairs", auto.key = list(colums= 3))
 ```
 
-###Scatterplot Matrix with Ellipses (caret)
+####Scatterplot Matrix with Ellipses (caret)
 The `ellipse` plot option is available for **classification** problems.
 
 ```{r visualizationData2_1}
 featurePlot(x=iris[, 1:4], y=iris$Species, plot="ellipse", auto.key = list(colums= 3))
 ```
 
-###Scatterplot (ggplot2)
+####Scatterplot (ggplot2)
 Simple Scatterplot:  
 ```{r}
 qplot(x=age, y=wage, data=Wage)
@@ -100,7 +167,7 @@ qq <- qplot(x=age, y=wage, colour=education, data=Wage)
 qq + geom_smooth(method="lm", formula = y~x)
 ```
 
-###Boxplot (Hmisc + ggplot2 + gridExtra)
+####Boxplot (Hmisc + ggplot2 + gridExtra)
 A boxplot example using `qplot` ...  
 ```{r}
 cutWage <- cut2(Wage$wage, g=3) #g: number of quantiles group
@@ -114,7 +181,7 @@ p2 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot", "j
 grid.arrange(p1, p2, ncol=2)
 ```
 
-###Boxplot (caret)
+####Boxplot (caret)
 A boxplot example using `featurePlot` ...  
 ```{r}
 featurePlot(x = iris[, 1:4],
@@ -125,7 +192,18 @@ featurePlot(x = iris[, 1:4],
             layout= c(4,1), auto.key = list(columns = 2))
 ```
 
-###Tables
+####Density Plots  
+Using `ggplot2` ...  
+```{r}
+qplot(x = wage, colour = education, data = Wage, geom = "density")
+```
+
+Using `caret` ...  
+```{r}
+featurePlot(Wage$wage, y = Wage$education, plot = "density", scales = list(x = list(relation="free"), y = list(releation="free")), adjust = 1.5, pch = "|", auto.key = list(columns = 3))
+```
+
+####Tables
 ```{r}
 t1 <- table(cut2(Wage$wage, g=3), Wage$jobclass)
 ##Show table content
@@ -139,6 +217,7 @@ prop.table(t1, 2)
 ```
 
 ##Pre-processing
+The addition, deletion or transformation of **training** dataset.  
 ###Binning: making factors out of quantitative predictors (Hmisc)
 An example on how to break a quantitative variables into different categories.
 
