@@ -26,7 +26,7 @@ __Interesting Packages__
 
 ##Some Applications
 ###Practice
-[Titanic: Machine Learning from Disaster]()
+[Titanic: Machine Learning from Disaster](https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/titanicExploration/titanicExploration.md)
 
 ###Machine Learning Algorithms
 __Naive Bayes Algorithm__  
