@@ -57,6 +57,37 @@ str(iris)
 summary(iris)
 ```
 
+#Setting the seed 
+Useful to seed the seed in order to be able to replicate the running experiments.
+
+* Often useful to set an overall seed
+* Possible to set a seed for each resample (for parallel fits)
+
+Setting the seed   
+```{r collapse = TRUE}
+set.seed(123)
+seeds <- vector(mode = "list", length = 2)
+for(i in 1:2) seeds[[i]] <- sample.int(1000, 10)
+seeds
+
+set.seed(123)
+seeds <- vector(mode = "list", length = 2)
+for(i in 1:2) seeds[[i]] <- sample.int(1000, 10)
+seeds
+```
+
+Not setting the seed   
+```{r collapse = TRUE}
+seeds <- vector(mode = "list", length = 2)
+for(i in 1:2) seeds[[i]] <- sample.int(1000, 10)
+seeds
+
+seeds <- vector(mode = "list", length = 2)
+for(i in 1:2) seeds[[i]] <- sample.int(1000, 10)
+seeds
+```
+
+
 #The Caret Vocabulary & Process  
 ##Data Splitting
 Techniques that can be used to create a **training** and **testing** dataset from the vailable data.  
@@ -102,7 +133,7 @@ folds.testing <- createFolds(y = iris$Species, k = 10, list = TRUE, returnTrain 
 sapply(folds.testing, length)
 ```
 
-If `list=FALSE` then `returnTrain` is not used - the **testing** dataset is returned - and a vector is returned telling which fold each element in y should be
+If `list=FALSE` then `returnTrain` is not used - the **testing** dataset is returned (which fold each observation should be, based on teh k folder).
 
 ```{r}
 set.seed(32323)
@@ -113,6 +144,38 @@ fold1.testing <- iris[fold1.testing.idx,]
 head(fold1.testing)
 ```
 
+###Data Splitting Applied to Time Series: TimeSlices
+
+```{r collapse = TRUE}
+set.seed(32323)
+tme_index <- 1:1000 # index for the time slice
+time_folds <-  createTimeSlices(y = tme_index,initialWindow = 30, horizon = 10)
+names(time_folds) #List of 2 elements train and test
+
+#Time Slice connected with the 1st fold 30 points for TRAINING/ 10 points for TESTING
+time_folds$train$Training001
+time_folds$test$Testing001
+
+#Time Slice connected with the 2nd fold 30 points for TRAINING/ 10 points for TESTING
+time_folds$train$Training002
+time_folds$test$Testing002
+```
+
+####Playing with `fixedWindow`  
+```{r collapse = TRUE}
+createTimeSlices(y = 1:9, initialWindow = 5, horizon = 1, fixedWindow = FALSE)
+createTimeSlices(y = 1:9, initialWindow = 5, horizon = 1, fixedWindow = TRUE)
+
+createTimeSlices(y = 1:9, initialWindow = 5, horizon = 3, fixedWindow = TRUE)
+createTimeSlices(y = 1:9, initialWindow = 5, horizon = 3, fixedWindow = FALSE)
+```
+
+####Playing with `skip`
+```{r collapse = TRUE}
+createTimeSlices(y = 1:15, initialWindow = 5, horizon = 3)
+createTimeSlices(y = 1:15, initialWindow = 5, horizon = 3, skip = 2)
+createTimeSlices(y = 1:15, initialWindow = 5, horizon = 3, skip = 3)
+```
 ##Visualizations
 **Important!** When performing exploratory analysis on the available dataset is a **good practice** to **split the available data set in a training dataset and a testing dataset** and perform the relevant exploration/ visualization on the **training** dataset.
 
@@ -225,3 +288,64 @@ An example on how to break a quantitative variables into different categories.
 cutWage <- cut2(Wage$wage, g=3) #g: number of quantiles group
 table(cutWage)
 ```
+
+##Model Training & Parameter Tuning
+The caret package has several functions that attempt to streamline the model building and evaluation process.
+
+The `train` function can be used to
+
+* evaluate, using resampling, the effect of model tuning parameters on performance
+* choose the "optimal" model across these parameters
+* estimate model performance from a training set
+
+[Model List & Parameters](http://topepo.github.io/caret/modelList.html)
+
+
+`train` arguments/ options
+```{r}
+args(train.default)
+```
+
+Using the train arguments is possible to perform some basic parameter tuning e.g.
+
+`metric` option
+* Continuous outcomes
+    * RMSE Root Mean Squared Error
+    * Rsquared
+* Categorical outcomes
+    * Accuracy
+    * Kappa (a measure of concordance)
+
+
+Basic parameter tuning can be done using the `trainControl` function. 
+
+`fitControl` arguments/ options
+```{r}
+args(trainControl)
+```
+
+For example by default simple bootstrap resampling is used for `each resampling iteration`. `trainControl` can be used to specify the type of resampling. So if a repeated k-fold resampling is to be used instead 
+
+```{r}
+fitControl <- trainControl(## 10-fold CV
+                           method = "repeatedcv",
+                           number = 10,
+                           ## repeated ten times
+                           repeats = 10)
+#This function will be used in the train function through the trControl argument
+```
+
+__`trainControl` resampling options (see documentation for more info)
+
+* method
+    * boot = bootstrapping
+    * boot632 = bootstrapping with adjustment
+    * cv = cross validation
+    * repeatedcv = repeated cross validation
+    * LOOCV = leave-one-out cross validation
+* number
+    * for boot/ cross validation
+    * no of samples to take
+* repeats
+    * Number of times to repeat subsampling
+    * If big - it can slow things down

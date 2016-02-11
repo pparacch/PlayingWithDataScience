@@ -114,6 +114,46 @@ The `iris` dataset:
 ## 
 ```
 
+#Setting the seed 
+Useful to seed the seed in order to be able to replicate the running experiments.
+
+* Often useful to set an overall seed
+* Possible to set a seed for each resample (for parallel fits)
+
+
+```r
+#Need to be done before a random operation
+set.seed(123)
+seeds <- vector(mode = "list", length = 2)
+for(i in 1:2) seeds[[i]] <- sample.int(1000, 10)
+seeds
+```
+
+```
+## [[1]]
+##  [1] 288 788 409 881 937  46 525 887 548 453
+## 
+## [[2]]
+##  [1] 957 453 677 571 103 896 245  42 326 946
+```
+
+```r
+set.seed(123)
+seeds <- vector(mode = "list", length = 2)
+for(i in 1:2) seeds[[i]] <- sample.int(1000, 10)
+seeds
+```
+
+```
+## [[1]]
+##  [1] 288 788 409 881 937  46 525 887 548 453
+## 
+## [[2]]
+##  [1] 957 453 677 571 103 896 245  42 326 946
+```
+
+
+
 #The Caret Vocabulary & Process  
 ##Data Splitting
 Techniques that can be used to create a **training** and **testing** dataset from the vailable data.  
@@ -148,11 +188,276 @@ prop.table(table(iris.test$Species))
 ##  0.3333333  0.3333333  0.3333333
 ```
 
-###Splittimg Based On Predictors
-The data can be splitted on the basis of teh predictor values using the _maximum dissimilarity sampling_. Note!! Dissimilarity between two sample can be  measured in a number of ways. Simplest approach is to use the distance between predictor values - if the distance is small then the 2 values are in near proximity. Larger distances are indication for dissimilarities.
+###Splitting Based On Predictors
+The data can be splitted on the basis of teh predictor values using the _maximum dissimilarity sampling_. Note!! Dissimilarity between two sample can be  measured in a number of ways. Simplest approach is to use the distance between predictor values - if the distance is small then the 2 values are in near proximity. Larger distances are indication for dissimilarities. See `caret::maxDissim` function.
+
+###Cross-Validation and Resampling Techniques
+Cross-Validation is a model validation technique for assessing how teh results of a statistical analysis will generalize to an independent dataset - using the same dataset e.g. **training** dataset to create different sets of test/training datasets (different cross-validation rounds).
+
+####k-fold
+Creating **training** folds...  
+
+```r
+set.seed(32323)
+folds.training <- createFolds(y = iris$Species, k = 10, list = TRUE, returnTrain = TRUE)
+#return a list objects, each list element contains info on the training dataset for each specific fold
+sapply(folds.training, length)
+```
+
+```
+## Fold01 Fold02 Fold03 Fold04 Fold05 Fold06 Fold07 Fold08 Fold09 Fold10 
+##    135    135    135    135    135    135    135    135    135    135
+```
+
+Creating **testing** folds...  
+
+```r
+set.seed(32323)
+folds.testing <- createFolds(y = iris$Species, k = 10, list = TRUE, returnTrain = FALSE)
+#return a list objects, each list element contains info on the testing dataset for each specific fold
+sapply(folds.testing, length)
+```
+
+```
+## Fold01 Fold02 Fold03 Fold04 Fold05 Fold06 Fold07 Fold08 Fold09 Fold10 
+##     15     15     15     15     15     15     15     15     15     15
+```
+
+If `list=FALSE` then `returnTrain` is not used - the **testing** dataset is returned (which fold each observation should be, based on teh k folder).
 
 
+```r
+set.seed(32323)
+folds.testing <- createFolds(y = iris$Species, k = 5, list = FALSE)
+head(folds.testing)
+```
 
+```
+## [1] 4 3 4 5 1 5
+```
+
+```r
+fold1.testing.idx <- which(folds.testing == 1)
+fold1.testing <- iris[fold1.testing.idx,]
+head(fold1.testing)
+```
+
+```
+##    Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 5           5.0         3.6          1.4         0.2  setosa
+## 7           4.6         3.4          1.4         0.3  setosa
+## 10          4.9         3.1          1.5         0.1  setosa
+## 24          5.1         3.3          1.7         0.5  setosa
+## 30          4.7         3.2          1.6         0.2  setosa
+## 31          4.8         3.1          1.6         0.2  setosa
+```
+
+###Data Splitting Applied to Time Series: TimeSlices
+
+
+```r
+set.seed(32323)
+tme_index <- 1:1000 # index for the time slice
+time_folds <-  createTimeSlices(y = tme_index,initialWindow = 30, horizon = 10)
+names(time_folds) #List of 2 elements train and test
+## [1] "train" "test"
+
+#Time Slice connected with the 1st fold 30 points for TRAINING/ 10 points for TESTING
+time_folds$train$Training001
+##  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+## [24] 24 25 26 27 28 29 30
+time_folds$test$Testing001
+##  [1] 31 32 33 34 35 36 37 38 39 40
+
+#Time Slice connected with the 2nd fold 30 points for TRAINING/ 10 points for TESTING
+time_folds$train$Training002
+##  [1]  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
+## [24] 25 26 27 28 29 30 31
+time_folds$test$Testing002
+##  [1] 32 33 34 35 36 37 38 39 40 41
+```
+
+####Playing with `fixedWindow`  
+
+```r
+createTimeSlices(y = 1:9, initialWindow = 5, horizon = 1, fixedWindow = FALSE)
+## $train
+## $train$Training1
+## [1] 1 2 3 4 5
+## 
+## $train$Training2
+## [1] 1 2 3 4 5 6
+## 
+## $train$Training3
+## [1] 1 2 3 4 5 6 7
+## 
+## $train$Training4
+## [1] 1 2 3 4 5 6 7 8
+## 
+## 
+## $test
+## $test$Testing1
+## [1] 6
+## 
+## $test$Testing2
+## [1] 7
+## 
+## $test$Testing3
+## [1] 8
+## 
+## $test$Testing4
+## [1] 9
+createTimeSlices(y = 1:9, initialWindow = 5, horizon = 1, fixedWindow = TRUE)
+## $train
+## $train$Training1
+## [1] 1 2 3 4 5
+## 
+## $train$Training2
+## [1] 2 3 4 5 6
+## 
+## $train$Training3
+## [1] 3 4 5 6 7
+## 
+## $train$Training4
+## [1] 4 5 6 7 8
+## 
+## 
+## $test
+## $test$Testing1
+## [1] 6
+## 
+## $test$Testing2
+## [1] 7
+## 
+## $test$Testing3
+## [1] 8
+## 
+## $test$Testing4
+## [1] 9
+
+createTimeSlices(y = 1:9, initialWindow = 5, horizon = 3, fixedWindow = TRUE)
+## $train
+## $train$Training1
+## [1] 1 2 3 4 5
+## 
+## $train$Training2
+## [1] 2 3 4 5 6
+## 
+## 
+## $test
+## $test$Testing1
+## [1] 6 7 8
+## 
+## $test$Testing2
+## [1] 7 8 9
+createTimeSlices(y = 1:9, initialWindow = 5, horizon = 3, fixedWindow = FALSE)
+## $train
+## $train$Training1
+## [1] 1 2 3 4 5
+## 
+## $train$Training2
+## [1] 1 2 3 4 5 6
+## 
+## 
+## $test
+## $test$Testing1
+## [1] 6 7 8
+## 
+## $test$Testing2
+## [1] 7 8 9
+```
+
+####Playing with `skip`
+
+```r
+createTimeSlices(y = 1:15, initialWindow = 5, horizon = 3)
+## $train
+## $train$Training1
+## [1] 1 2 3 4 5
+## 
+## $train$Training2
+## [1] 2 3 4 5 6
+## 
+## $train$Training3
+## [1] 3 4 5 6 7
+## 
+## $train$Training4
+## [1] 4 5 6 7 8
+## 
+## $train$Training5
+## [1] 5 6 7 8 9
+## 
+## $train$Training6
+## [1]  6  7  8  9 10
+## 
+## $train$Training7
+## [1]  7  8  9 10 11
+## 
+## $train$Training8
+## [1]  8  9 10 11 12
+## 
+## 
+## $test
+## $test$Testing1
+## [1] 6 7 8
+## 
+## $test$Testing2
+## [1] 7 8 9
+## 
+## $test$Testing3
+## [1]  8  9 10
+## 
+## $test$Testing4
+## [1]  9 10 11
+## 
+## $test$Testing5
+## [1] 10 11 12
+## 
+## $test$Testing6
+## [1] 11 12 13
+## 
+## $test$Testing7
+## [1] 12 13 14
+## 
+## $test$Testing8
+## [1] 13 14 15
+createTimeSlices(y = 1:15, initialWindow = 5, horizon = 3, skip = 2)
+## $train
+## $train$Training1
+## [1] 1 2 3 4 5
+## 
+## $train$Training4
+## [1] 4 5 6 7 8
+## 
+## $train$Training7
+## [1]  7  8  9 10 11
+## 
+## 
+## $test
+## $test$Testing1
+## [1] 6 7 8
+## 
+## $test$Testing4
+## [1]  9 10 11
+## 
+## $test$Testing7
+## [1] 12 13 14
+createTimeSlices(y = 1:15, initialWindow = 5, horizon = 3, skip = 3)
+## $train
+## $train$Training1
+## [1] 1 2 3 4 5
+## 
+## $train$Training5
+## [1] 5 6 7 8 9
+## 
+## 
+## $test
+## $test$Testing1
+## [1] 6 7 8
+## 
+## $test$Testing5
+## [1] 10 11 12
+```
 ##Visualizations
 **Important!** When performing exploratory analysis on the available dataset is a **good practice** to **split the available data set in a training dataset and a testing dataset** and perform the relevant exploration/ visualization on the **training** dataset.
 
@@ -173,7 +478,7 @@ Using `graphics` ...
 hist(Wage$wage)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-3-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-10-1.png) 
 
 ####Scatterplot Matrix (caret)
 The `pairs` plot option is available for **regression** and **classification** problems.
@@ -209,7 +514,7 @@ Simple Scatterplot:
 qplot(x=age, y=wage, data=Wage)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-4-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-11-1.png) 
 
 Adding the `jobclass` dimension:  
 
@@ -217,7 +522,7 @@ Adding the `jobclass` dimension:
 qplot(x=age, y=wage, colour=jobclass, data=Wage)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-5-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-12-1.png) 
 
 Using `education` dimension and adding regression smoothers:  
 
@@ -226,7 +531,7 @@ qq <- qplot(x=age, y=wage, colour=education, data=Wage)
 qq + geom_smooth(method="lm", formula = y~x)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-6-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-13-1.png) 
 
 ####Boxplot (Hmisc + ggplot2 + gridExtra)
 A boxplot example using `qplot` ...  
@@ -237,7 +542,7 @@ p1 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot"))
 p1
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-7-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-14-1.png) 
 
 Adding the points overlayed...  
 
@@ -246,7 +551,7 @@ p2 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot", "j
 grid.arrange(p1, p2, ncol=2)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-8-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-15-1.png) 
 
 ####Boxplot (caret)
 A boxplot example using `featurePlot` ...  
@@ -260,7 +565,7 @@ featurePlot(x = iris[, 1:4],
             layout= c(4,1), auto.key = list(columns = 2))
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-9-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-16-1.png) 
 
 ####Density Plots  
 Using `ggplot2` ...  
@@ -269,7 +574,7 @@ Using `ggplot2` ...
 qplot(x = wage, colour = education, data = Wage, geom = "density")
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-10-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-17-1.png) 
 
 Using `caret` ...  
 
@@ -282,7 +587,7 @@ featurePlot(Wage$wage, y = Wage$education, plot = "density", scales = list(x = l
 ## names: releation
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-11-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-18-1.png) 
 
 ####Tables
 
@@ -342,3 +647,90 @@ table(cutWage)
 ## [ 20.1, 92.2) [ 92.2,118.9) [118.9,318.3] 
 ##          1000          1040           960
 ```
+
+##Model Training & Parameter Tuning
+The caret package has several functions that attempt to streamline the model building and evaluation process.
+
+The `train` function can be used to
+
+* evaluate, using resampling, the effect of model tuning parameters on performance
+* choose the "optimal" model across these parameters
+* estimate model performance from a training set
+
+[Model List & Parameters](http://topepo.github.io/caret/modelList.html)
+
+
+`train` arguments/ options
+
+```r
+args(train.default)
+```
+
+```
+## function (x, y, method = "rf", preProcess = NULL, ..., weights = NULL, 
+##     metric = ifelse(is.factor(y), "Accuracy", "RMSE"), maximize = ifelse(metric %in% 
+##         c("RMSE", "logLoss"), FALSE, TRUE), trControl = trainControl(), 
+##     tuneGrid = NULL, tuneLength = 3) 
+## NULL
+```
+
+Using the train arguments is possible to perform some basic parameter tuning e.g.
+
+`metric` option
+* Continuous outcomes
+    * RMSE Root Mean Squared Error
+    * Rsquared
+* Categorical outcomes
+    * Accuracy
+    * Kappa (a measure of concordance)
+
+
+Basic parameter tuning can be done using the `trainControl` function. 
+
+`fitControl` arguments/ options
+
+```r
+args(trainControl)
+```
+
+```
+## function (method = "boot", number = ifelse(grepl("cv", method), 
+##     10, 25), repeats = ifelse(grepl("cv", method), 1, number), 
+##     p = 0.75, search = "grid", initialWindow = NULL, horizon = 1, 
+##     fixedWindow = TRUE, verboseIter = FALSE, returnData = TRUE, 
+##     returnResamp = "final", savePredictions = FALSE, classProbs = FALSE, 
+##     summaryFunction = defaultSummary, selectionFunction = "best", 
+##     preProcOptions = list(thresh = 0.95, ICAcomp = 3, k = 5), 
+##     sampling = NULL, index = NULL, indexOut = NULL, timingSamps = 0, 
+##     predictionBounds = rep(FALSE, 2), seeds = NA, adaptive = list(min = 5, 
+##         alpha = 0.05, method = "gls", complete = TRUE), trim = FALSE, 
+##     allowParallel = TRUE) 
+## NULL
+```
+
+For example by default simple bootstrap resampling is used for `each resampling iteration`. `trainControl` can be used to specify the type of resampling. So if a repeated k-fold resampling is to be used instead 
+
+
+```r
+fitControl <- trainControl(## 10-fold CV
+                           method = "repeatedcv",
+                           number = 10,
+                           ## repeated ten times
+                           repeats = 10)
+#This function will be used in the train function through the trControl argument
+```
+
+__`trainControl` resampling options (see documentation for more info)
+
+* method
+    * boot = bootstrapping
+    * boot632 = bootstrapping with adjustment
+    * cv = cross validation
+    * repeatedcv = repeated cross validation
+    * LOOCV = leave-one-out cross validation
+* number
+    * for boot/ cross validation
+    * no of samples to take
+* repeats
+    * Number of times to repeat subsampling
+    * If big - it can slow things down
