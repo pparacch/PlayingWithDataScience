@@ -27,6 +27,7 @@ install.packages("gridExtra")
 #Data
 install.packages("ISLR")
 install.packages("AppliedPredictiveModeling")
+install.packages("kernlab")
 ```
 
 
@@ -114,22 +115,201 @@ The `iris` dataset:
 ## 
 ```
 
+The `spam` dataset:  
+
+```
+## 'data.frame':	4601 obs. of  58 variables:
+##  $ make             : num  0 0.21 0.06 0 0 0 0 0 0.15 0.06 ...
+##  $ address          : num  0.64 0.28 0 0 0 0 0 0 0 0.12 ...
+##  $ all              : num  0.64 0.5 0.71 0 0 0 0 0 0.46 0.77 ...
+##  $ num3d            : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ our              : num  0.32 0.14 1.23 0.63 0.63 1.85 1.92 1.88 0.61 0.19 ...
+##  $ over             : num  0 0.28 0.19 0 0 0 0 0 0 0.32 ...
+##  $ remove           : num  0 0.21 0.19 0.31 0.31 0 0 0 0.3 0.38 ...
+##  $ internet         : num  0 0.07 0.12 0.63 0.63 1.85 0 1.88 0 0 ...
+##  $ order            : num  0 0 0.64 0.31 0.31 0 0 0 0.92 0.06 ...
+##  $ mail             : num  0 0.94 0.25 0.63 0.63 0 0.64 0 0.76 0 ...
+##  $ receive          : num  0 0.21 0.38 0.31 0.31 0 0.96 0 0.76 0 ...
+##  $ will             : num  0.64 0.79 0.45 0.31 0.31 0 1.28 0 0.92 0.64 ...
+##  $ people           : num  0 0.65 0.12 0.31 0.31 0 0 0 0 0.25 ...
+##  $ report           : num  0 0.21 0 0 0 0 0 0 0 0 ...
+##  $ addresses        : num  0 0.14 1.75 0 0 0 0 0 0 0.12 ...
+##  $ free             : num  0.32 0.14 0.06 0.31 0.31 0 0.96 0 0 0 ...
+##  $ business         : num  0 0.07 0.06 0 0 0 0 0 0 0 ...
+##  $ email            : num  1.29 0.28 1.03 0 0 0 0.32 0 0.15 0.12 ...
+##  $ you              : num  1.93 3.47 1.36 3.18 3.18 0 3.85 0 1.23 1.67 ...
+##  $ credit           : num  0 0 0.32 0 0 0 0 0 3.53 0.06 ...
+##  $ your             : num  0.96 1.59 0.51 0.31 0.31 0 0.64 0 2 0.71 ...
+##  $ font             : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ num000           : num  0 0.43 1.16 0 0 0 0 0 0 0.19 ...
+##  $ money            : num  0 0.43 0.06 0 0 0 0 0 0.15 0 ...
+##  $ hp               : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ hpl              : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ george           : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ num650           : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ lab              : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ labs             : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ telnet           : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ num857           : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ data             : num  0 0 0 0 0 0 0 0 0.15 0 ...
+##  $ num415           : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ num85            : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ technology       : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ num1999          : num  0 0.07 0 0 0 0 0 0 0 0 ...
+##  $ parts            : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ pm               : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ direct           : num  0 0 0.06 0 0 0 0 0 0 0 ...
+##  $ cs               : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ meeting          : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ original         : num  0 0 0.12 0 0 0 0 0 0.3 0 ...
+##  $ project          : num  0 0 0 0 0 0 0 0 0 0.06 ...
+##  $ re               : num  0 0 0.06 0 0 0 0 0 0 0 ...
+##  $ edu              : num  0 0 0.06 0 0 0 0 0 0 0 ...
+##  $ table            : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ conference       : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ charSemicolon    : num  0 0 0.01 0 0 0 0 0 0 0.04 ...
+##  $ charRoundbracket : num  0 0.132 0.143 0.137 0.135 0.223 0.054 0.206 0.271 0.03 ...
+##  $ charSquarebracket: num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ charExclamation  : num  0.778 0.372 0.276 0.137 0.135 0 0.164 0 0.181 0.244 ...
+##  $ charDollar       : num  0 0.18 0.184 0 0 0 0.054 0 0.203 0.081 ...
+##  $ charHash         : num  0 0.048 0.01 0 0 0 0 0 0.022 0 ...
+##  $ capitalAve       : num  3.76 5.11 9.82 3.54 3.54 ...
+##  $ capitalLong      : num  61 101 485 40 40 15 4 11 445 43 ...
+##  $ capitalTotal     : num  278 1028 2259 191 191 ...
+##  $ type             : Factor w/ 2 levels "nonspam","spam": 2 2 2 2 2 2 2 2 2 2 ...
+```
+
+```
+##       make           address            all             num3d         
+##  Min.   :0.0000   Min.   : 0.000   Min.   :0.0000   Min.   : 0.00000  
+##  1st Qu.:0.0000   1st Qu.: 0.000   1st Qu.:0.0000   1st Qu.: 0.00000  
+##  Median :0.0000   Median : 0.000   Median :0.0000   Median : 0.00000  
+##  Mean   :0.1046   Mean   : 0.213   Mean   :0.2807   Mean   : 0.06542  
+##  3rd Qu.:0.0000   3rd Qu.: 0.000   3rd Qu.:0.4200   3rd Qu.: 0.00000  
+##  Max.   :4.5400   Max.   :14.280   Max.   :5.1000   Max.   :42.81000  
+##       our               over            remove          internet      
+##  Min.   : 0.0000   Min.   :0.0000   Min.   :0.0000   Min.   : 0.0000  
+##  1st Qu.: 0.0000   1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.: 0.0000  
+##  Median : 0.0000   Median :0.0000   Median :0.0000   Median : 0.0000  
+##  Mean   : 0.3122   Mean   :0.0959   Mean   :0.1142   Mean   : 0.1053  
+##  3rd Qu.: 0.3800   3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.: 0.0000  
+##  Max.   :10.0000   Max.   :5.8800   Max.   :7.2700   Max.   :11.1100  
+##      order              mail            receive             will       
+##  Min.   :0.00000   Min.   : 0.0000   Min.   :0.00000   Min.   :0.0000  
+##  1st Qu.:0.00000   1st Qu.: 0.0000   1st Qu.:0.00000   1st Qu.:0.0000  
+##  Median :0.00000   Median : 0.0000   Median :0.00000   Median :0.1000  
+##  Mean   :0.09007   Mean   : 0.2394   Mean   :0.05982   Mean   :0.5417  
+##  3rd Qu.:0.00000   3rd Qu.: 0.1600   3rd Qu.:0.00000   3rd Qu.:0.8000  
+##  Max.   :5.26000   Max.   :18.1800   Max.   :2.61000   Max.   :9.6700  
+##      people            report           addresses           free        
+##  Min.   :0.00000   Min.   : 0.00000   Min.   :0.0000   Min.   : 0.0000  
+##  1st Qu.:0.00000   1st Qu.: 0.00000   1st Qu.:0.0000   1st Qu.: 0.0000  
+##  Median :0.00000   Median : 0.00000   Median :0.0000   Median : 0.0000  
+##  Mean   :0.09393   Mean   : 0.05863   Mean   :0.0492   Mean   : 0.2488  
+##  3rd Qu.:0.00000   3rd Qu.: 0.00000   3rd Qu.:0.0000   3rd Qu.: 0.1000  
+##  Max.   :5.55000   Max.   :10.00000   Max.   :4.4100   Max.   :20.0000  
+##     business          email             you             credit        
+##  Min.   :0.0000   Min.   :0.0000   Min.   : 0.000   Min.   : 0.00000  
+##  1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.: 0.000   1st Qu.: 0.00000  
+##  Median :0.0000   Median :0.0000   Median : 1.310   Median : 0.00000  
+##  Mean   :0.1426   Mean   :0.1847   Mean   : 1.662   Mean   : 0.08558  
+##  3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.: 2.640   3rd Qu.: 0.00000  
+##  Max.   :7.1400   Max.   :9.0900   Max.   :18.750   Max.   :18.18000  
+##       your              font             num000           money         
+##  Min.   : 0.0000   Min.   : 0.0000   Min.   :0.0000   Min.   : 0.00000  
+##  1st Qu.: 0.0000   1st Qu.: 0.0000   1st Qu.:0.0000   1st Qu.: 0.00000  
+##  Median : 0.2200   Median : 0.0000   Median :0.0000   Median : 0.00000  
+##  Mean   : 0.8098   Mean   : 0.1212   Mean   :0.1016   Mean   : 0.09427  
+##  3rd Qu.: 1.2700   3rd Qu.: 0.0000   3rd Qu.:0.0000   3rd Qu.: 0.00000  
+##  Max.   :11.1100   Max.   :17.1000   Max.   :5.4500   Max.   :12.50000  
+##        hp               hpl              george            num650      
+##  Min.   : 0.0000   Min.   : 0.0000   Min.   : 0.0000   Min.   :0.0000  
+##  1st Qu.: 0.0000   1st Qu.: 0.0000   1st Qu.: 0.0000   1st Qu.:0.0000  
+##  Median : 0.0000   Median : 0.0000   Median : 0.0000   Median :0.0000  
+##  Mean   : 0.5495   Mean   : 0.2654   Mean   : 0.7673   Mean   :0.1248  
+##  3rd Qu.: 0.0000   3rd Qu.: 0.0000   3rd Qu.: 0.0000   3rd Qu.:0.0000  
+##  Max.   :20.8300   Max.   :16.6600   Max.   :33.3300   Max.   :9.0900  
+##       lab                labs            telnet             num857       
+##  Min.   : 0.00000   Min.   :0.0000   Min.   : 0.00000   Min.   :0.00000  
+##  1st Qu.: 0.00000   1st Qu.:0.0000   1st Qu.: 0.00000   1st Qu.:0.00000  
+##  Median : 0.00000   Median :0.0000   Median : 0.00000   Median :0.00000  
+##  Mean   : 0.09892   Mean   :0.1029   Mean   : 0.06475   Mean   :0.04705  
+##  3rd Qu.: 0.00000   3rd Qu.:0.0000   3rd Qu.: 0.00000   3rd Qu.:0.00000  
+##  Max.   :14.28000   Max.   :5.8800   Max.   :12.50000   Max.   :4.76000  
+##       data              num415            num85           technology     
+##  Min.   : 0.00000   Min.   :0.00000   Min.   : 0.0000   Min.   :0.00000  
+##  1st Qu.: 0.00000   1st Qu.:0.00000   1st Qu.: 0.0000   1st Qu.:0.00000  
+##  Median : 0.00000   Median :0.00000   Median : 0.0000   Median :0.00000  
+##  Mean   : 0.09723   Mean   :0.04784   Mean   : 0.1054   Mean   :0.09748  
+##  3rd Qu.: 0.00000   3rd Qu.:0.00000   3rd Qu.: 0.0000   3rd Qu.:0.00000  
+##  Max.   :18.18000   Max.   :4.76000   Max.   :20.0000   Max.   :7.69000  
+##     num1999          parts              pm               direct       
+##  Min.   :0.000   Min.   :0.0000   Min.   : 0.00000   Min.   :0.00000  
+##  1st Qu.:0.000   1st Qu.:0.0000   1st Qu.: 0.00000   1st Qu.:0.00000  
+##  Median :0.000   Median :0.0000   Median : 0.00000   Median :0.00000  
+##  Mean   :0.137   Mean   :0.0132   Mean   : 0.07863   Mean   :0.06483  
+##  3rd Qu.:0.000   3rd Qu.:0.0000   3rd Qu.: 0.00000   3rd Qu.:0.00000  
+##  Max.   :6.890   Max.   :8.3300   Max.   :11.11000   Max.   :4.76000  
+##        cs             meeting           original         project       
+##  Min.   :0.00000   Min.   : 0.0000   Min.   :0.0000   Min.   : 0.0000  
+##  1st Qu.:0.00000   1st Qu.: 0.0000   1st Qu.:0.0000   1st Qu.: 0.0000  
+##  Median :0.00000   Median : 0.0000   Median :0.0000   Median : 0.0000  
+##  Mean   :0.04367   Mean   : 0.1323   Mean   :0.0461   Mean   : 0.0792  
+##  3rd Qu.:0.00000   3rd Qu.: 0.0000   3rd Qu.:0.0000   3rd Qu.: 0.0000  
+##  Max.   :7.14000   Max.   :14.2800   Max.   :3.5700   Max.   :20.0000  
+##        re               edu              table            conference      
+##  Min.   : 0.0000   Min.   : 0.0000   Min.   :0.000000   Min.   : 0.00000  
+##  1st Qu.: 0.0000   1st Qu.: 0.0000   1st Qu.:0.000000   1st Qu.: 0.00000  
+##  Median : 0.0000   Median : 0.0000   Median :0.000000   Median : 0.00000  
+##  Mean   : 0.3012   Mean   : 0.1798   Mean   :0.005444   Mean   : 0.03187  
+##  3rd Qu.: 0.1100   3rd Qu.: 0.0000   3rd Qu.:0.000000   3rd Qu.: 0.00000  
+##  Max.   :21.4200   Max.   :22.0500   Max.   :2.170000   Max.   :10.00000  
+##  charSemicolon     charRoundbracket charSquarebracket charExclamation  
+##  Min.   :0.00000   Min.   :0.000    Min.   :0.00000   Min.   : 0.0000  
+##  1st Qu.:0.00000   1st Qu.:0.000    1st Qu.:0.00000   1st Qu.: 0.0000  
+##  Median :0.00000   Median :0.065    Median :0.00000   Median : 0.0000  
+##  Mean   :0.03857   Mean   :0.139    Mean   :0.01698   Mean   : 0.2691  
+##  3rd Qu.:0.00000   3rd Qu.:0.188    3rd Qu.:0.00000   3rd Qu.: 0.3150  
+##  Max.   :4.38500   Max.   :9.752    Max.   :4.08100   Max.   :32.4780  
+##    charDollar         charHash          capitalAve        capitalLong     
+##  Min.   :0.00000   Min.   : 0.00000   Min.   :   1.000   Min.   :   1.00  
+##  1st Qu.:0.00000   1st Qu.: 0.00000   1st Qu.:   1.588   1st Qu.:   6.00  
+##  Median :0.00000   Median : 0.00000   Median :   2.276   Median :  15.00  
+##  Mean   :0.07581   Mean   : 0.04424   Mean   :   5.191   Mean   :  52.17  
+##  3rd Qu.:0.05200   3rd Qu.: 0.00000   3rd Qu.:   3.706   3rd Qu.:  43.00  
+##  Max.   :6.00300   Max.   :19.82900   Max.   :1102.500   Max.   :9989.00  
+##   capitalTotal          type     
+##  Min.   :    1.0   nonspam:2788  
+##  1st Qu.:   35.0   spam   :1813  
+##  Median :   95.0                 
+##  Mean   :  283.3                 
+##  3rd Qu.:  266.0                 
+##  Max.   :15841.0
+```
+
 #Setting the seed 
 Useful to seed the seed in order to be able to replicate the running experiments.
 
 * Often useful to set an overall seed
 * Possible to set a seed for each resample (for parallel fits)
 
+Setting the seed   
 
 ```r
-#Need to be done before a random operation
 set.seed(123)
 seeds <- vector(mode = "list", length = 2)
 for(i in 1:2) seeds[[i]] <- sample.int(1000, 10)
 seeds
-```
+## [[1]]
+##  [1] 288 788 409 881 937  46 525 887 548 453
+## 
+## [[2]]
+##  [1] 957 453 677 571 103 896 245  42 326 946
 
-```
+set.seed(123)
+seeds <- vector(mode = "list", length = 2)
+for(i in 1:2) seeds[[i]] <- sample.int(1000, 10)
+seeds
 ## [[1]]
 ##  [1] 288 788 409 881 937  46 525 887 548 453
 ## 
@@ -137,21 +317,27 @@ seeds
 ##  [1] 957 453 677 571 103 896 245  42 326 946
 ```
 
+Not setting the seed   
+
 ```r
-set.seed(123)
 seeds <- vector(mode = "list", length = 2)
 for(i in 1:2) seeds[[i]] <- sample.int(1000, 10)
 seeds
-```
-
-```
 ## [[1]]
-##  [1] 288 788 409 881 937  46 525 887 548 453
+##  [1] 890 693 640 992 654 705 541 590 287 146
 ## 
 ## [[2]]
-##  [1] 957 453 677 571 103 896 245  42 326 946
-```
+##  [1] 964 902 690 794  25 476 754 215 316 230
 
+seeds <- vector(mode = "list", length = 2)
+for(i in 1:2) seeds[[i]] <- sample.int(1000, 10)
+seeds
+## [[1]]
+##  [1] 143 415 413 368 152 139 232 463 264 851
+## 
+## [[2]]
+##  [1]  46 442 798 122 559 206 127 749 888 372
+```
 
 
 #The Caret Vocabulary & Process  
@@ -478,7 +664,7 @@ Using `graphics` ...
 hist(Wage$wage)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-10-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-11-1.png) 
 
 ####Scatterplot Matrix (caret)
 The `pairs` plot option is available for **regression** and **classification** problems.
@@ -514,7 +700,7 @@ Simple Scatterplot:
 qplot(x=age, y=wage, data=Wage)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-11-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-12-1.png) 
 
 Adding the `jobclass` dimension:  
 
@@ -522,7 +708,7 @@ Adding the `jobclass` dimension:
 qplot(x=age, y=wage, colour=jobclass, data=Wage)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-12-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-13-1.png) 
 
 Using `education` dimension and adding regression smoothers:  
 
@@ -531,7 +717,7 @@ qq <- qplot(x=age, y=wage, colour=education, data=Wage)
 qq + geom_smooth(method="lm", formula = y~x)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-13-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-14-1.png) 
 
 ####Boxplot (Hmisc + ggplot2 + gridExtra)
 A boxplot example using `qplot` ...  
@@ -542,7 +728,7 @@ p1 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot"))
 p1
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-14-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-15-1.png) 
 
 Adding the points overlayed...  
 
@@ -551,7 +737,7 @@ p2 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot", "j
 grid.arrange(p1, p2, ncol=2)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-15-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-16-1.png) 
 
 ####Boxplot (caret)
 A boxplot example using `featurePlot` ...  
@@ -565,7 +751,7 @@ featurePlot(x = iris[, 1:4],
             layout= c(4,1), auto.key = list(columns = 2))
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-16-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-17-1.png) 
 
 ####Density Plots  
 Using `ggplot2` ...  
@@ -574,7 +760,7 @@ Using `ggplot2` ...
 qplot(x = wage, colour = education, data = Wage, geom = "density")
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-17-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-18-1.png) 
 
 Using `caret` ...  
 
@@ -587,7 +773,7 @@ featurePlot(Wage$wage, y = Wage$education, plot = "density", scales = list(x = l
 ## names: releation
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-18-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-19-1.png) 
 
 ####Tables
 
@@ -632,7 +818,68 @@ prop.table(t1, 2)
 ```
 
 ##Pre-processing
-The addition, deletion or transformation of **training** dataset.  
+__Remember!!__ When deciding the type fo pre-processing to apply to the data a good practice is to use only the __training__ dataset. __Do Not Use All of The Data Available - exlcude the testing/ validation dataset!!__
+
+The addition, deletion or transformation of **training** dataset.
+
+###Why pre-processing?
+Sometimes it is needed to transform predictors to make them useful or valuable for the next steps.  Predictors can have different scales, outliers or predictors could be skewed...
+ 
+
+```r
+spam.inTrain <- createDataPartition(y = spam$type, p = 0.75, list = FALSE)
+spam.training <- spam[spam.inTrain,]
+spam.testing <- spam[-spam.inTrain,]
+summary(spam.training$capitalAve)
+##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+##    1.000    1.583    2.276    4.992    3.702 1022.000
+
+mean(spam.training$capitalAve)
+## [1] 4.99219
+sd(spam.training$capitalAve)
+## [1] 29.3848
+```
+
+Distribution is right skewed..    
+
+```r
+hist(spam.training$capitalAve, xlab = "Average No Of Capital Letter")
+```
+
+![](R_caret_files/figure-html/unnamed-chunk-22-1.png) 
+
+##Standarizing a predictor: centering & scaling
+Using the mean and standar deviation of a predictor to center & scale the standarized predictor. Note when standarizing we are losing interpreatbility of values.
+
+
+```r
+p_standarized.train <- spam.training$capitalAve
+p_standarized.train <- (p_standarized.train - mean(p_standarized.train))/sd(p_standarized.train)
+#Centering around the mean value - the mean of the standarized predictor is 0
+p_standarized.train.mean <- mean(p_standarized.train)
+p_standarized.train.mean
+## [1] 9.445051e-18
+#Scaling using the sd - the sd of the standarized predictor is 1
+p_standarized.train.sd <- sd(p_standarized.train)
+p_standarized.train.sd
+## [1] 1
+```
+
+###Standarizing the (predictor) test set
+__When standarizing the predictor in the test set the same mean and standard deviation used to standarize the predictor in the training dataset must be used.__
+
+
+```r
+p_standarized.test <- spam.testing$capitalAve
+p_standarized.test <- (p_standarized.test - mean(spam.training$capitalAve))/sd(spam.training$capitalAve)
+#Centering around the mean value of training - the mean of the standarized predictor is not 0 (but should be close to)
+mean(p_standarized.test)
+## [1] 0.02713894
+#Scaling using the sd of the training - the sd of the standarized predictor is not 1 (but should be close to)
+sd(p_standarized.test)
+## [1] 1.290229
+```
+
 ###Binning: making factors out of quantitative predictors (Hmisc)
 An example on how to break a quantitative variables into different categories.
 
@@ -720,7 +967,7 @@ fitControl <- trainControl(## 10-fold CV
 #This function will be used in the train function through the trControl argument
 ```
 
-__`trainControl` resampling options (see documentation for more info)
+__`trainControl` resampling options__ (see documentation for more info)
 
 * method
     * boot = bootstrapping

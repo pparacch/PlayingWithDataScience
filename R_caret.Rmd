@@ -31,6 +31,7 @@ install.packages("gridExtra")
 #Data
 install.packages("ISLR")
 install.packages("AppliedPredictiveModeling")
+install.packages("kernlab")
 ```
 
 ```{r loadingRequiredPackages, echo = FALSE, message=FALSE, warning=FALSE}
@@ -55,6 +56,14 @@ The `iris` dataset:
 data(iris)
 str(iris)
 summary(iris)
+```
+
+The `spam` dataset:  
+```{r theData3, message=FALSE, warning=FALSE, echo = FALSE}
+require(kernlab)
+data(spam)
+str(spam)
+summary(spam)
 ```
 
 #Setting the seed 
@@ -280,7 +289,54 @@ prop.table(t1, 2)
 ```
 
 ##Pre-processing
-The addition, deletion or transformation of **training** dataset.  
+__Remember!!__ When deciding the type fo pre-processing to apply to the data a good practice is to use only the __training__ dataset. __Do Not Use All of The Data Available - exlcude the testing/ validation dataset!!__
+
+The addition, deletion or transformation of **training** dataset.
+
+###Why pre-processing?
+Sometimes it is needed to transform predictors to make them useful or valuable for the next steps.  Predictors can have different scales, outliers or predictors could be skewed...
+ 
+```{r collapse = TRUE}
+spam.inTrain <- createDataPartition(y = spam$type, p = 0.75, list = FALSE)
+spam.training <- spam[spam.inTrain,]
+spam.testing <- spam[-spam.inTrain,]
+summary(spam.training$capitalAve)
+
+mean(spam.training$capitalAve)
+sd(spam.training$capitalAve)
+```
+
+Distribution is right skewed..    
+```{r}
+hist(spam.training$capitalAve, xlab = "Average No Of Capital Letter")
+```
+
+##Standarizing a predictor: centering & scaling
+Using the mean and standar deviation of a predictor to center & scale the standarized predictor. Note when standarizing we are losing interpreatbility of values.
+
+```{r collapse = TRUE}
+p_standarized.train <- spam.training$capitalAve
+p_standarized.train <- (p_standarized.train - mean(p_standarized.train))/sd(p_standarized.train)
+#Centering around the mean value - the mean of the standarized predictor is 0
+p_standarized.train.mean <- mean(p_standarized.train)
+p_standarized.train.mean
+#Scaling using the sd - the sd of the standarized predictor is 1
+p_standarized.train.sd <- sd(p_standarized.train)
+p_standarized.train.sd
+```
+
+###Standarizing the (predictor) test set
+__When standarizing the predictor in the test set the same mean and standard deviation used to standarize the predictor in the training dataset must be used.__
+
+```{r collapse = TRUE}
+p_standarized.test <- spam.testing$capitalAve
+p_standarized.test <- (p_standarized.test - mean(spam.training$capitalAve))/sd(spam.training$capitalAve)
+#Centering around the mean value of training - the mean of the standarized predictor is not 0 (but should be close to)
+mean(p_standarized.test)
+#Scaling using the sd of the training - the sd of the standarized predictor is not 1 (but should be close to)
+sd(p_standarized.test)
+```
+
 ###Binning: making factors out of quantitative predictors (Hmisc)
 An example on how to break a quantitative variables into different categories.
 
@@ -335,7 +391,7 @@ fitControl <- trainControl(## 10-fold CV
 #This function will be used in the train function through the trControl argument
 ```
 
-__`trainControl` resampling options (see documentation for more info)
+__`trainControl` resampling options__ (see documentation for more info)
 
 * method
     * boot = bootstrapping
