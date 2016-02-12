@@ -384,6 +384,9 @@ hist(spam.training$capitalAve); qqnorm(spam.training$capitalAve)
 hist(p_standarized.train.capitalAve); qqnorm(p_standarized.train.capitalAve)
 ```
 
+###Dealing with Missing Values
+One popular techniuque for imputation of missing data is a K-nearest neighbor model where a missing sample is imputed by finding the samples in the training set closest to it and average the nearby points to fill in. Note the entire training set is required every time a missing value needs to be imputed.lllll
+
 ###Binning: making factors out of quantitative predictors (Hmisc)
 An example on how to break a quantitative variables into different categories.
 
