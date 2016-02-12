@@ -310,8 +310,8 @@ Distribution is right skewed..
 ```{r}
 hist(spam.training$capitalAve, xlab = "Average No Of Capital Letter")
 ```
-
-##Standarizing a predictor: centering & scaling
+###Data Transformations For Individual Predictors
+####Centering & Scaling
 Using the mean and standar deviation of a predictor to center & scale the standarized predictor. Note when standarizing we are losing interpreatbility of values.
 
 ```{r collapse = TRUE}
@@ -325,7 +325,6 @@ p_standarized.train.sd <- sd(p_standarized.train)
 p_standarized.train.sd
 ```
 
-###Standarizing the (predictor) test set
 __When standarizing the predictor in the test set the same mean and standard deviation used to standarize the predictor in the training dataset must be used.__
 
 ```{r collapse = TRUE}
@@ -335,6 +334,54 @@ p_standarized.test <- (p_standarized.test - mean(spam.training$capitalAve))/sd(s
 mean(p_standarized.test)
 #Scaling using the sd of the training - the sd of the standarized predictor is not 1 (but should be close to)
 sd(p_standarized.test)
+```
+
+#####Using `preProcess` function
+Working on `training` dataset...
+
+```{r collapse = TRUE}
+preProcessObj <- preProcess(spam.training[,-58], method = c("center", "scale"))
+p_standarized.train.all <- predict(object = preProcessObj, spam.training[,-58]) #Center And Scale all
+p_standarized.train.capitalAve <- p_standarized.train.all$capitalAve
+
+mean(p_standarized.train.capitalAve)
+
+sd(p_standarized.train.capitalAve)
+```
+
+Applying standarization on `testing` dataset...
+```{r collapse = TRUE}
+#Using the preProcessObj created using the 
+p_standarized.test.all <- predict(object = preProcessObj, spam.testing[,-58]) #Center And Scale all
+p_standarized.test.capitalAve <- p_standarized.test.all$capitalAve
+
+mean(p_standarized.test.capitalAve)
+
+sd(p_standarized.test.capitalAve)
+```
+
+#####Using `preProcess` argument in the `train` function
+```{r warning=T, message=T}
+set.seed(32343)
+modelFit <- train(type ~ ., data = spam.training, preProcess= c("center", "scale"), method="glm")
+modelFit
+```
+
+####Transformation To Resolve Skewness
+The use of the Box & Cox family of transformations based on a specific parameter (calculated from the available values). The `"BoxCox"` will estimate a Box-Cox transformation on the predictors if the data are greater than zero).
+
+```{r collapse = TRUE}
+preProcessObj <- preProcess(spam.training[,-58], method = c("BoxCox"))
+p_standarized.train.all <- predict(object = preProcessObj, spam.training[,-58]) #BoxCox all
+p_standarized.train.capitalAve <- p_standarized.train.all$capitalAve
+
+preProcessObj
+
+preProcessObj$bc
+
+par(mfrow=c(2,2));
+hist(spam.training$capitalAve); qqnorm(spam.training$capitalAve)
+hist(p_standarized.train.capitalAve); qqnorm(p_standarized.train.capitalAve)
 ```
 
 ###Binning: making factors out of quantitative predictors (Hmisc)

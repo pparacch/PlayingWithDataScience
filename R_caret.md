@@ -664,7 +664,7 @@ Using `graphics` ...
 hist(Wage$wage)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-11-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-11-1.png)
 
 ####Scatterplot Matrix (caret)
 The `pairs` plot option is available for **regression** and **classification** problems.
@@ -674,14 +674,14 @@ The `pairs` plot option is available for **regression** and **classification** p
 featurePlot(x=Wage[, c("age", "education", "jobclass")], y=Wage$wage, plot="pairs")
 ```
 
-![](R_caret_files/figure-html/visualizationData1-1.png) 
+![](R_caret_files/figure-html/visualizationData1-1.png)
 
 
 ```r
 featurePlot(x=iris[, 1:4], y=iris$Species, plot="pairs", auto.key = list(colums= 3))
 ```
 
-![](R_caret_files/figure-html/visualizationData2-1.png) 
+![](R_caret_files/figure-html/visualizationData2-1.png)
 
 ####Scatterplot Matrix with Ellipses (caret)
 The `ellipse` plot option is available for **classification** problems.
@@ -691,7 +691,7 @@ The `ellipse` plot option is available for **classification** problems.
 featurePlot(x=iris[, 1:4], y=iris$Species, plot="ellipse", auto.key = list(colums= 3))
 ```
 
-![](R_caret_files/figure-html/visualizationData2_1-1.png) 
+![](R_caret_files/figure-html/visualizationData2_1-1.png)
 
 ####Scatterplot (ggplot2)
 Simple Scatterplot:  
@@ -700,7 +700,7 @@ Simple Scatterplot:
 qplot(x=age, y=wage, data=Wage)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-12-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-12-1.png)
 
 Adding the `jobclass` dimension:  
 
@@ -708,7 +708,7 @@ Adding the `jobclass` dimension:
 qplot(x=age, y=wage, colour=jobclass, data=Wage)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-13-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-13-1.png)
 
 Using `education` dimension and adding regression smoothers:  
 
@@ -717,7 +717,7 @@ qq <- qplot(x=age, y=wage, colour=education, data=Wage)
 qq + geom_smooth(method="lm", formula = y~x)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-14-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-14-1.png)
 
 ####Boxplot (Hmisc + ggplot2 + gridExtra)
 A boxplot example using `qplot` ...  
@@ -728,7 +728,7 @@ p1 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot"))
 p1
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-15-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-15-1.png)
 
 Adding the points overlayed...  
 
@@ -737,7 +737,7 @@ p2 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot", "j
 grid.arrange(p1, p2, ncol=2)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-16-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-16-1.png)
 
 ####Boxplot (caret)
 A boxplot example using `featurePlot` ...  
@@ -751,7 +751,7 @@ featurePlot(x = iris[, 1:4],
             layout= c(4,1), auto.key = list(columns = 2))
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-17-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-17-1.png)
 
 ####Density Plots  
 Using `ggplot2` ...  
@@ -760,7 +760,7 @@ Using `ggplot2` ...
 qplot(x = wage, colour = education, data = Wage, geom = "density")
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-18-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-18-1.png)
 
 Using `caret` ...  
 
@@ -773,7 +773,7 @@ featurePlot(Wage$wage, y = Wage$education, plot = "density", scales = list(x = l
 ## names: releation
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-19-1.png) 
+![](R_caret_files/figure-html/unnamed-chunk-19-1.png)
 
 ####Tables
 
@@ -846,9 +846,9 @@ Distribution is right skewed..
 hist(spam.training$capitalAve, xlab = "Average No Of Capital Letter")
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-22-1.png) 
-
-##Standarizing a predictor: centering & scaling
+![](R_caret_files/figure-html/unnamed-chunk-22-1.png)
+###Data Transformations For Individual Predictors
+####Centering & Scaling
 Using the mean and standar deviation of a predictor to center & scale the standarized predictor. Note when standarizing we are losing interpreatbility of values.
 
 
@@ -865,7 +865,6 @@ p_standarized.train.sd
 ## [1] 1
 ```
 
-###Standarizing the (predictor) test set
 __When standarizing the predictor in the test set the same mean and standard deviation used to standarize the predictor in the training dataset must be used.__
 
 
@@ -879,6 +878,217 @@ mean(p_standarized.test)
 sd(p_standarized.test)
 ## [1] 1.290229
 ```
+
+#####Using `preProcess` function
+Working on `training` dataset...
+
+
+```r
+preProcessObj <- preProcess(spam.training[,-58], method = c("center", "scale"))
+p_standarized.train.all <- predict(object = preProcessObj, spam.training[,-58]) #Center And Scale all
+p_standarized.train.capitalAve <- p_standarized.train.all$capitalAve
+
+mean(p_standarized.train.capitalAve)
+## [1] 9.445051e-18
+
+sd(p_standarized.train.capitalAve)
+## [1] 1
+```
+
+Applying standarization on `testing` dataset...
+
+```r
+#Using the preProcessObj created using the 
+p_standarized.test.all <- predict(object = preProcessObj, spam.testing[,-58]) #Center And Scale all
+p_standarized.test.capitalAve <- p_standarized.test.all$capitalAve
+
+mean(p_standarized.test.capitalAve)
+## [1] 0.02713894
+
+sd(p_standarized.test.capitalAve)
+## [1] 1.290229
+```
+
+#####Using `preProcess` argument in the `train` function
+
+```r
+set.seed(32343)
+modelFit <- train(type ~ ., data = spam.training, preProcess= c("center", "scale"), method="glm")
+```
+
+```
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+```
+
+```
+## Warning: glm.fit: algorithm did not converge
+```
+
+```
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+```
+
+```
+## Warning: glm.fit: algorithm did not converge
+```
+
+```
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+```
+
+```
+## Warning: glm.fit: algorithm did not converge
+```
+
+```
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+```
+
+```
+## Warning: glm.fit: algorithm did not converge
+```
+
+```
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+```
+
+```r
+modelFit
+```
+
+```
+## Generalized Linear Model 
+## 
+## 3451 samples
+##   57 predictors
+##    2 classes: 'nonspam', 'spam' 
+## 
+## Pre-processing: centered (57), scaled (57) 
+## Resampling: Bootstrapped (25 reps) 
+## Summary of sample sizes: 3451, 3451, 3451, 3451, 3451, 3451, ... 
+## Resampling results
+## 
+##   Accuracy   Kappa      Accuracy SD  Kappa SD  
+##   0.9094066  0.8094173  0.02659242   0.05601656
+## 
+## 
+```
+
+####Transformation To Resolve Skewness
+The use of the Box & Cox family of transformations based on a specific parameter (calculated from the available values). The `"BoxCox"` will estimate a Box-Cox transformation on the predictors if the data are greater than zero).
+
+
+```r
+preProcessObj <- preProcess(spam.training[,-58], method = c("BoxCox"))
+p_standarized.train.all <- predict(object = preProcessObj, spam.training[,-58]) #BoxCox all
+p_standarized.train.capitalAve <- p_standarized.train.all$capitalAve
+
+preProcessObj
+## Created from 3451 samples and 3 variables
+## 
+## Pre-processing:
+##   - Box-Cox transformation (3)
+##   - ignored (0)
+## 
+## Lambda estimates for Box-Cox transformation:
+## -0.6, 0, 0
+
+preProcessObj$bc
+## $capitalAve
+## Box-Cox Transformation
+## 
+## 3451 data points used to estimate Lambda
+## 
+## Input data summary:
+##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+##    1.000    1.583    2.276    4.992    3.702 1022.000 
+## 
+## Largest/Smallest: 1020 
+## Sample Skewness: 23.2 
+## 
+## Estimated Lambda: -0.6 
+## 
+## 
+## $capitalLong
+## Box-Cox Transformation
+## 
+## 3451 data points used to estimate Lambda
+## 
+## Input data summary:
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1.00    6.00   14.00   52.36   43.00 9989.00 
+## 
+## Largest/Smallest: 9990 
+## Sample Skewness: 32.1 
+## 
+## Estimated Lambda: 0 
+## With fudge factor, Lambda = 0 will be used for transformations
+## 
+## 
+## $capitalTotal
+## Box-Cox Transformation
+## 
+## 3451 data points used to estimate Lambda
+## 
+## Input data summary:
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##     1.0    35.0    97.0   290.1   272.0 15840.0 
+## 
+## Largest/Smallest: 15800 
+## Sample Skewness: 9.12 
+## 
+## Estimated Lambda: 0 
+## With fudge factor, Lambda = 0 will be used for transformations
+
+par(mfrow=c(2,2));
+hist(spam.training$capitalAve); qqnorm(spam.training$capitalAve)
+hist(p_standarized.train.capitalAve); qqnorm(p_standarized.train.capitalAve)
+```
+
+![](R_caret_files/figure-html/unnamed-chunk-28-1.png)
+
 
 ###Binning: making factors out of quantitative predictors (Hmisc)
 An example on how to break a quantitative variables into different categories.
