@@ -664,7 +664,7 @@ Using `graphics` ...
 hist(Wage$wage)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-11-1.png)
+![](R_caret_files/figure-html/unnamed-chunk-11-1.png) 
 
 ####Scatterplot Matrix (caret)
 The `pairs` plot option is available for **regression** and **classification** problems.
@@ -674,14 +674,14 @@ The `pairs` plot option is available for **regression** and **classification** p
 featurePlot(x=Wage[, c("age", "education", "jobclass")], y=Wage$wage, plot="pairs")
 ```
 
-![](R_caret_files/figure-html/visualizationData1-1.png)
+![](R_caret_files/figure-html/visualizationData1-1.png) 
 
 
 ```r
 featurePlot(x=iris[, 1:4], y=iris$Species, plot="pairs", auto.key = list(colums= 3))
 ```
 
-![](R_caret_files/figure-html/visualizationData2-1.png)
+![](R_caret_files/figure-html/visualizationData2-1.png) 
 
 ####Scatterplot Matrix with Ellipses (caret)
 The `ellipse` plot option is available for **classification** problems.
@@ -691,7 +691,7 @@ The `ellipse` plot option is available for **classification** problems.
 featurePlot(x=iris[, 1:4], y=iris$Species, plot="ellipse", auto.key = list(colums= 3))
 ```
 
-![](R_caret_files/figure-html/visualizationData2_1-1.png)
+![](R_caret_files/figure-html/visualizationData2_1-1.png) 
 
 ####Scatterplot (ggplot2)
 Simple Scatterplot:  
@@ -700,7 +700,7 @@ Simple Scatterplot:
 qplot(x=age, y=wage, data=Wage)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-12-1.png)
+![](R_caret_files/figure-html/unnamed-chunk-12-1.png) 
 
 Adding the `jobclass` dimension:  
 
@@ -708,7 +708,7 @@ Adding the `jobclass` dimension:
 qplot(x=age, y=wage, colour=jobclass, data=Wage)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-13-1.png)
+![](R_caret_files/figure-html/unnamed-chunk-13-1.png) 
 
 Using `education` dimension and adding regression smoothers:  
 
@@ -717,7 +717,7 @@ qq <- qplot(x=age, y=wage, colour=education, data=Wage)
 qq + geom_smooth(method="lm", formula = y~x)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-14-1.png)
+![](R_caret_files/figure-html/unnamed-chunk-14-1.png) 
 
 ####Boxplot (Hmisc + ggplot2 + gridExtra)
 A boxplot example using `qplot` ...  
@@ -728,7 +728,7 @@ p1 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot"))
 p1
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-15-1.png)
+![](R_caret_files/figure-html/unnamed-chunk-15-1.png) 
 
 Adding the points overlayed...  
 
@@ -737,7 +737,7 @@ p2 <- qplot(x = cutWage, y = age , data=Wage, fill=cutWage, geom=c("boxplot", "j
 grid.arrange(p1, p2, ncol=2)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-16-1.png)
+![](R_caret_files/figure-html/unnamed-chunk-16-1.png) 
 
 ####Boxplot (caret)
 A boxplot example using `featurePlot` ...  
@@ -751,7 +751,7 @@ featurePlot(x = iris[, 1:4],
             layout= c(4,1), auto.key = list(columns = 2))
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-17-1.png)
+![](R_caret_files/figure-html/unnamed-chunk-17-1.png) 
 
 ####Density Plots  
 Using `ggplot2` ...  
@@ -760,7 +760,7 @@ Using `ggplot2` ...
 qplot(x = wage, colour = education, data = Wage, geom = "density")
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-18-1.png)
+![](R_caret_files/figure-html/unnamed-chunk-18-1.png) 
 
 Using `caret` ...  
 
@@ -773,7 +773,7 @@ featurePlot(Wage$wage, y = Wage$education, plot = "density", scales = list(x = l
 ## names: releation
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-19-1.png)
+![](R_caret_files/figure-html/unnamed-chunk-19-1.png) 
 
 ####Tables
 
@@ -846,9 +846,11 @@ Distribution is right skewed..
 hist(spam.training$capitalAve, xlab = "Average No Of Capital Letter")
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-22-1.png)
+![](R_caret_files/figure-html/unnamed-chunk-22-1.png) 
+
 ###Data Transformations For Individual Predictors
-####Centering & Scaling
+
+####Centering & Scaling  
 Using the mean and standar deviation of a predictor to center & scale the standarized predictor. Note when standarizing we are losing interpreatbility of values.
 
 
@@ -879,7 +881,7 @@ sd(p_standarized.test)
 ## [1] 1.290229
 ```
 
-#####Using `preProcess` function
+#####Using `preProcess` function  
 Working on `training` dataset...
 
 
@@ -914,87 +916,6 @@ sd(p_standarized.test.capitalAve)
 ```r
 set.seed(32343)
 modelFit <- train(type ~ ., data = spam.training, preProcess= c("center", "scale"), method="glm")
-```
-
-```
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-```
-
-```
-## Warning: glm.fit: algorithm did not converge
-```
-
-```
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-```
-
-```
-## Warning: glm.fit: algorithm did not converge
-```
-
-```
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-```
-
-```
-## Warning: glm.fit: algorithm did not converge
-```
-
-```
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-```
-
-```
-## Warning: glm.fit: algorithm did not converge
-```
-
-```
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-```
-
-```r
 modelFit
 ```
 
@@ -1002,7 +923,7 @@ modelFit
 ## Generalized Linear Model 
 ## 
 ## 3451 samples
-##   57 predictors
+##   57 predictor
 ##    2 classes: 'nonspam', 'spam' 
 ## 
 ## Pre-processing: centered (57), scaled (57) 
@@ -1011,7 +932,7 @@ modelFit
 ## Resampling results
 ## 
 ##   Accuracy   Kappa      Accuracy SD  Kappa SD  
-##   0.9094066  0.8094173  0.02659242   0.05601656
+##   0.9061002  0.8022386  0.02894948   0.06081898
 ## 
 ## 
 ```
@@ -1087,8 +1008,10 @@ hist(spam.training$capitalAve); qqnorm(spam.training$capitalAve)
 hist(p_standarized.train.capitalAve); qqnorm(p_standarized.train.capitalAve)
 ```
 
-![](R_caret_files/figure-html/unnamed-chunk-28-1.png)
+![](R_caret_files/figure-html/unnamed-chunk-28-1.png) 
 
+###Dealing with Missing Values
+One popular techniuque for imputation of missing data is a K-nearest neighbor model where a missing sample is imputed by finding the samples in the training set closest to it and average the nearby points to fill in. Note the entire training set is required every time a missing value needs to be imputed.lllll
 
 ###Binning: making factors out of quantitative predictors (Hmisc)
 An example on how to break a quantitative variables into different categories.

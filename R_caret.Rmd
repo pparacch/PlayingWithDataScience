@@ -293,6 +293,10 @@ __Remember!!__ When deciding the type fo pre-processing to apply to the data a g
 
 The addition, deletion or transformation of **training** dataset.
 
+* training and test must be processed in the same way
+* test transformation will likely be imperfect
+* carefull when transforming factor variables
+
 ###Why pre-processing?
 Sometimes it is needed to transform predictors to make them useful or valuable for the next steps.  Predictors can have different scales, outliers or predictors could be skewed...
  
@@ -310,8 +314,10 @@ Distribution is right skewed..
 ```{r}
 hist(spam.training$capitalAve, xlab = "Average No Of Capital Letter")
 ```
+
 ###Data Transformations For Individual Predictors
-####Centering & Scaling
+
+####Centering & Scaling  
 Using the mean and standar deviation of a predictor to center & scale the standarized predictor. Note when standarizing we are losing interpreatbility of values.
 
 ```{r collapse = TRUE}
@@ -336,7 +342,7 @@ mean(p_standarized.test)
 sd(p_standarized.test)
 ```
 
-#####Using `preProcess` function
+#####Using `preProcess` function  
 Working on `training` dataset...
 
 ```{r collapse = TRUE}
@@ -361,7 +367,7 @@ sd(p_standarized.test.capitalAve)
 ```
 
 #####Using `preProcess` argument in the `train` function
-```{r warning=T, message=T}
+```{r warning=FALSE, message=FALSE}
 set.seed(32343)
 modelFit <- train(type ~ ., data = spam.training, preProcess= c("center", "scale"), method="glm")
 modelFit
@@ -385,7 +391,32 @@ hist(p_standarized.train.capitalAve); qqnorm(p_standarized.train.capitalAve)
 ```
 
 ###Dealing with Missing Values
-One popular techniuque for imputation of missing data is a K-nearest neighbor model where a missing sample is imputed by finding the samples in the training set closest to it and average the nearby points to fill in. Note the entire training set is required every time a missing value needs to be imputed.lllll
+One popular techniuque for imputation of missing data is a K-nearest neighbor model where a missing sample is imputed by finding the samples in the training set closest to it and average the nearby points to fill in. Note the entire training set is required every time a missing value needs to be imputed.
+
+```{r collapse= TRUE}
+set.seed(13343)
+##Make some values NAs
+spam.training$capAveWithNAs <- spam.training$capitalAve
+selectedNAs <- rbinom(n = dim(spam.training)[1], size = 1, prob = 0.05) == 1
+spam.training$capAveWithNAs[selectedNAs] <- NA
+summary(spam.training$capAveWithNAs)
+##The modified predictor has now a certain number of elements set to NAs
+
+##Impute & Standardize
+preObj <- preProcess(spam.training[, -58], method = "knnImpute")
+capAve <- predict(preObj, spam.training[,-58])$capAveWithNAs
+summary(capAve)
+
+#Standarized True Values
+capAveTruth <- spam.training$capitalAve
+capAveTruth <- (capAveTruth - mean(capAveTruth))/ sd(capAveTruth)
+
+result <- cbind(imputed = capAve[selectedNAs], real = capAveTruth[selectedNAs], difference = (capAve[selectedNAs] - capAveTruth[selectedNAs]))
+head(result)
+
+quantile(result[3])
+```
+
 
 ###Binning: making factors out of quantitative predictors (Hmisc)
 An example on how to break a quantitative variables into different categories.
