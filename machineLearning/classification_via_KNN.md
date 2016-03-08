@@ -1,0 +1,68 @@
+# Classification Using KNN
+
+
+
+## Lazy Learning - classification using K Nearest-Neighbor (KNN)
+
+__Core Concept__: "_... things that are alike are likely to have properties that are alike._"
+
+NN classifiers are defined by their characteristic of classifying __unlabeled__ examples by assigning them the class of similar labeled examples. NN methods are quite owerful.
+
+### The KNN algorithm
+
+| Strengths | Weakness |
+| --------- | -------- |
+| Simple and effective | Does not produce a model, limited interpretability |
+| Makes no assumption ablout the underlying data distribution | Requires the selection of an appropiate K |
+| Fast training phase | Slow classification phase |
+| | Nominal features and missing data require additional processing |
+
+
+The KNN algorith uses K nearest-neighbors to classify unlabeled obseravtions. After choosing k, the algorithm requires a trining dataset made up of labeled observations. Then for each unlabeled observation, k-NN identifies the k records in the training dataset that are nearest/ similar to the observation undr analysis. The unlabeled observation is assigned the same class representing the majority of the k neighbors.
+
+The KNN algorith is considered __lazy learning/ instance-based learning/ rote learning__ cause no abstraction/ generalization occurs. A __lazy learner__ is not learning anything, it just stores the training data. For this reason the training phase - which is not actually training anything - is very fast. On the other side the making prediction tends to be very slow having to go through the training data than using an abstraction/ generalization.
+
+Although KNN classifiers are considered lazy, they are still quite powerful under certain circumstances.
+
+#### How to Quantify Similarity 
+
+Similarity is measured with __distance__. A __distance function__ is a function or formula that measures the similarity between two different observations/ instances.
+
+There are many ways to calculate the __distance__ traditionally the K-NN algorithm uses the __euclidean distance__ which is the distance that would be measured if it were possible to use a ruler between the two observations/ points. Note! the euclidean distance is measured "as the crow flies" or in other words "the shortest direct route".
+
+{p, q} are two observations to be compared, each observation has n (quantitative) features then the euclidean distance is calculated as 
+
+\[dist(p,q) = \sqrt{(p1-q1)^2 + (p2-q2)^2 + .. + (pn -qn)^2}\]
+
+#### Choosing the Appropiate K
+
+The decion of how many neighbors (K) to use in the algorithm influences how well the classification performs on unlabeled data (__bias-variance tradeoff__). Choosing a large K reduces the variance but increases the bias (__bias the learner__), on the other side choosing a small K (e.g. K = 1) increases the variance but reduces the bias (the learner is able to identify small and important patterns).
+
+In practice choosing K depends on the difficulty of the concept to be learned and the number of observations in the training dataset - "_One common practice is to begin with k equal to the square root of the number of training examples_" and then test several K values on a variety of test dataset and choose the one that deliver the best classification performance.
+
+#### Preparing the data for KNN
+
+The distance formula is highly dependent on how the features are measured (e.g scale) - the features with the dominat scales will influence the distance two observations. For this reason features are transformed to a __standard range__ before applying the algorithm.
+
+One solution is to __rescale__ the features by shrinking or expanding their range in order to have each feature contributing the distance calculation, e.g the __min-max normalization__, the __z-score standardization__.
+
+__min-max normalization__ for a feature x
+
+\[x_{new} = \frac{x - min(x)}{max(x) - min(x)}\]
+
+
+__z-score standardization__ for a feature x
+
+\[x_{new} = \frac{x - \mu}{\sigma} = \frac{x - mean(x)}{stdDev(x)}\]
+
+
+##### The case of nominal/ qualitative data
+
+The distance formula is not defined for nominal/ qualitative data, e.g. what is the distance between "male" and "female"? A typical solution for nominal/ qualitative features is to introduce __dummy variables__ and if necessary apply normalization.
+
+
+
+
+#Reference
+
+* Chapter 3 & 4 of ["Machine Learning with R" 2nd edition](https://www.safaribooksonline.com/library/view/machine-learning-with/9781784393908/ch03.html)
