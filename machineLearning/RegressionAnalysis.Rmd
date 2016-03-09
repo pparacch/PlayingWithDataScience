@@ -9,8 +9,9 @@ output:
 ```{r echo = FALSE, results='hide'}
 Sys.setlocale("LC_ALL", "C")
 ```
+# Regression Analysis (1)
 
-Regression analysis is the preferred method when both the response variable and the predictors (explanatory variables) are __continuous variables__.
+Regression analysis is the preferred method when both the response variable and the predictors (explanatory variables) are __continuous variables__. Note! if predictors are __qualitative variables__ still is possible to transform them using the __dummy variable__ approach.
 
 The essence of the Regression Analysis is to use sample data to estimate parameter values and their standard errors having selected a model which describes the relationship between the response and the predictors (explanatory variables). __Note!__ _The model choice is a really big deal._
 
@@ -26,6 +27,7 @@ where
 * b: the __slope__, the change of y for a change of x
 
 ##Example
+
 ```{r loadingExampleData}
 reg.data <- read.csv("./datasets/tannin.csv")
 attach(reg.data)
@@ -218,7 +220,33 @@ pp <- 1 - pf((SSR / 1) / (SSE / (n-2)), 1, (n-2))
 The probability of getting a value for F as large as the calculated on if the null hypothesis is true is `r pp` - quite small so very unlikely to get such statistic under the null hypothesis.
 
 
+# Regression Methods (2)
+
+The introduction of a set of methods, part of the machine learning toolkit, used for estimating relationships among numeric data. __Regression__ is concerned with specifying the relationship between the __outcome/dependent variable__ (the value to be predicted) and one or more "numeric" __independent variables__ (the predictors) - __parametric approach__.
+
+__Simplest form of regression__, __Simple Linear Regression__ assumes a linear relationship between the independent and dependent variables, e.g. a straigh line. If y is our __outocome__ and x is our only __predictor__ the simplest form of regression can be represented by 
+
+$y = a + b * x$
+
+* a is the __intercept__, the point where the line crosses the vertical y axis
+* b is the __slope__, how much the line rises for an unit increase of x
+
+The job is to estimate the values for a and b so that the specify line is the best one to relate the supplied x values to the values of y.
+
+Regression Analysis is commonly used o model complex relationships among data elements, specifically
+
+* Examining how population and individuals vary by their measured characteristics
+* Quantifying the casual relationship between an event and teh response
+* Identifying patterns that can be  used to forecast future behaviour given known criteria
+
+__Regression Analysis__ -> one of the possible approach __Linear Regression__ -> __Simple Linear Regression__ vs. __Multiple Linear Regression__.
+
+Note!! Regression can be used for __classification__ task -> __Logistic Regression__ vs. __Multinomial Logistic Regression__.
+
+
+## Simple Linear Regression
 
 #Reference
 
-* Chapter 7 of ["Statistics: An Introduction Using R"](http://eu.wiley.com/WileyCDA/WileyTitle/productCd-1118941098.html)
+* (1) Chapter 7 of ["Statistics: An Introduction Using R"](http://eu.wiley.com/WileyCDA/WileyTitle/productCd-1118941098.html)
+* (2) Chapter 6 of ["Machine Learning with R"](https://www.safaribooksonline.com/library/view/machine-learning-with/9781784393908/ch06.html)

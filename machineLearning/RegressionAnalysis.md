@@ -3,7 +3,7 @@ Pier Lorenzo Paracchini
 January 4, 2016  
 
 
-Regression analysis is the preferred method when both the response variable and the predictors (explanatory variables) are __continuous variables__.
+Regression analysis is the preferred method when both the response variable and the predictors (explanatory variables) are __continuous variables__. Note! if predictors are __qualitative variables__ still is possible to transform them using the __dummy variable__ approach.
 
 The essence of the Regression Analysis is to use sample data to estimate parameter values and their standard errors having selected a model which describes the relationship between the response and the predictors (explanatory variables). __Note!__ _The model choice is a really big deal._
 
@@ -57,7 +57,7 @@ summary(reg.data)
 plot(tannin, growth, pch=21, bg="blue")
 ```
 
-![](RegressionAnalysis_files/figure-html/summaryData-1.png) 
+![](RegressionAnalysis_files/figure-html/summaryData-1.png)
 
 ###Linear Regression
 
@@ -99,11 +99,11 @@ plot(tannin, growth, pch=21, bg="blue")
 abline(reg = reg.model.fit, col="green")
 ```
 
-![](RegressionAnalysis_files/figure-html/visualizingFitModel-1.png) 
+![](RegressionAnalysis_files/figure-html/visualizingFitModel-1.png)
 
 The fit is reasonably good but it is not perfect. The observations do not lie on the fitted line. The difference between an observation and the predicted value (using the model) for a specific x (explanatory variable) is called __residual__.
 
-The fit pass through the point in the centre of the cloud of data. The best-fit line will be pivoted about the mean values of x and y and our job is to find the best value for this slope <U+2013> the one that minimizes the sum of squares of the red lines in the graph above.
+The fit pass through the point in the centre of the cloud of data. The best-fit line will be pivoted about the mean values of x and y and our job is to find the best value for this slope – the one that minimizes the sum of squares of the red lines in the graph above.
 
 
 ```r
@@ -137,7 +137,7 @@ for(i in 1:length(tannin)){
 }
 ```
 
-![](RegressionAnalysis_files/figure-html/visualizingFitModel_extended-1.png) 
+![](RegressionAnalysis_files/figure-html/visualizingFitModel_extended-1.png)
 
 Residuals:
 
@@ -172,7 +172,7 @@ abline(h=20.07225,col="green",lty=2)
 arrows(-1.216,20.07225,-1.216,19,col="red")
 ```
 
-![](RegressionAnalysis_files/figure-html/sseGraph-1.png) 
+![](RegressionAnalysis_files/figure-html/sseGraph-1.png)
 
 ###Calculation Involved in Linear Regression
 
@@ -271,7 +271,7 @@ The __ANOVA__ table
 |Total|108.8888889|8|||
 
 
-"The null hypothesis under test in a linear regression is that the slope of the regression line is zero (i.e. no dependence of y on x). The two-tailed alternative hypothesis is that the slope is significantly different from zero (either positive or negative). In many applications it is not particularly interesting to reject the null hypothesis, because we are interested in the effect sizes (estimates of the slope and intercept) and their standard errors. We often know from the outset that the null hypothesis is false. Nevertheless, to test whether the F ratio is sufficiently large to reject the null hypothesis, we compare our test statistic (the calculated value of F in the final column of the ANOVA table) with the critical value of F. Recall that the test statistic is the value of F that is expected by chance alone when the null hypothesis is true. We find the critical value of F from quantiles of the F distribution qf, with 1 d.f. in the numerator and n <U+2212> 2 d.f. in the denominator (as described below)."
+"The null hypothesis under test in a linear regression is that the slope of the regression line is zero (i.e. no dependence of y on x). The two-tailed alternative hypothesis is that the slope is significantly different from zero (either positive or negative). In many applications it is not particularly interesting to reject the null hypothesis, because we are interested in the effect sizes (estimates of the slope and intercept) and their standard errors. We often know from the outset that the null hypothesis is false. Nevertheless, to test whether the F ratio is sufficiently large to reject the null hypothesis, we compare our test statistic (the calculated value of F in the final column of the ANOVA table) with the critical value of F. Recall that the test statistic is the value of F that is expected by chance alone when the null hypothesis is true. We find the critical value of F from quantiles of the F distribution qf, with 1 d.f. in the numerator and n − 2 d.f. in the denominator (as described below)."
 
 
 ```r
