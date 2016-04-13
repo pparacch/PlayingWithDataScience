@@ -1,0 +1,83 @@
+---
+title: "Text Mining the complete work of William Shakespeare"
+author: "ppar"
+date: "13 april 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#setwd("E:/APPL/workspace_r/PlayingWithDataScience/unstructuredData")
+```
+
+## Reference
+From the blog ["Text Mining the Complete Works of William Shakespeare"](http://www.r-bloggers.com/text-mining-the-complete-works-of-william-shakespeare/)
+
+## Getting Ready
+
+### Loading the data
+
+```{r loadData}
+fileData <- "./../data/williamShakespearWork.txt"
+if (!file.exists(fileData)) {
+    download.file("http://www.gutenberg.org/cache/epub/100/pg100.txt", destfile = fileData)
+}
+shakespeare <- readLines(fileData, encoding = "UTF-8")
+```
+
+### Exploring the data
+```{r exploringTheData, collapse = T}
+#No of lines
+length(shakespeare)
+
+#Line examples
+head(shakespeare, 10)
+tail(shakespeare, 10)
+```
+
+Looking at the lines at the beginning and end of the book, it is possible to see that a header and footer section are present in the dataset. __These sections need to be removed from the dataset__.
+
+Different works are separated by the following section 
+
+    '<<THIS ELECTRONIC VERSION OF THE COMPLETE WORKS OF WILLIAM SHAKESPEARE IS COPYRIGHT 1990-1993 BY WORLD LIBRARY, INC., AND IS PROVIDED BY PROJECT GUTENBERG ETEXT OF ILLINOIS BENEDICTINE COLLEGE... FOR DOWNLOAD TIME OR FOR MEMBERSHIP.>>'
+
+Actions:
+
+* __CLEAN__ - remove header and footer sections from the dataset
+    * header: from line 1 to line 175
+    * footer: from line 124368 to the end
+* __CLEAN__ - remove the sections separting the different works
+    
+
+### Clean the data
+
+```{r cleanStep1, collapse = T}
+
+# remove header and footer
+# create a one string document
+endHeader <- 175
+startFooter <- 124368
+
+header <- shakespeare[1:endHeader]
+header.txt <- paste(header, collapse = " ")
+
+footer <- shakespeare[startFooter: length(shakespeare)]
+footer.txt <- paste(footer, collapse = " ")
+
+header.txt
+
+footer.txt
+
+shakespeare <- shakespeare[-c(startFooter: length(shakespeare))]
+shakespeare <- shakespeare[-c(1:endHeader)]
+shakespeare.txt <- paste(shakespeare, collapse = " ")
+
+nchar(shakespeare.txt)
+```
+
+```{r cleanStep2, collapse = T}
+# remove separating section
+# create a one string document fopr each document
+shakespeare.works <- strsplit(shakespeare.txt, "<<[^>]*>>")[[1]]
+length(shakespeare.works) #No of works
+```
