@@ -2,12 +2,14 @@
 title: "Text Mining the complete work of William Shakespeare"
 author: "ppar"
 date: "13 april 2016"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-#setwd("E:/APPL/workspace_r/PlayingWithDataScience/unstructuredData")
+#setwd("./unstructuredData")
 ```
 
 ## Reference
@@ -32,6 +34,8 @@ length(shakespeare)
 
 #Line examples
 head(shakespeare, 10)
+shakespeare[175:176]
+shakespeare[124366:124380]
 tail(shakespeare, 10)
 ```
 
@@ -81,3 +85,108 @@ nchar(shakespeare.txt)
 shakespeare.works <- strsplit(shakespeare.txt, "<<[^>]*>>")[[1]]
 length(shakespeare.works) #No of works
 ```
+
+### Data Analysis - Text Mining
+
+#### Create the Corpus
+```{r corpus}
+require(tm)
+require(SnowballC)
+
+docs.corpus <- Corpus(VectorSource(shakespeare.works))
+
+docs.corpus
+inspect(docs.corpus[1:2])
+```
+
+#### Clean the Corpus and apply Stemming
+
+```{r cleanCorpus}
+#Transformations used to clean up the Corpus
+docs.corpus <- tm_map(docs.corpus, content_transformer(tolower))
+docs.corpus <- tm_map(docs.corpus, removePunctuation)
+docs.corpus <- tm_map(docs.corpus, removeNumbers)
+docs.corpus <- tm_map(docs.corpus, removeWords, stopwords(kind = "en"))
+docs.corpus <- tm_map(docs.corpus, stemDocument)
+
+docs.corpus <- tm_map(docs.corpus, stripWhitespace)
+```
+
+```{r inspectOneDoc}
+inspect(docs.corpus[1])
+as.character(docs.corpus[[1]])
+```
+
+#### Create the TermDocumentMatrix & DocumentTermMatrix
+
+The most convenient matrix will depend on the relative number of documents and terms in your data.
+
+```{r tdmCreation, collapse = T}
+tdm <- TermDocumentMatrix(docs.corpus)
+tdm
+#To visualize the content of the matrix
+inspect(tdm[1:10, 1:10])
+
+dtm <- DocumentTermMatrix(docs.corpus)
+dtm
+#To visualize the content of the matrix
+inspect(dtm[1:10, 1:10])
+```
+
+__What are the most frequently occuring terms? Most frequently -> at least 2000 times__
+
+```{r frequentTerms, collapse=T}
+# Same result working with the TermDocumentMatrix or 
+# DocumentTermMatrix
+findFreqTerms(tdm, 2000)
+
+findFreqTerms(dtm, 2000)
+```
+
+__What are the possible associations between words?__
+
+```{r findAssociations}
+findAssocs(x = tdm, terms = "love",  corlimit = 0.8)
+
+findAssocs(x = tdm, terms = "love",  corlimit = 0.77)
+```
+
+Looking at the `tdm` we can see that there are around 18379 terms - some of those terms do not occur very often. Same processing could be done using the Document Term Matric.
+
+```{r reduceSParcityMatrix, collapse=T}
+tdm
+dim(tdm)
+tdm.common <- removeSparseTerms(tdm, 0.2)
+tdm.common
+dim(tdm.common)
+
+inspect(tdm.common[1:10, 1:10])
+```
+the TermDocumentMatrix has been reduuced from 18379 to 46 terms using a sparse value `0.2`.
+
+#### Visual Inspection
+
+```{r visualize, collapse = T}
+# require(slam)
+tdm.common.asMatrix <- as.matrix(tdm.common)
+
+#Please note the space used by the two different objects
+object.size(tdm.common)
+object.size(tdm.common.asMatrix)
+
+require(reshape)
+require(ggplot2)
+tdm.common.asMatrix <- melt(tdm.common.asMatrix)
+head(tdm.common.asMatrix)
+
+ggplot(tdm.common.asMatrix, aes(x = Docs, y= Terms, fill = log10(value))) +
+    geom_tile(colour = "white") +
+    scale_fill_gradient(high="#FF0000", low = "#FFFFFF")+
+    ylab("")+
+    theme(panel.background = element_blank())
+```
+
+The colour scale indicates the number of times that each of the terms cropped up in each of the documents. I applied a logarithmic transform to the counts since there was a very large disparity in the numbers across terms and documents. The grey tiles correspond to terms which are not found in the corresponding document.
+
+One can see that some terms, like “will” turn up frequently in most documents, while “love” is common in some and rare or absent in others.
+
