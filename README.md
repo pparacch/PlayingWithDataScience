@@ -1,7 +1,7 @@
 #Walk-about in Data Science
 
 ##The R language - My first Steps (Notes)
-Based on 
+Based on the following sources 
 
 * __Data Science Specialization__ at __[Coursera](https://www.coursera.org/specializations/jhudatascience)__ 
 * __["The Art of R Programming"](http://shop.oreilly.com/product/9781593273842.do)__ by Norman Matloff.
