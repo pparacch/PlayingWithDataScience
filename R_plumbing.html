@@ -119,47 +119,240 @@ $(document).ready(function () {
 </div>
 
 
-<div id="walk-about-in-data-science" class="section level1">
-<h1>Walk-about in Data Science</h1>
-<div id="the-r-language---my-first-steps-notes" class="section level2">
-<h2>The R language - My first Steps (Notes)</h2>
-<p>Based on the following sources</p>
+<div id="r-plumbing-fundamentals" class="section level1">
+<h1>R Plumbing: Fundamentals</h1>
+<p><a href="#help">Getting Help</a></p>
+<p><a href="#package">Package Management</a></p>
+<p><a href="#wd">Working Directory Management</a></p>
+<p><a href="#loadedObjects">Managing Loaded Named-Objects</a></p>
+<p><a href="#dataset">Managing Available Data Sets</a></p>
+<div id="getting-help" class="section level2">
+<h2><a id="help">Getting Help</a></h2>
+<p><a href="http://cran.r-project.org/">R website</a> <a href="http://stackoverflow.com/">Stackoverflow</a></p>
+<div id="locale" class="section level3">
+<h3>Locale</h3>
+<div id="reminder" class="section level4">
+<h4>Reminder</h4>
+<p><strong>[From edx.org]</strong> If you downloaded and installed R in a location other than the United States, you might encounter some formating issues later in this class due to language differences. To fix this, you will need to type in your R console:</p>
+<p><code>Sys.setlocale(&quot;LC_ALL&quot;, &quot;C&quot;)</code></p>
+<p>This will only change the locale for your current R session.</p>
+</div>
+</div>
+<div id="the-help-command-in-r" class="section level3">
+<h3>The Help command in R</h3>
+<table style="width:32%;">
+<colgroup>
+<col width="18%"></col>
+<col width="13%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>help(cmd)</code></td>
+<td>Brings up a help entry for the specified command.</td>
+</tr>
+<tr class="even">
+<td><code>?cmd</code></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>help.start()</code></td>
+<td>Open the help system default browser.</td>
+</tr>
+<tr class="even">
+<td><code>help.search(&quot;string&quot;)</code></td>
+<td>Search the Help System for the provided “string”.</td>
+</tr>
+<tr class="odd">
+<td><code>apropos(pattern)</code></td>
+<td>Show all of the commands that contains provided pattern. Note pattern can be a regular expression or a string.</td>
+</tr>
+<tr class="even">
+<td><code>example(cmd)</code></td>
+<td>Run examples section from the online help.</td>
+</tr>
+<tr class="odd">
+<td><code>?Syntax</code></td>
+<td>To get a complete refence on operator syntax &amp; precedences</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="package-management" class="section level2">
+<h2><a id="package">Package Management</a></h2>
+<table style="width:31%;">
+<colgroup>
+<col width="18%"></col>
+<col width="12%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>search()</code></td>
+<td>Show a list of packages (and other objects) that are loaded and available for use.</td>
+</tr>
+<tr class="even">
+<td><code>installed.packages()</code></td>
+<td>Show a list of packages that are installed. <strong>Note! Installed does not mean that is loaded &amp; ready for use</strong>.</td>
+</tr>
+<tr class="odd">
+<td><code>install.packages(&quot;name&quot;)</code></td>
+<td>Install a package (library) from the CRAN website.</td>
+</tr>
+<tr class="even">
+<td><code>source(&quot;http://bioconductor.org/biocLite.R&quot;); biocLite(&quot;packageName&quot;)</code></td>
+<td>Install a package (library) from the Bioconductor website.</td>
+</tr>
+<tr class="odd">
+<td><code>library(name)</code></td>
+<td>Load a package (previously installed), making it available for use.</td>
+</tr>
+<tr class="even">
+<td><code>detach(package:name)</code></td>
+<td>Make the package unavailable for use. Replace name with the package name to be detached.</td>
+</tr>
+</tbody>
+</table>
+<p>The basic installation of R provides a set of commands that allow to carry out many of the task you might need. Sometimes you will need to run/ perform a specific task and the commands you need are not available. If you find out that the basic installation of R does not have the appropiate commands available, then remember that the <a href="http://cran.r-project.org/web/packages/available_packages_by_name.html">CRAN</a> and <a href="http://bioconductor.org/">Bioconductor</a> websites have additional packages available <strong>ready to be used</strong>.</p>
+<div id="how-to-install-extra-packages" class="section level3">
+<h3>How to Install Extra packages</h3>
 <ul>
-<li><strong>Data Science Specialization</strong> at <strong><a href="https://www.coursera.org/specializations/jhudatascience">Coursera</a></strong></li>
-<li><strong><a href="http://shop.oreilly.com/product/9781593273842.do">“The Art of R Programming”</a></strong> by Norman Matloff.</li>
-<li>add others</li>
+<li>Package Installer available in R for CRAN/ Bioconductor packages</li>
+<li><code>install.packages()</code>command for CRAN package</li>
+<li><code>source(&quot;http://bioconductor.org/biocLite.R&quot;); biocLite(&quot;packageName&quot;)</code>commands for Bioconductor packages</li>
 </ul>
-<div id="r-language" class="section level3">
-<h3>R Language</h3>
-<p>“<em>R is an extremely versatile open source language for statistics and data science. It is widely used in every field wherethere is data - business, industry, government, medicine, academia and so on.</em>”</p>
-<p><strong>Basics</strong></p>
+</div>
+<div id="running-and-manipulating-packages" class="section level3">
+<h3>Running and manipulating packages</h3>
 <ul>
-<li><p><a href="https://github.com/pparacch/PlayingWithDataScience/blob/master/R_plumbing.md">Plumbing: Fundamentals</a></p></li>
-<li><p><a href="https://github.com/pparacch/PlayingWithDataScience/blob/master/R_data_types_and_basic_operations.md">Data Types And Basic Operations</a></p></li>
-<li><p><a href="https://github.com/pparacch/PlayingWithDataScience/blob/master/R_vectors.md">Vectors</a></p></li>
-</ul>
-<p><strong>Interesting Packages</strong></p>
-<ul>
-<li><p><a href="https://github.com/pparacch/PlayingWithDataScience/blob/master/R_dplyr.md">A grammar for data frame management (dyplr)</a></p></li>
-<li><p><a href="https://github.com/pparacch/PlayingWithDataScience/blob/master/unstructuredData/managingUnstructureData.md">A grammar for unstructured data management (tm)</a></p></li>
+<li><p>You can see which packages have been installed using <code>installed.packages()</code>.</p></li>
+<li><p>You can search which packages are loaded and running in the current session using <code>search()</code>.</p></li>
+<li><p>You can load packages in the current session using <code>library(package)</code> Note!! package must be an installed package.</p></li>
+<li><p>You can make a package unavailable (removing or unloading) in the current session using <code>detach(package)</code>.</p></li>
 </ul>
 </div>
 </div>
-<div id="some-applications" class="section level2">
-<h2>Some Applications</h2>
-<div id="practice" class="section level3">
-<h3>Practice</h3>
-<p><a href="https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/titanicExploration/titanicExploration.md">Titanic: Machine Learning from Disaster</a></p>
+<div id="working-directory-management" class="section level2">
+<h2><a id="wd">Working Directory Management</a></h2>
+<p>The working directory is the location - in your file system - where file are looked and stored by default.</p>
+<table style="width:39%;">
+<colgroup>
+<col width="18%"></col>
+<col width="20%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>getwd()</code></td>
+<td>Return the current working directory.</td>
+</tr>
+<tr class="even">
+<td><code>setwd(&quot;location&quot;)</code></td>
+<td>Set the current directory to the provided location. “location” can be an absolute path or relative path (relative to the current working directory).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note!</strong> If you want to change the working directory on a permanent basis look at the “Preferences” for R/ RStudio.</p>
+<div id="other-commands" class="section level3">
+<h3>Other Commands</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>dir()</code></td>
+<td>List all files/ directories in the working directory.</td>
+</tr>
+<tr class="even">
+<td><code>dir(&quot;location&quot;)</code></td>
+<td>List all files/ directories in the provided directory.</td>
+</tr>
+<tr class="odd">
+<td><code>dir(all.files = T)</code></td>
+<td>List all files/ directories including hidden ones.</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="machine-learning-algorithms" class="section level3">
-<h3>Machine Learning Algorithms</h3>
-<p><strong>Naive Bayes Algorithm</strong><br />
-* <a href="https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/ClassificationUsingNaiveBayes.md">theory</a> and some applications</p>
+</div>
+<div id="managing-loaded-named-objects" class="section level2">
+<h2><a id="loadedObjects">Managing loaded Named-Objects</a></h2>
+<table style="width:32%;">
+<colgroup>
+<col width="18%"></col>
+<col width="13%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>ls()</code></td>
+<td>List all objects available in the current session. Objects are ordered in alphabetically order.</td>
+</tr>
+<tr class="even">
+<td><code>ls(pattern = &quot;&lt;pattern&gt;)&quot;</code></td>
+<td>List all of the objects available in the current session with a name matching the provided pattern. E.g. <code>ls(pattern = &quot;b&quot;)</code> list all objects with a name containing <strong>b</strong>; <code>ls(pattern = &quot;be&quot;)</code> list all objects with a name containing <strong>be</strong>; <code>ls(pattern = &quot;^b&quot;)</code> list all objects with a name starting with <strong>b</strong>; <code>ls(pattern = &quot;^[be]&quot;)</code> list all objects with a name starting with <strong>b</strong> or <strong>e</strong>; <code>ls(pattern = &quot;txt$&quot;)</code> list all objects with a name ending with <strong>txt</strong>; <code>ls(pattern = &quot;a.b&quot;)</code> list all objects with a name containing <strong>a</strong>‘anyCharacter’<strong>b</strong>.</td>
+</tr>
+<tr class="odd">
+<td><code>rm(list)</code> same as <code>remove(list)</code></td>
+<td>Remove loaded objects, whose name is in the provided list, from the current session.</td>
+</tr>
+</tbody>
+</table>
 <ul>
-<li><a href="https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/ClassificationUsingNaiveBayes_example.md">SMS messages - spam or ham?</a></li>
+<li>Remove all loaded objects available in the current session <code>rm(list = ls()</code></li>
+<li>Remove all loaded objects whose name matches the provided pattern <code>rm(list = ls(&quot;pattern&quot;))</code>.</li>
+<li>Remove specific objects <code>rm(objectName1, objectName2, objectName3, ..)</code>.</li>
 </ul>
-<p><strong>Clustering</strong> * <a href="https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/automaticCategorizationWikiArticles.md">Automatic categorization of Wikipedia articles</a></p>
 </div>
+<div id="managing-available-data-sets" class="section level2">
+<h2><a id="dataset">Managing Available data Sets</a></h2>
+<table style="width:32%;">
+<colgroup>
+<col width="18%"></col>
+<col width="13%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>data()</code></td>
+<td>List all of the available data sets, all packages in teh search path are used.</td>
+</tr>
+<tr class="even">
+<td><code>data(package = .packages(all.available = TRUE))</code></td>
+<td>List of all the available data sets for all of the available packages.</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 

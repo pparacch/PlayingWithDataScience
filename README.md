@@ -1,13 +1,13 @@
-#Walk-about in Data Science
+# Walk-about in Data Science
 
-##The R language - My first Steps (Notes)
+## The R language - My first Steps (Notes)
 Based on the following sources 
 
 * __Data Science Specialization__ at __[Coursera](https://www.coursera.org/specializations/jhudatascience)__ 
 * __["The Art of R Programming"](http://shop.oreilly.com/product/9781593273842.do)__ by Norman Matloff.
 * add others
 
-###R Language
+### R Language
 "_R is an extremely versatile open source language for statistics and data science. It is widely used in every field wherethere is data - business, industry, government, medicine, academia and so on._"
 
 __Basics__
@@ -24,11 +24,12 @@ __Interesting Packages__
 
 * [A grammar for unstructured data management (tm)](https://github.com/pparacch/PlayingWithDataScience/blob/master/unstructuredData/managingUnstructureData.md)
 
-##Some Applications
-###Practice
+## Some Applications
+
+### Practice
 [Titanic: Machine Learning from Disaster](https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/titanicExploration/titanicExploration.md)
 
-###Machine Learning Algorithms
+### Machine Learning Algorithms
 __Naive Bayes Algorithm__  
 * [theory](https://github.com/pparacch/PlayingWithDataScience/blob/master/machineLearning/ClassificationUsingNaiveBayes.md) and  some applications
 
