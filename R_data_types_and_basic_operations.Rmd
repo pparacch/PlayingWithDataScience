@@ -1,8 +1,15 @@
-# Data Types & Basic Operations
-Pier Lorenzo Paracchini  
-7 april 2017  
+---
+title: "Data Types & Basic Operations"
+author: "Pier Lorenzo Paracchini"
+date: "7 april 2017"
+output: 
+  html_document: 
+    keep_md: yes
+---
 
-
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE)
+```
 
 [Data Types Overview: Vectors](#vectors)  
 [Data Types Overview: Attributes](#atributes)  
@@ -50,91 +57,68 @@ Atomic vectors can be __logical__, __integer__, __double__, __character__, __com
 
 __How to create an atomic vector__
 
-
-```r
+```{r}
 #Creating atomic vectors
 #double
 x <- c(1,2,3)
 x
-## [1] 1 2 3
 
 #integer
 y <- c(1L,2L,3L)
 y
-## [1] 1 2 3
 
 #logical
 w <- c(TRUE, FALSE, TRUE)
 w
-## [1]  TRUE FALSE  TRUE
 
 #character
 z <- c("and", "here", "I", "am")
 z
-## [1] "and"  "here" "I"    "am"
 ```
 
 Atomic vectors are always a flat structure
 
-
-```r
+```{r}
 #even when nesting c()
 x <- c(1,2,3,c(4,5,6,7))
 x
-## [1] 1 2 3 4 5 6 7
 ```
 
 __How to check the type__
 
-
-```r
+```{r}
 #double
 typeof(x)
-## [1] "double"
 is.double(x)
-## [1] TRUE
 
 #integer
 typeof(y)
-## [1] "integer"
 is.integer(y)
-## [1] TRUE
 
 #logical
 typeof(w)
-## [1] "logical"
 is.logical(w)
-## [1] TRUE
 
 #character
 typeof(z)
-## [1] "character"
 is.character(z)
-## [1] TRUE
 
 #note is.numeric() just check if is a number
 is.numeric(x)#double
-## [1] TRUE
 is.numeric(y)#integer
-## [1] TRUE
 is.numeric(w)#logical
-## [1] FALSE
 is.numeric(z)#character
-## [1] FALSE
 ```
 
 #### Coercion
 
 Being an atomic vector homogeneous, all of its elements must be of the same type. Trying to combine elements of different types triggers __automatic coercion to the most flexible type__. Corcion often happens automatically - if unsure about _what's going on_ __explicitly coerce with `as.character, as.double, as.integer, as.logical`.
 
-
-```r
+```{r}
 #coercion applied
 str(c(1, "a")) #most flexible type -> character
-##  chr [1:2] "1" "a"
 
 str(c(FALSE, TRUE, 10)) #logical corced to numeric FALSE = 0 and TRUE = 1
-##  num [1:3] 0 1 10
 ```
 
 ### Lists
@@ -143,113 +127,44 @@ Lists are different from atomic vector being heterogeneous, a list can contain e
 
 __How to create a list__
 
-
-```r
+```{r}
 #Different types can be included in a list
 x <- list(1:3, c(TRUE, FALSE), c("a", "b", "c", "d"))
 str(x)
-## List of 3
-##  $ : int [1:3] 1 2 3
-##  $ : logi [1:2] TRUE FALSE
-##  $ : chr [1:4] "a" "b" "c" "d"
 x
-## [[1]]
-## [1] 1 2 3
-## 
-## [[2]]
-## [1]  TRUE FALSE
-## 
-## [[3]]
-## [1] "a" "b" "c" "d"
 
 #List can be made up of lists
 y <- list(list(list(1:3), list(4:6), list()))
 str(y)
-## List of 1
-##  $ :List of 3
-##   ..$ :List of 1
-##   .. ..$ : int [1:3] 1 2 3
-##   ..$ :List of 1
-##   .. ..$ : int [1:3] 4 5 6
-##   ..$ : list()
 y
-## [[1]]
-## [[1]][[1]]
-## [[1]][[1]][[1]]
-## [1] 1 2 3
-## 
-## 
-## [[1]][[2]]
-## [[1]][[2]][[1]]
-## [1] 4 5 6
-## 
-## 
-## [[1]][[3]]
-## list()
 ```
 
 `c()` will combine several lists into one. If given a combination of atomic vectors and lists, `c()` will first coerce atomic vectors to lists before combining them. 
 
-
-```r
+```{r}
 x <- list(list(1,2), c(3,4))
 str(x)
-## List of 2
-##  $ :List of 2
-##   ..$ : num 1
-##   ..$ : num 2
-##  $ : num [1:2] 3 4
 x
-## [[1]]
-## [[1]][[1]]
-## [1] 1
-## 
-## [[1]][[2]]
-## [1] 2
-## 
-## 
-## [[2]]
-## [1] 3 4
 
 y <- c(list(1,2), c(3,4))
 str(y)
-## List of 4
-##  $ : num 1
-##  $ : num 2
-##  $ : num 3
-##  $ : num 4
 y
-## [[1]]
-## [1] 1
-## 
-## [[2]]
-## [1] 2
-## 
-## [[3]]
-## [1] 3
-## 
-## [[4]]
-## [1] 4
 ```
 
 __Check the type of a list__
 
 Lists are used to build the most complicated structures in R, e.g. dataframes are lists.
 
-
-```r
+```{r}
 x <- list(1,2)
 typeof(x)
-## [1] "list"
 ```
 
 __Check if an object is a list__
 
-
-```r
+```{r}
 x <- list(1,2,3)
 is.list(x)
-## [1] TRUE
 ```
 
 ## <a id="attributes">Attributes</a>
@@ -261,39 +176,27 @@ __How to access attributes of an object?__
 Use `attributes()` to get all attributes connected with an object.
 Use `attr()` to create a custom attribute or get a specific attribute
 
-
-```r
+```{r}
 y <- 1:10
 #To get the attributes of this object...
 attributes(y) #An atomic vector does not have any attribute
-## NULL
 
 #Add an attribute
 attr(y, "my_attribute") <- "This is a custome created attribute"
 #To get the attributes of this object...
 str(attributes(y))#check the structure returned
-## List of 1
-##  $ my_attribute: chr "This is a custome created attribute"
 attributes(y)#get all attributes for the passed object
-## $my_attribute
-## [1] "This is a custome created attribute"
 attr(y, "my_attribute")#get the specified attribute
-## [1] "This is a custome created attribute"
 ```
 
 __Note__ by default most attribute are lost when operating on a vector
 
-
-```r
+```{r}
 y <- 1:10
 attr(y, "test") <- "attr test value"
 attributes(y)
-## $test
-## [1] "attr test value"
 attributes(y[1])
-## NULL
 attributes(sum(y))
-## NULL
 ```
 
 The only attributes not lost are __names__, __dimensions__ and __class__. These attributes have specific accessors to get and set the values `names(x)`, `dim(x)` and `class(x)`. __DO NOT USE format `attr(x, "name")`, where `name = "names", "dim", "class"`__  
